@@ -1,0 +1,310 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
+
+* {
+	font-family: 'Nunito', sans-serif;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-weight: 600;
+}
+
+:root {
+	/* Logo Color Palette */
+	--logo-light-green: #2bb673;
+	--logo-dark-green: #2b8859;
+	--logo-light-orange: #e4c355 ;
+	--logo-dark-orange: #e7b71b;
+	/* Logo Color Palette */
+
+	/* System Color Palette */
+	--grey: #F1F0F6;
+	--grey-active-hover: #e1e1e9;
+	--dark-grey: #8D8D8D;
+	--light: #fff;
+	--dark: #333333;
+	--blue: #1775F1;
+	--light-blue: #D0E4FF;
+	--dark-blue: #0C5FCD;
+	--red: #FC3B56;
+	--dark-red: #dc2942;
+	/* System Color Palette */
+
+    /* System Fonts */
+    --main-font: 'Nunito';
+    --sub-font: 'sans-serif';
+}
+
+/* ::-webkit-scrollbar {
+	display: none;
+} */
+
+html {
+	overflow-x: hidden;
+}
+
+body {
+	overflow-x: hidden;
+}
+
+a {
+	text-decoration: none;
+}
+
+li {
+	list-style: none;
+}
+
+.main-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    padding-top: 50px;
+}
+
+.checkbox-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.remember-me-container{
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+}
+
+.show-password-cb{
+    margin: auto;
+    padding: 10px;
+}
+
+.checkbox-container input {
+    width: 20px;
+    margin: auto;
+    
+}
+
+.checkbox-container label {
+    font-size: 14px;
+    margin-top: 9.5px;
+    margin-left: 10px;
+    color: var(--dark-grey);
+}
+
+form {
+    width: 325px;
+}
+
+form img {
+    height: 80px;
+    margin-bottom: 30px;
+    border-radius: 15px;
+    box-shadow: 2px 5px 5px 0 rgba(0, 0, 0, 0.2);
+}
+
+form input {
+    display: block;
+    height: 40px;
+    width: 100%;
+    padding: 5px;
+    padding-left: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: none;
+    background-color: var(--grey);
+    font-size: 15px;
+}
+
+
+
+form .login-header {
+    font-weight: 900;
+    color: var(--dark);
+}
+
+.login-description {
+    font-weight: 600;
+    font-size: 14px;
+    margin-left: 2px;
+    margin-bottom: 25px;
+    color: var(--dark-grey);
+}
+
+.checkbox-container{
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.account-default-label{
+    margin: auto;
+    font-family: var(--main-font);
+    font-size: 0.75rem;
+    vertical-align: middle;
+    color: #333333
+}
+
+.forgot-pass-btn{
+    font-family: var(--main-font, --sub-font); 
+    font-size: 0.75rem;
+    text-decoration: none;
+    color: #333333;
+    transition: color 0.6s;
+    margin-left: -20px;
+    vertical-align: middle;
+}
+
+.forgot-pass-btn:hover{
+    color: #999999;
+    transition: color 0.6s;
+}
+
+form .btn-login {
+    font-family: 'Nunito', 'sans-serif';
+    background-color: var(--logo-light-orange);
+    font-weight: 700;
+    color: var(--light);
+    height: 40px;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+form .btn-login:hover {
+    background-color: var(--logo-dark-orange);
+    color: var(--light);
+}
+
+.register-account {
+    margin-top: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    color: var(--dark-grey);
+    transition: color 0.6s ease;
+}
+
+.register-account:hover {
+    color: var(--logo-dark-orange);
+    transition: color 0.6s ease;
+}
+
+
+.main-separator-container{
+    position: relative;
+    width: 100%;
+}
+
+.separator-container{
+    position: absolute;
+    top: -8px;
+    width: 100%;
+}
+
+.separator{
+    font-family: var(--sub-text-fonts);
+    margin: auto;
+    width: 10%;
+    background-color: white;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600; 
+    color: #666666;
+}
+
+.other-login-btn{
+    position: relative;
+    width: 100%;
+    height: auto;
+    text-align: center;
+    margin-top: 20px;
+    display: flex;
+    vertical-align: middle;
+    padding: 8px;
+    background-color: #e7e7e7;
+    border-radius: 5px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #e7e7e7;
+    transition: background 0.6s, border-width 0.6s, border-style 0.6s, text-align 0.6s ease;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.other-sign-in-img{
+    display: inline-flex;
+    vertical-align: middle;
+    align-items: center;
+    width: auto;
+    height: 14px;
+    margin-left: 10px;
+    margin-top: auto;
+    transition: height 0.6s, margin-top 0.6s ease;
+    position: absolute;
+}
+
+.google-text-sign-in{
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 650;
+    margin-left: 10px;
+    vertical-align: middle;
+    margin: auto;
+    font-family: var(--sub-text-fonts);
+    transition: margin-left 0.6s ease;
+    color: #666666;
+    transition: color 0.6s ease;
+}
+
+.other-login-btn:hover{
+    background-color: white;
+    border-width: 1px;
+    border-style: solid;
+    text-align: center;
+    transition: background 0.6s, border-width 0.6s, border-style 0.6s, text-align 0.6s ease;
+}
+
+.other-login-btn:hover .google-text-sign-in{
+    color: #333333;
+    transition: color 0.6s ease;
+}
+
+.index-footer{
+	display: flex;
+	flex-direction: row;
+    justify-content: center;
+	width: 100vw;
+	background-color: var(--logo-dark-orange);
+	padding: 20px;
+}
+
+.download-app {
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    color: var(--light);
+    transition: color 0.6s ease;
+}
+
+/* Media Query */
+@media screen and (max-width: 768px) {
+    .container {
+        width: 100%;
+    }
+}
+/* Media Query */
+
