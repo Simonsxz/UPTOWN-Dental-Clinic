@@ -22,7 +22,7 @@ allDropdown.forEach(item=> {
 })
 
 // Doctors List
-const rowsPerPage = 4;
+let rowsPerPage = 3; // Default rows per page
 let currentPage = 1;
 
 // Sample data for table rows
@@ -32,11 +32,8 @@ const tableData = [
     { id: 3, firstName: "Larry", lastName: "Bird", date: "November 18, 2024 | 8:25am" },
     { id: 4, firstName: "Tom", lastName: "Smith", date: "November 18, 2024 | 8:25am" },
     { id: 5, firstName: "Jane", lastName: "Doe", date: "November 18, 2024 | 8:25am" },
-	{ id: 5, firstName: "Jane", lastName: "Doe", date: "November 18, 2024 | 8:25am" },
-	{ id: 5, firstName: "Jane", lastName: "Doe", date: "November 18, 2024 | 8:25am" },
-	{ id: 5, firstName: "Jane", lastName: "Doe", date: "November 18, 2024 | 8:25am" },
-	{ id: 5, firstName: "Jane", lastName: "Doe", date: "November 18, 2024 | 8:25am" },
-	{ id: 5, firstName: "Jane", lastName: "Doe", date: "November 18, 2024 | 8:25am" },
+    { id: 6, firstName: "Mike", lastName: "Johnson", date: "November 18, 2024 | 8:25am" },
+    { id: 7, firstName: "Emily", lastName: "Clark", date: "November 18, 2024 | 8:25am" },
 ];
 
 // Render table rows
@@ -44,11 +41,14 @@ function renderTable() {
     const tableBody = document.getElementById("tableBody");
     tableBody.innerHTML = "";
 
-    const start = (currentPage - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
+    let data = tableData;
+    if (rowsPerPage !== "all") {
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        data = tableData.slice(start, end);
+    }
 
-    const rows = tableData.slice(start, end);
-    rows.forEach(row => {
+    data.forEach(row => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <th scope="row">${row.id}</th>
@@ -56,15 +56,62 @@ function renderTable() {
             <td>${row.lastName}</td>
             <td>${row.date}</td>
             <td>
-                <button class="view-button">
-                    <i class="fas fa-eye"></i> View
-                </button>
-            </td>
+				<!-- View Button with Tooltip -->
+				<button class="action-button view-button1" title="View Details">
+					<i class="fas fa-eye"></i> 
+				</button>
+
+				<!-- Edit Button with Tooltip -->
+				<button class="action-button edit-button" title="Edit Details">
+					<i class="fas fa-edit"></i> 
+				</button>
+
+				<!-- Delete Button with Tooltip -->
+				<button class="action-button delete-button" title="Delete Record">
+					<i class="fas fa-trash-alt"></i>
+				</button>
+			</td>
+
+
         `;
         tableBody.appendChild(tr);
     });
 
-    document.getElementById("currentPage").textContent = `Page ${currentPage}`;
+    renderPagination();
+    updateEntriesInfo();
+}
+
+// Render pagination controls
+function renderPagination() {
+    const pageNumbers = document.getElementById("pageNumbers");
+    pageNumbers.innerHTML = "";
+
+    const totalPages = rowsPerPage === "all" ? 1 : Math.ceil(tableData.length / rowsPerPage);
+
+    for (let i = 1; i <= totalPages; i++) {
+        const page = document.createElement("div");
+        page.className = `page-number ${i === currentPage ? "active" : ""}`;
+        page.textContent = i;
+        page.onclick = () => goToPage(i);
+        pageNumbers.appendChild(page);
+    }
+}
+
+// Update "Showing X to Y of Z entries" text
+function updateEntriesInfo() {
+    const entriesInfo = document.getElementById("entriesInfo");
+
+    const totalEntries = tableData.length;
+    const start = rowsPerPage === "all" ? 1 : (currentPage - 1) * rowsPerPage + 1;
+    const end = rowsPerPage === "all" ? totalEntries : Math.min(currentPage * rowsPerPage, totalEntries);
+
+    entriesInfo.textContent = `Showing ${start} to ${end} of ${totalEntries} entries`;
+}
+
+// Go to a specific page
+function goToPage(page) {
+    currentPage = page;
+    renderTable();
 }
 
 // Pagination controls
@@ -76,11 +123,24 @@ function prevPage() {
 }
 
 function nextPage() {
-    if (currentPage < Math.ceil(tableData.length / rowsPerPage)) {
+    const totalPages = rowsPerPage === "all" ? 1 : Math.ceil(tableData.length / rowsPerPage);
+    if (currentPage < totalPages) {
         currentPage++;
         renderTable();
     }
 }
+
+// Update rows per page
+function updateRowsPerPage() {
+    const dropdown = document.getElementById("rowsPerPage");
+    rowsPerPage = dropdown.value === "all" ? "all" : parseInt(dropdown.value, 10);
+    currentPage = 1;
+    renderTable();
+}
+
+// Initialize table
+renderTable();
+
 
 // Search functionality
 document.querySelector(".search-button").addEventListener("click", () => {

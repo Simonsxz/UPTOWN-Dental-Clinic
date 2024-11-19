@@ -381,6 +381,7 @@ nav .divider {
 nav .profile h2{
 	font-size: 20px;
 	padding-top: 10px;
+	color: #6d6d6d;
 }
 
 nav .profile {
@@ -1056,48 +1057,288 @@ thead {
 	font-size: 16px;
 	font-weight: 500;
 }
-/* ChatGPT Suggestions */
+
 .table-container {
-	max-height: 400px;
-	overflow-y: auto;
-	border-radius: 10px; /* Adjust the border-radius value as desired */
-  }
+    width: 100%;
+    margin: 20px 0;
+}
 
-  .table-responsive {
-	overflow-x: auto;
-	border-radius: 10px; /* Adjust the border-radius value as desired */
-  }
+.table-controls {
+    display: flex;
+    justify-content: space-between; /* Align elements to opposite sides */
+    align-items: center;
+    margin-bottom: 10px;
+}
 
-  .table-responsive thead th,
-  .table-responsive tbody td {
-	white-space: nowrap;
-  }
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+	color: #6D6D6D;
+}
 
-  .table-responsive tbody tr:hover {
-	background-color: #f5f5f5;
-  }
+.filter-container label {
+    font-weight: bold;
+    font-size: 14px;
+}
 
-  .table-container .table {
-	border-collapse: separate;
-	border-spacing: 0;
-  }
+.rows-per-page {
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
 
-  .table-container .table td,
-  .table-container .table th {
+.left-container1{
+	width: 100%;
+	display: grid;
+	flex-direction: row;
+	margin-top: -10px;
+}
+
+/* Search Container */
+.search-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;  /* Aligns the items to the right */
+    width: 100%;
+    max-width: 400px;  /* You can adjust the max width as needed */
+    margin: 10px 0;  /* Adjust the vertical spacing */
+}
+
+/* Search Bar */
+.search-bar {
+    width: 80%;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 2px solid #007bff;
+    border-radius: 30px 0 0 30px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.search-bar::placeholder {
+    color: #bbb;
+}
+
+/* Search Bar Focus */
+.search-bar:focus {
+    border-color: #0056b3;
+}
+
+/* Search Button */
+.search-button {
+    padding: 8px 12px;
+    background-color: #007bff;
+    border: 2px solid #007bff;
+    border-radius: 0 30px 30px 0;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+/* Search Button Hover */
+.search-button:hover {
+    background-color: #0056b3;
+}
+
+/* Search Icon */
+.search-button i {
+    font-size: 18px;
+}
+
+
+.search-input {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 300px;
+}
+
+.search-bar {
+    width: 200px;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+}
+
+.search-button {
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;	
+    align-items: center;
+}
+
+.search-button i {
+    margin-right: 5px;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: space-between; /* Pagination on the left, text on the right */
+    align-items: center;
+    margin-top: 15px;
+    gap: 20px;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pagination .page-button {
+    padding: 8px;
+    background-color: transparent;
+    color: #6d6d6d;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.page-button i {
+    font-size: 16px;
+}
+
+.page-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+
+/* Tooltip Container */
+.action-button {
+    position: relative;
+}
+
+.action-button::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 120%; /* Position above the button */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+
+.view-button2{
+	display: flex;
+}
+
+/* View Button Styles */
+.view-button1 {
+    background-color: #28a745; /* Green */
+	color: white;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	padding-left: 12px;
+	padding-right: 8px;
 	border: none;
-  }
+	text-align: center;
+	border-radius: 5px;
+}
 
-  .table-container .table thead th:first-child,
-  .table-container .table tbody td:first-child {
-	border-radius: 10px 0 0 0;
-  }
+.view-button1:hover {
+    background-color: #218838;
+}
 
-  .table-container .table thead th:last-child,
-  .table-container .table tbody td:last-child {
-	border-radius: 0 10px 0 0;
-  }
-/* ChatGPT Suggestions */
-/* Tables */
+/* Edit Button Styles */
+.edit-button {
+    background-color: #ffc107; /* Yellow */
+	color: white;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	padding-left: 12px;
+	padding-right: 8px;
+	border: none;
+	text-align: center;
+	border-radius: 5px;
+}
+
+.edit-button:hover {
+    background-color: #e0a800;
+}
+
+/* Delete Button Styles */
+.delete-button {
+    background-color: #dc3545; /* Red */
+	color: white;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	padding-left: 12px;
+	padding-right: 8px;
+	border: none;
+	text-align: center;
+	border-radius: 5px;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
+}
+
+/* Icon Styling */
+.action-button i {
+    margin-right: 5px;
+}
+
+/* Show Tooltip on Hover */
+.action-button:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+.page-numbers {
+    display: flex;
+    gap: 5px;
+}
+
+.page-number {
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #333;
+    transition: background-color 0.3s ease;
+}
+
+.page-number:hover {
+    background-color: #f1f0f6;
+    color: #6d6d6d;
+}
+
+.page-number.active {
+    background-color: #f1f0f6;
+    color: #1f1f1f;
+}
+
+.entries-info {
+    font-size: 14px;
+    color: #555;
+    font-weight: bold;
+}
+
+
 
 /* Modal */
 .popup {
@@ -1423,8 +1664,14 @@ thead {
     align-items: center; 
 }
 
-.patient h2, .patient p {
-    margin: 0; 
+.patient h2 {
+	margin: 0;
+}
+
+.patient p {
+    margin: 0;
+	color: #6D6D6D;
+	font-weight: bold; 
 }
 
 .patient button {
@@ -1525,7 +1772,7 @@ thead {
 
 .search-button {
     padding: 8px 15px;
-    background-color: #007bff;
+    background-color: #6D6D6D;
     color: white;
     border: none;
     border-radius: 5px;
@@ -1547,7 +1794,7 @@ thead {
 
 .page-button {
     padding: 8px 15px;
-    background-color: #007bff;
+    background-color: #6D6D6D;
     color: white;
     border: none;
     border-radius: 5px;
