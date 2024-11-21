@@ -1,243 +1,94 @@
-// SIDEBAR DROPDOWN
-const allDropdown = document.querySelectorAll('#sidebar .side-dropdown');
-const sidebar = document.getElementById('sidebar');
-
-allDropdown.forEach(item=> {
-	const a = item.parentElement.querySelector('a:first-child');
-	a.addEventListener('click', function (e) {
-		e.preventDefault();
-
-		if(!this.classList.contains('active')) {
-			allDropdown.forEach(i=> {
-				const aLink = i.parentElement.querySelector('a:first-child');
-
-				aLink.classList.remove('active');
-				i.classList.remove('show');
-			})
-		}
-
-		this.classList.toggle('active');
-		item.classList.toggle('show');
-	})
-})
-
-// Doctors List
-let rowsPerPage = 3; // Default rows per page
-let currentPage = 1;
-
-// Sample data for table rows
-const tableData = [
-    { id: 1, firstName: "Mark", lastName: "Otto", date: "November 18, 2024 | 8:25am" },
-    { id: 2, firstName: "Jacob", lastName: "Thornton", date: "November 18, 2024 | 8:25am" },
-    { id: 3, firstName: "Larry", lastName: "Bird", date: "November 18, 2024 | 8:25am" },
-    { id: 4, firstName: "Tom", lastName: "Smith", date: "November 18, 2024 | 8:25am" },
-    { id: 5, firstName: "Jane", lastName: "Doe", date: "November 18, 2024 | 8:25am" },
-    { id: 6, firstName: "Mike", lastName: "Johnson", date: "November 18, 2024 | 8:25am" },
-    { id: 7, firstName: "Emily", lastName: "Clark", date: "November 18, 2024 | 8:25am" },
-];
-
-// Render table rows
-function renderTable() {
-    const tableBody = document.getElementById("tableBody");
-    tableBody.innerHTML = "";
-
-    let data = tableData;
-    if (rowsPerPage !== "all") {
-        const start = (currentPage - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-        data = tableData.slice(start, end);
-    }
-
-    data.forEach(row => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <th scope="row">${row.id}</th>
-            <td>${row.firstName}</td>
-            <td>${row.lastName}</td>
-            <td>${row.date}</td>
-            <td>
-				<!-- View Button with Tooltip -->
-				<button class="action-button view-button1" title="View Details">
-					<i class="fas fa-eye"></i> 
-				</button>
-
-				<!-- Edit Button with Tooltip -->
-				<button class="action-button edit-button" title="Edit Details">
-					<i class="fas fa-edit"></i> 
-				</button>
-
-				<!-- Delete Button with Tooltip -->
-				<button class="action-button delete-button" title="Delete Record">
-					<i class="fas fa-trash-alt"></i>
-				</button>
-			</td>
-
-
-        `;
-        tableBody.appendChild(tr);
-    });
-
-    renderPagination();
-    updateEntriesInfo();
+// Disable Form Resubmition
+if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
 }
+const spans = document.querySelectorAll('.progress-bar span');
 
-// Render pagination controls
-function renderPagination() {
-    const pageNumbers = document.getElementById("pageNumbers");
-    pageNumbers.innerHTML = "";
-
-    const totalPages = rowsPerPage === "all" ? 1 : Math.ceil(tableData.length / rowsPerPage);
-
-    for (let i = 1; i <= totalPages; i++) {
-        const page = document.createElement("div");
-        page.className = `page-number ${i === currentPage ? "active" : ""}`;
-        page.textContent = i;
-        page.onclick = () => goToPage(i);
-        pageNumbers.appendChild(page);
-    }
-}
-
-// Update "Showing X to Y of Z entries" text
-function updateEntriesInfo() {
-    const entriesInfo = document.getElementById("entriesInfo");
-
-    const totalEntries = tableData.length;
-    const start = rowsPerPage === "all" ? 1 : (currentPage - 1) * rowsPerPage + 1;
-    const end = rowsPerPage === "all" ? totalEntries : Math.min(currentPage * rowsPerPage, totalEntries);
-
-    entriesInfo.textContent = `Showing ${start} to ${end} of ${totalEntries} entries`;
-}
-
-// Go to a specific page
-function goToPage(page) {
-    currentPage = page;
-    renderTable();
-}
-
-// Pagination controls
-function prevPage() {
-    if (currentPage > 1) {
-        currentPage--;
-        renderTable();
-    }
-}
-
-function nextPage() {
-    const totalPages = rowsPerPage === "all" ? 1 : Math.ceil(tableData.length / rowsPerPage);
-    if (currentPage < totalPages) {
-        currentPage++;
-        renderTable();
-    }
-}
-
-// Update rows per page
-function updateRowsPerPage() {
-    const dropdown = document.getElementById("rowsPerPage");
-    rowsPerPage = dropdown.value === "all" ? "all" : parseInt(dropdown.value, 10);
-    currentPage = 1;
-    renderTable();
-}
-
-// Initialize table
-renderTable();
-
-
-// Search functionality
-document.querySelector(".search-button").addEventListener("click", () => {
-    const searchTerm = document.getElementById("tableSearch").value.toLowerCase();
-    const filteredData = tableData.filter(row =>
-        row.firstName.toLowerCase().includes(searchTerm) ||
-        row.lastName.toLowerCase().includes(searchTerm) ||
-        row.date.toLowerCase().includes(searchTerm)
-    );
-
-    tableData.length = 0; // Clear tableData and refill with filtered data
-    Array.prototype.push.apply(tableData, filteredData);
-    currentPage = 1;
-    renderTable();
+spans.forEach((span) => {
+  span.style.width = span.dataset.width;
+  span.innerHTML = span.dataset.width;
 });
 
-// Initialize table
-renderTable();
-
-
-
-
-
-// SIDEBAR COLLAPSE
+// JavaScript for Sidebar Collapse
+const sidebar = document.getElementById('sidebar');
 const toggleSidebar = document.querySelector('nav .toggle-sidebar');
 const allSideDivider = document.querySelectorAll('#sidebar .divider');
+const allDropdown = document.querySelectorAll('#sidebar .side-dropdown');
 
-if(sidebar.classList.contains('hide')) {
-	allSideDivider.forEach(item=> {
-		item.textContent = '-'
-	})
-	allDropdown.forEach(item=> {
-		const a = item.parentElement.querySelector('a:first-child');
-		a.classList.remove('active');
-		item.classList.remove('show');
-	})
-} else {
-	allSideDivider.forEach(item=> {
-		item.textContent = item.dataset.text;
-	})
+// Function to handle sidebar state based on screen size
+function handleSidebarState() {
+  if (window.innerWidth <= 768) { // Adjust the breakpoint as needed
+    sidebar.classList.add('hide');
+    allSideDivider.forEach(item => {
+      item.textContent = '-';
+    });
+    allDropdown.forEach(item => {
+      const a = item.parentElement.querySelector('a:first-child');
+      a.classList.remove('active');
+      item.classList.remove('show');
+    });
+  } else {
+    sidebar.classList.remove('hide');
+    allSideDivider.forEach(item => {
+      item.textContent = item.dataset.text;
+    });
+  }
 }
 
+// Initial setup to ensure sidebar is initially collapsed
+handleSidebarState();
+
+// Event listener for window resize
+window.addEventListener('resize', handleSidebarState);
+
+// Event listener for toggling sidebar
 toggleSidebar.addEventListener('click', function () {
-	sidebar.classList.toggle('hide');
+  sidebar.classList.toggle('hide');
 
-	if(sidebar.classList.contains('hide')) {
-		allSideDivider.forEach(item=> {
-			item.textContent = '-'
-		})
-
-		allDropdown.forEach(item=> {
-			const a = item.parentElement.querySelector('a:first-child');
-			a.classList.remove('active');
-			item.classList.remove('show');
-		})
-	} else {
-		allSideDivider.forEach(item=> {
-			item.textContent = item.dataset.text;
-		})
-	}
-})
-
-
-
+  if (sidebar.classList.contains('hide')) {
+    allSideDivider.forEach(item => {
+      item.textContent = '-';
+    });
+    allDropdown.forEach(item => {
+      const a = item.parentElement.querySelector('a:first-child');
+      a.classList.remove('active');
+      item.classList.remove('show');
+    });
+  } else {
+    allSideDivider.forEach(item => {
+      item.textContent = item.dataset.text;
+    });
+  }
+});
 
 sidebar.addEventListener('mouseleave', function () {
-	if(this.classList.contains('hide')) {
-		allDropdown.forEach(item=> {
-			const a = item.parentElement.querySelector('a:first-child');
-			a.classList.remove('active');
-			item.classList.remove('show');
-		})
-		allSideDivider.forEach(item=> {
-			item.textContent = '-'
-		})
-	}
-})
-
-
+  if (sidebar.classList.contains('hide')) {
+    allDropdown.forEach(item => {
+      const a = item.parentElement.querySelector('a:first-child');
+      a.classList.remove('active');
+      item.classList.remove('show');
+    });
+    allSideDivider.forEach(item => {
+      item.textContent = '-';
+    });
+  }
+});
 
 sidebar.addEventListener('mouseenter', function () {
-	if(this.classList.contains('hide')) {
-		allDropdown.forEach(item=> {
-			const a = item.parentElement.querySelector('a:first-child');
-			a.classList.remove('active');
-			item.classList.remove('show');
-		})
-		allSideDivider.forEach(item=> {
-			item.textContent = item.dataset.text;
-		})
-	}
-})
+  if (sidebar.classList.contains('hide')) {
+    allDropdown.forEach(item => {
+      const a = item.parentElement.querySelector('a:first-child');
+      a.classList.remove('active');
+      item.classList.remove('show');
+    });
+    allSideDivider.forEach(item => {
+      item.textContent = item.dataset.text;
+    });
+  }
+});
 
 
-
-
-// PROFILE DROPDOWN
+// Profile Dropdown
 const profile = document.querySelector('nav .profile');
 const imgProfile = profile.querySelector('img');
 const dropdownProfile = profile.querySelector('.profile-link');
@@ -246,10 +97,7 @@ imgProfile.addEventListener('click', function () {
 	dropdownProfile.classList.toggle('show');
 })
 
-
-
-
-// MENU
+// Menu
 const allMenu = document.querySelectorAll('main .content-data .head .menu');
 
 allMenu.forEach(item=> {
@@ -260,8 +108,6 @@ allMenu.forEach(item=> {
 		menuLink.classList.toggle('show');
 	})
 })
-
-
 
 window.addEventListener('click', function (e) {
 	if(e.target !== imgProfile) {
@@ -284,53 +130,90 @@ window.addEventListener('click', function (e) {
 			}
 		}
 	})
-})
+});
+	 
+//Animals Tabbed Interface
+function showTab(tabId) {
+	// Hide all tab contents
+	var tabContents = document.querySelectorAll('.tab-content');
+	tabContents.forEach(function(tabContent) {
+		tabContent.style.display = 'none';
+	});
 
+	// Show the selected tab content
+	var selectedTab = document.getElementById(tabId);
+	if (selectedTab) {
+		selectedTab.style.display = 'block';
+	}
 
+	var tabs = document.querySelectorAll('.t-tab');
+    tabs.forEach(function(tab) {
+        tab.classList.remove('green-border');
+    });
 
+    // Add the green border to the clicked li element
+    var selectedTab = document.querySelector('[onclick="showTab(\'' + tabId + '\')"]');
+    selectedTab.classList.add('green-border');
 
-
-// PROGRESSBAR
-const allProgress = document.querySelectorAll('main .card .progress');
-
-allProgress.forEach(item=> {
-	item.style.setProperty('--value', item.dataset.value)
-})
-
-
-
-
-
-
-// APEXCHART
-var options = {
-  series: [{
-  name: 'series1',
-  data: [31, 40, 28, 51, 42, 109, 100]
-}, {
-  name: 'series2',
-  data: [11, 32, 45, 32, 34, 52, 41]
-}],
-  chart: {
-  height: 350,
-  type: 'area'
-},
-dataLabels: {
-  enabled: false
-},
-stroke: {
-  curve: 'smooth'
-},
-xaxis: {
-  type: 'datetime',
-  categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
-},
-tooltip: {
-  x: {
-    format: 'dd/MM/yy HH:mm'
-  },
-},
+    // Add your logic to show the corresponding tab content here
 };
 
-var chart = new ApexCharts(document.querySelector("#chart"), options);
-chart.render();
+window.onload = function() {
+    showTab('fa-tab');
+};
+
+const changeEmailBtn = document.getElementById("changeEmailBtn");
+const editEmailForm = document.getElementById("editEmailForm");
+
+changeEmailBtn.addEventListener("click", function() {
+    if (editEmailForm.style.display === "none" || editEmailForm.style.display === "") {
+        editEmailForm.style.display = "block";
+    } else {
+        editEmailForm.style.display = "none";
+    }
+});
+
+const changeContactBtn = document.getElementById("changeContactBtn");
+const editContactForm = document.getElementById("editContactForm");
+
+changeContactBtn.addEventListener("click", function() {
+    if (editContactForm.style.display === "none" || editContactForm.style.display === "") {
+        editContactForm.style.display = "block";
+    } else {
+        editContactForm.style.display = "none";
+    }
+});
+
+const addAddressButton = document.getElementById("addAddressButton");
+const addAddressForm = document.getElementById("addAddressForm");
+
+
+addAddressButton.addEventListener("click", function() {
+    if (addAddressForm.style.display === "none" || addAddressForm.style.display === "") {
+        addAddressForm.style.display = "block";
+    } else {
+        addAddressForm.style.display = "none";
+    }
+});
+
+$(document).ready(function(){
+    $('#imageModal').on('show.bs.modal', function (e) {
+        // Add your desired effects when the modal is about to be shown
+        console.log('Modal is about to be shown');
+    });
+
+    $('#imageModal').on('shown.bs.modal', function (e) {
+        // Add your desired effects when the modal is fully shown
+        console.log('Modal is fully shown');
+    });
+
+    $('#imageModal').on('hide.bs.modal', function (e) {
+        // Add your desired effects when the modal is about to be hidden
+        console.log('Modal is about to be hidden');
+    });
+
+    $('#imageModal').on('hidden.bs.modal', function (e) {
+        // Add your desired effects when the modal is fully hidden
+        console.log('Modal is fully hidden');
+    });
+});
