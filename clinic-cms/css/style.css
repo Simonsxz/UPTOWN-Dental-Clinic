@@ -3721,19 +3721,12 @@ thead {
 /* Card styling */
 .info-card {
     width: 100%;
-    max-width: 800px;
-    background-color: #ffffff;
     border: 1px solid #dee2e6;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
     box-sizing: border-box;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.info-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+	margin-top: -30px;
+	height: 100em;
 }
 
 /* Title of the card */
@@ -3758,34 +3751,54 @@ thead {
     gap: 10px;
 }
 
-/* Buttons */
-.info-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s, color 0.3s;
+.xray-container {
+	display: flex;
+	gap: 16px;
+	padding: 20px;
+	align-items: flex-start;
 }
 
-.info-primary-button {
-    background-color: #007bff;
-    color: white;
+.xray-card {
+	width: 200px;
+	aspect-ratio: 4 / 6;
+	border: 2px dashed #ccc;
+	border-radius: 8px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #fff;
+	cursor: pointer;
+	transition: background-color 0.3s, border-color 0.3s;
 }
 
-.info-primary-button:hover {
-    background-color: #0056b3;
+.xray-card:hover {
+	background-color: #e9f5ff;
+	border-color: #007bff;
 }
 
-.info-secondary-button {
-    background-color: #f8f9fa;
-    color: #333;
-    border: 1px solid #dee2e6;
+.xray-card .add-icon {
+	font-size: 48px;
+	color: #aaa;
+	transition: color 0.3s;
 }
 
-.info-secondary-button:hover {
-    background-color: #e2e6ea;
+.xray-card:hover .add-icon {
+	color: #007bff;
 }
+
+.image-gallery {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+}
+
+.image-gallery img {
+	width: 200px;
+	height: auto;
+	border-radius: 8px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
 
 
 /* Media Query */

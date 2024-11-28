@@ -1,3 +1,6 @@
+<!-- <?php require_once "processes/controllerUserData.php"; ?>
+<?php include 'processes/notificationsController.php';?>
+<?php require_once "processes/loggedUserInfo.php"; ?> -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,7 +16,7 @@
     <link rel="stylesheet" href="css/modal.css">
     <link rel="stylesheet" href="\css\style.css">
     <link rel="icon" type="image/x-icon" href="\assets\uplogo.png">
-    <title>Patient Information</title>
+    <title>Xray</title>
 </head>
 <body>
   
@@ -34,8 +37,8 @@
 			<li><a href="dashboard.html"><i class='bx bxs-dashboard icon' ></i>Dashboard</a></li>
 			<li class="divider" data-text="main"></li>
             <li><a href="doctors.html"><i class='bx bxs-user-detail icon' ></i> Doctors </a></li>
-			<li><a href="patient.html" class="active"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
-			<li><a href="xray.html"><i class='bx bxs-barcode icon' ></i> X-ray </a></li>
+			<li><a href="patient.html"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
+			<li><a href="xray.html" class="active"><i class='bx bxs-barcode icon' ></i> X-ray </a></li>
 			<li><a href=""><i class='bx bxs-photo-album icon' ></i> Oral Photos </a></li>
 
 			<!-- help -->
@@ -87,14 +90,14 @@
 		<main>
 			<div class="dash-header">
                 <!-- Page Header -->
-                <h1 class="title">Patient</h1>
+                <h1 class="title">Xray</h1>
                 <!-- Page Header -->
 
                 <!-- Breadcrumbs -->
                 <ul class="breadcrumbs">
                     <li><p>Main</p></li>
                     <li class="divider">/</li>
-                    <li><a href="#" class="active">Patient</a></li>
+                    <li><a href="#" class="active">Xray</a></li>
                 </ul>
             </div>
 	
@@ -105,11 +108,11 @@
 							<div class="patient">
 								<div>
 									<h2>Patient List</h2>
-									<p>List of Patients of UPTOWN Dental Clinic</p>
+									<p>List of Xray of UPTOWN Dental Clinic</p>
 								</div>
 								<button>
 									<i class="fas fa-plus-circle"></i>
-									Add New Patient</button>
+									Add New Xray</button>
 							</div>							
                             <div class="table-container">
 								<!-- Controls -->
@@ -189,6 +192,6 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="/js/patient.js"></script>
+<script src="\js\patient.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </html>

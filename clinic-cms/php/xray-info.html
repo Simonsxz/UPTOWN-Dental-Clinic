@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="css/modal.css">
     <link rel="stylesheet" href="\css\style.css">
     <link rel="icon" type="image/x-icon" href="\assets\uplogo.png">
-    <title>Patient Information</title>
+    <title>Patient Xray</title>
 </head>
 <body>
   
@@ -85,103 +85,36 @@
 
 		<!-- Main -->
 		<main>
-			<div class="dash-header">
-                <!-- Page Header -->
-                <h1 class="title">Patient</h1>
-                <!-- Page Header -->
-
-                <!-- Breadcrumbs -->
+            <div class="dash-header">
+                <h1 class="title">Xray Copy</h1>
                 <ul class="breadcrumbs">
                     <li><p>Main</p></li>
                     <li class="divider">/</li>
-                    <li><a href="#" class="active">Patient</a></li>
+                    <li><a href="#" class="active">Xray</a></li>
                 </ul>
             </div>
-	
-			<div class="main-content-main-container">
+
+            <div class="main-content-main-container">
                 <div class="left-container1">
                     <div class="welcome-dashboard-container">
                         <div class="welcome-dashboard-content-container">
 							<div class="patient">
 								<div>
-									<h2>Patient List</h2>
-									<p>List of Patients of UPTOWN Dental Clinic</p>
+									<h2>John Doe Smith</h2>
+									<p>Xray Copies of the patient of UPTOWN Dental Clinic</p>
 								</div>
-								<button>
-									<i class="fas fa-plus-circle"></i>
-									Add New Patient</button>
+					
 							</div>							
                             <div class="table-container">
-								<!-- Controls -->
-								<div class="table-controls">
-									<!-- Filter Dropdown -->
-									<div class="filter-container">
-										<label for="rowsPerPage">Show:</label>
-										<select id="rowsPerPage" class="rows-per-page" onchange="updateRowsPerPage()">
-											<option value="3">3</option>
-											<option value="5">5</option>
-											<option value="10">10</option>
-											<option value="all">All</option>
-										</select>
-									</div>
-							
-									<!-- Search Bar -->
-									<div class="search-container">
-										<input type="text" id="tableSearch" placeholder="Search..." class="search-bar">
-										<button class="search-button">
-											<i class="fas fa-search"></i>
-										</button>
-									</div>									
-								</div>
-							
-								<!-- Table -->
-								<table class="table table-hover">
-									<thead>
-										<tr>
-											<th scope="col">#</th>
-											<th scope="col">First Name</th>
-											<th scope="col">Last Name</th>
-											<th scope="col">Created</th>
-											<th scope="col">Actions</th>
-										</tr>
-									</thead>
-									<tbody id="tableBody">
-										<!-- Table rows go here -->
-									</tbody>
-								</table>
-							
-								<div class="pagination-container">
-									<!-- Left: Pagination -->
-									<div class="pagination">
-										<button class="page-button" onclick="prevPage()">
-											<i class="fas fa-chevron-left"></i>
-										</button>
-								
-										<div id="pageNumbers" class="page-numbers">
-											<!-- Page numbers will be dynamically generated -->
-										</div>
-								
-										<button class="page-button" onclick="nextPage()">
-											<i class="fas fa-chevron-right"></i>
-										</button>
-									</div>
-								
-									<!-- Right: Showing entries text -->
-									<div class="entries-info" id="entriesInfo">
-										<!-- Text will be dynamically updated -->
-									</div>
-								</div>
-								
-								
-							</div>
-							
+
+                                <div class="xray-container">
+                                    <div class="xray-card" onclick="addImage(this)">
+                                        <span class="add-icon">+</span>
+                                    </div>
+                                    <div class="image-gallery" id="imageGallery"></div>
+                                </div>
                             
-                        </div>
-                    </div>
-					<div>
-                    
-			</div>
-		</main>
+        </main>
       
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
@@ -189,6 +122,6 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="/js/patient.js"></script>
+<script src="/js/xray-info.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </html>
