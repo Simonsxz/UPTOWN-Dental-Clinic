@@ -205,6 +205,27 @@ toggleSidebar.addEventListener('click', function () {
 })
 
 
+function previewImage() {
+	const fileInput = document.getElementById('imageUpload');
+	const previewImage = document.getElementById('uploadedImage');
+	const noFileText = document.querySelector('.no-file-text');
+  
+	if (fileInput.files && fileInput.files[0]) {
+	  const reader = new FileReader();
+	  reader.onload = function (e) {
+		previewImage.src = e.target.result;
+		previewImage.style.display = 'block';
+		noFileText.style.display = 'none'; // Hide "Upload Image" text
+	  };
+	  reader.readAsDataURL(fileInput.files[0]);
+	} else {
+	  previewImage.style.display = 'none';
+	  noFileText.style.display = 'block'; // Show "Upload Image" text
+	}
+  }
+  
+
+
 
 
 sidebar.addEventListener('mouseleave', function () {

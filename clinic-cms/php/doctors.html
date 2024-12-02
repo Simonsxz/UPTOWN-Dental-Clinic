@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="css/modal.css">
     <link rel="stylesheet" href="\css\style.css">
     <link rel="icon" type="image/x-icon" href="\assets\uplogo.png">
-    <title>Doctors</title>
+    <title>User Account</title>
 </head>
 <body>
   
@@ -36,7 +36,7 @@
 		
 			<li><a href="dashboard.html"><i class='bx bxs-dashboard icon' ></i>Dashboard</a></li>
 			<li class="divider" data-text="main"></li>
-            <li><a href="doctors.html" class="active"><i class='bx bxs-user-detail icon' ></i> Doctors </a></li>
+            <li><a href="doctors.html" class="active"><i class='bx bxs-user-detail icon' ></i> User Account </a></li>
 			<li><a href="patient.html"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
 			<li><a href="xray.html"><i class='bx bxs-barcode icon' ></i> X-ray </a></li>
 			<li><a href=""><i class='bx bxs-photo-album icon' ></i> Oral Photos </a></li>
@@ -90,14 +90,14 @@
 		<main>
 			<div class="dash-header">
                 <!-- Page Header -->
-                <h1 class="title">Doctors</h1>
+                <h1 class="title">Users Account</h1>
                 <!-- Page Header -->
 
                 <!-- Breadcrumbs -->
                 <ul class="breadcrumbs">
                     <li><p>Main</p></li>
                     <li class="divider">/</li>
-                    <li><a href="#" class="active">Doctors</a></li>
+                    <li><a href="#" class="active">User Account</a></li>
                 </ul>
             </div>
 	
@@ -107,12 +107,14 @@
                         <div class="welcome-dashboard-content-container">
 							<div class="patient">
 								<div>
-									<h2>Doctors List</h2>
-									<p>List of Doctors of UPTOWN Dental Clinic</p>
+									<h2>List of Users</h2>
+									<p>Users List of UPTOWN Dental Clinic</p>
 								</div>
-								<button>
+								<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
 									<i class="fas fa-plus-circle"></i>
-									Add New User</button>
+									Add New User
+								  </button>
+								  
 							</div>							
                             <div class="table-container">
 								<!-- Controls -->
@@ -185,7 +187,70 @@
 					<div>
                     
 			</div>
+
+			<!-- Modal -->
+<!-- Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+	  <div class="modal-content" style="background-color: #ffffff;"> <!-- White background -->
+		<div class="modal-header">
+		  <h5 class="modal-title" id="addUserModalLabel" style="color: #333;">Add User Details</h5>
+		</div>
+		<div class="modal-body">
+		  <div class="d-flex align-items-center">
+			<!-- Image container -->
+			<!-- Image upload section -->
+		<div class="image-upload-container">
+			<label for="imageUpload" class="image-label">
+			<input type="file" id="imageUpload" class="d-none" onchange="previewImage()" />
+			<div class="image-preview">
+				<img id="uploadedImage" class="preview-image" src="" />
+				<span class="no-file-text">Upload Image</span>
+			</div>
+			</label>
+		</div>
+  
+  
+			<!-- Form details -->
+			<div class="w-100">
+			  <form id="addUserForm">
+				<div class="mb-3">
+				  <label for="firstName" class="form-label" style="color: #555;">First Name</label>
+				  <input type="text" class="form-control" id="firstName" required>
+				</div>
+				<div class="mb-3">
+				  <label for="lastName" class="form-label" style="color: #555;">Last Name</label>
+				  <input type="text" class="form-control" id="lastName" required>
+				</div>
+				<div class="mb-3">
+				  <label for="role" class="form-label" style="color: #555;">Role</label>
+				  <select class="form-select" id="role" required>
+					<option value="" disabled selected>Select a role</option>
+					<option value="admin">Admin</option>
+					<option value="doctor">Doctor</option>
+					<option value="receptionist">Receptionist</option>
+				  </select>
+				</div>
+				<!-- Updated buttons section in the modal form -->
+				<div class="d-flex justify-content-end gap-2 mt-4">
+					<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-primary">Save</button>
+				</div>
+  
+  
+			  </form>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	</div>
+  </div>
+  
+
+			
 		</main>
+
+		
       
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>

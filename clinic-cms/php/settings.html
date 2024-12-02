@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="css/modal.css">
     <link rel="stylesheet" href="\css\style.css">
     <link rel="icon" type="image/x-icon" href="\assets\uplogo.png">
-    <title>Patient Information</title>
+    <title>UPTOWN Settings</title>
 </head>
 <body>
   
@@ -85,51 +85,38 @@
 
 		<!-- Main -->
 		<main>
-            <div class="dash-header">
-                <h1 class="title">Patient Information</h1>
+			<div class="dash-header">
+                <!-- Page Header -->
+                <h1 class="title">Settings</h1>
+                <!-- Page Header -->
+
+                <!-- Breadcrumbs -->
                 <ul class="breadcrumbs">
                     <li><p>Main</p></li>
                     <li class="divider">/</li>
-                    <li><a href="#" class="active">Patient</a></li>
+                    <li><a href="#" class="active">Settings</a></li>
                 </ul>
             </div>
-
-            <div class="main-content-main-container">
-                <div class="left-container1">
-                    <div class="welcome-dashboard-container">
-                        <div class="welcome-dashboard-content-container">
-							<div class="patient">
-								<div>
-									<h2>John Doe Smith</h2>
-									<p>All the details of the patient of UPTOWN Dental Clinic</p>
-								</div>
-					
-							</div>							
-                            <div class="table-container">
-
-            <div class="module-container">
-                <div class="horizontal-nav-bar">
-                    <button class="nav-item active">P.I.R</button>
-					<button class="nav-item">Medical History</button>
-					<button class="nav-item">Medical Condition</button>
-                    <button class="nav-item">PTP</button>
-                    <button class="nav-item">Procedures</button>
-                    <button class="nav-item">Xray</button>
-                    <button class="nav-item">Intra Oral Photos</button>
-                    <button class="nav-item">Extra Oral Photos</button>
-                    <button class="nav-item">Notes</button>
+	
+			<div class="settings-cards-container">
+                <div class="settings-card" onclick="toggleCard(this)">
+                    <div class="settings-card-title">Account Settings</div>
+                    <div class="settings-card-content">Manage your account details, password, and preferences.</div>
+                </div>
+                <div class="settings-card" onclick="toggleCard(this)">
+                    <div class="settings-card-title">Import Data</div>
+                    <div class="settings-card-content">Upload and integrate your data into the system.</div>
+                </div>
+                <div class="settings-card" onclick="toggleCard(this)">
+                    <div class="settings-card-title">Export Data</div>
+                    <div class="settings-card-content">Download your data in various formats.</div>
+                </div>
+                <div class="settings-card" onclick="toggleCard(this)">
+                    <div class="settings-card-title">Activity Report</div>
+                    <div class="settings-card-content">View and track your recent activities and logs.</div>
                 </div>
             </div>
-
-            <div class="info-container">
-                <div class="info-card">
-                    <h2 class="info-title">Overview</h2>
-                    <p class="info-content">
-                        This section provides a summary of patient statistics, recent activities, and quick links.
-                    </p>
-                </div>
-            </div>
-        </main>
+		</main>
       
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
@@ -137,6 +124,6 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="/js/patient-info.js"></script>
+<script src="/js/settings.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </html>

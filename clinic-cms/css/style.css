@@ -3687,7 +3687,7 @@ thead {
     border-radius: 4px;
     padding: 10px 20px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     transition: background-color 0.3s, color 0.3s;
 }
 
@@ -3707,6 +3707,110 @@ thead {
     padding: 20px;
     box-sizing: border-box;
 }
+
+.image-upload-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 40px; /* Adjusts spacing from the bottom */
+	margin-right: 40px;
+	margin-left: 20px;
+  }
+  
+  .image-label {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 200px;
+	height: 200px;
+	border: 2px solid #ccc;
+	border-radius: 50%;
+	background-color: #f9f9f9;
+	cursor: pointer;
+	overflow: hidden;
+  }
+  
+  .image-preview {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+  }
+  
+  .preview-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover; /* Ensures the image covers the circle */
+	display: block;
+  }
+  
+  .no-file-text {
+	position: absolute;
+	color: #666;
+	font-size: 16px;
+	text-align: center;
+	pointer-events: none; /* Prevents interference with clicks */
+  }
+  
+  
+  .modal-content {
+	border: 1px solid #ddd; /* Light gray border around the modal */
+	border-radius: 10px; /* Rounded corners */
+  }
+  
+  .modal-header {
+	border-bottom: 1px solid #ddd; /* Border under the header */
+  }
+  
+  .form-label {
+	font-weight: bold;
+	color: #555; /* Dark gray color */
+  }
+  
+  .btn-outline-secondary {
+	color: #555; /* Dark gray */
+	border: 2px solid #555;
+  }
+  
+  .btn-outline-secondary:hover {
+	background-color: #555;
+	color: white;
+  }
+  
+  .btn-primary {
+	background-color: #007bff; /* Blue button */
+	border: none;
+	color: white;
+  }
+  
+  .btn-primary:hover {
+	background-color: #0056b3; /* Darker blue for hover */
+  }
+  
+  .modal-body {
+	padding: 20px;
+  }
+  
+  .modal-dialog {
+	max-width: 800px; /* Adjust width for side-by-side layout */
+  }
+  
+  .d-flex {
+	display: flex;
+	align-items: center;
+  }
+  
+  .me-4 {
+	margin-right: 1.5rem; /* Space between the image and form */
+  }
+  
+  .justify-content-between {
+	justify-content: space-between;
+  }
+  
 
 /* Container for the info card */
 .info-container {
@@ -3797,6 +3901,47 @@ thead {
 	height: auto;
 	border-radius: 8px;
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+
+.settings-cards-container {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 15px;
+	width: 100%;
+	margin-top: 20px;
+}
+.settings-card {
+	background: white;
+	border-radius: 8px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	padding: 20px;
+	text-align: left;
+	cursor: pointer;
+	transition: box-shadow 0.3s;
+	width: 100%;
+}
+.settings-card:hover {
+	box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+.settings-card.active {
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+.settings-card-title {
+	font-size: 18px;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+.settings-card-content {
+	max-height: 0;
+	overflow: hidden;
+	font-size: 14px;
+	color: #555;
+	margin-top: 10px;
+	transition: max-height 0.3s ease;
+}
+.settings-card.active .settings-card-content {
+	max-height: 400px; /* Adjust based on the expected content length */
 }
 
 
