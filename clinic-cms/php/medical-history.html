@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="css/modal.css">
     <link rel="stylesheet" href="\css\style.css">
     <link rel="icon" type="image/x-icon" href="\assets\uplogo.png">
-    <title>Patient Information</title>
+    <title>Medical History</title>
 </head>
 <body>
   
@@ -86,11 +86,11 @@
 		<!-- Main -->
 		<main>
             <div class="dash-header">
-                <h1 class="title">Patient Information</h1>
+                <h1 class="title">Medical History</h1>
                 <ul class="breadcrumbs">
                     <li><p>Main</p></li>
                     <li class="divider">/</li>
-                    <li><a href="#" class="active">Patient</a></li>
+                    <li><a href="#" class="active">Medical History</a></li>
                 </ul>
             </div>
 
@@ -111,12 +111,12 @@
                             <div class="table-container">
 
             <div class="module-container">
-                <div class="horizontal-nav-bar">				
-					<a href="patient-info.html" class="nav-item-link">
-                        <button class="nav-item active">P.I.R</button>
+                <div class="horizontal-nav-bar">
+                    <a href="patient-info.html" class="nav-item-link">
+                        <button class="nav-item">P.I.R</button>
                     </a>
 					<a href="medical-history.html" class="nav-item-link">
-                        <button class="nav-item">Medical History</button>
+                        <button class="nav-item active">Medical History</button>
                     </a>                    
 					<a href="medical-condition.html" class="nav-item-link">
                         <button class="nav-item">Medical Condition</button>
@@ -131,79 +131,63 @@
             </div>
 
 			<div class="info-container">
-				<h2 class="info-title">Patient Details</h2>
-				<form class="details-form">
-					<div class="form-group patient-name-group">
-						<label for="patient-name">Patient's Name:</label>
-						<input type="text" id="patient-name" name="patient-name" class="form-input patient-name">
-					</div>
-					<!-- Other form fields remain unchanged -->
-					<div class="form-group">
-						<label for="first-visit">Date of First Visit:</label>
-						<input type="date" id="first-visit" name="first-visit" class="form-input">
-					</div>
-					<div class="form-group">
-						<label for="checkup-done-by">Check-Up Done By:</label>
-						<input type="text" id="checkup-done-by" name="checkup-done-by" class="form-input">
-					</div>
-					<div class="form-group">
-						<label for="address">Address:</label>
-						<input type="text" id="address" name="address" class="form-input">
-					</div>
-					<div class="form-group">
-						<label for="dob">Date of Birth:</label>
-						<input type="date" id="dob" name="dob" class="form-input">
-					</div>
-					<div class="form-group">
-						<label for="age">Age:</label>
-						<input type="number" id="age" name="age" class="form-input">
-					</div>
-					<div class="form-group">
-						<label for="gender">Gender:</label>
-						<select id="gender" name="gender" class="form-input">
-							<option value="male">Male</option>
-							<option value="female">Female</option>
-							<option value="other">Other</option>
-						</select>
-					</div>
-					<div class="form-group">
-						<label for="height">Height:</label>
-						<input type="text" id="height" name="height" class="form-input">
-					</div>
-					<div class="form-group">
-						<label for="weight">Weight:</label>
-						<input type="text" id="weight" name="weight" class="form-input">
-					</div>
-					<div class="form-group">
-						<label for="civil-status">Civil Status:</label>
-						<input type="text" id="civil-status" name="civil-status" class="form-input">
-					</div>
-					<div class="form-group">
-						<label for="occupation">Occupation:</label>
-						<input type="text" id="occupation" name="occupation" class="form-input">
-					</div>
-					<div class="form-group">
-						<label for="religion">Religion:</label>
-						<input type="text" id="religion" name="religion" class="form-input">
-					</div>
-					<div class="form-group">
-						<label for="contact-number">Contact Number:</label>
-						<input type="tel" id="contact-number" name="contact-number" class="form-input">
-					</div>
-					<div class="form-group">
-						<label for="facebook-account">Facebook Account:</label>
-						<input type="text" id="facebook-account" name="facebook-account" class="form-input">
-					</div>
-					<div class="form-group">
-						<label for="nationality">Nationality:</label>
-						<input type="text" id="nationality" name="nationality" class="form-input">
-					</div>
-					<div class="form-group patient-name-group">
-						<label for="referred-by">Referred By:</label>
-						<input type="text" id="referred-by" name="referred-by" class="form-input">
-					</div>
-				</form>
-			</div>
+                <h2 class="info-title">Medical History</h2>
+                <form class="details-form">
+                    <div class="form-group">
+                        <label for="last-visit">Date of Last Visit:</label>
+                        <input type="date" id="last-visit" name="last-visit" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="physician-name">General Physician's Name:</label>
+                        <input type="text" id="physician-name" name="physician-name" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Have you had any serious illness or operation?</label>
+                        <textarea id="serious-illness" name="serious-illness" class="form-input" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>If Yes, describe:</label>
+                        <textarea id="illness-description" name="illness-description" class="form-input" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Have you ever had a blood transfusion?</label>
+                        <div>
+                            <label><input type="radio" name="blood-transfusion" value="yes"> Yes</label>
+                            <label><input type="radio" name="blood-transfusion" value="no"> No</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>If Yes, give approximate dates:</label>
+                        <input type="text" id="transfusion-dates" name="transfusion-dates" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>(For Women only) Are you pregnant?</label>
+                        <div>
+                            <label><input type="radio" name="pregnant" value="yes"> Yes</label>
+                            <label><input type="radio" name="pregnant" value="no"> No</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Are you taking birth control pills?</label>
+                        <div>
+                            <label><input type="radio" name="birth-control" value="yes"> Yes</label>
+                            <label><input type="radio" name="birth-control" value="no"> No</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Are you taking any medication?</label>
+                        <div>
+                            <label><input type="radio" name="medication" value="yes"> Yes</label>
+                            <label><input type="radio" name="medication" value="no"> No</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>If Yes, please specify:</label>
+                        <textarea id="medication-specify" name="medication-specify" class="form-input" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            
 			
         </main>
       
@@ -213,6 +197,6 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="/js/patient-info.js"></script>
+<script src="/js/medical-history.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </html>

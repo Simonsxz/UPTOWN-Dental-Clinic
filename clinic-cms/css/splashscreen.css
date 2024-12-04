@@ -17,7 +17,7 @@ body {
 
 .intro {
     text-align: center;
-    animation: fadeIn 3s ease-in-out, holdStill 2s ease-in-out 3s, fadeOut 2s ease-in-out 5s;
+    animation: fadeIn 3s ease-in-out, holdStill 2s, fadeOut 3s ease-in-out 8s;
 }
 
 .logo-container {
@@ -53,6 +53,7 @@ body {
     animation: fadeInDental 3.5s ease-in-out;
     display: block;
 }
+
 
 @keyframes fadeIn {
     from {

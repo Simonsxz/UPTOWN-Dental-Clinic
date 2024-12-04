@@ -224,7 +224,18 @@ function previewImage() {
 	}
   }
   
-
+  document.getElementById("togglePassword").addEventListener("click", function () {
+	const passwordInput = document.getElementById("password");
+	const eyeIcon = document.getElementById("eyeIcon");
+	if (passwordInput.type === "password") {
+	  passwordInput.type = "text";
+	  eyeIcon.classList.replace("bi-eye", "bi-eye-slash");
+	} else {
+	  passwordInput.type = "password";
+	  eyeIcon.classList.replace("bi-eye-slash", "bi-eye");
+	}
+  });
+  
 
 
 

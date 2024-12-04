@@ -1245,21 +1245,23 @@ thead {
 	display: flex;
 }
 
-/* View Button Styles */
 .view-button1 {
-    background-color: #28a745; /* Green */
-	color: white;
-	padding-top: 8px;
-	padding-bottom: 8px;
-	padding-left: 12px;
-	padding-right: 8px;
-	border: none;
-	text-align: center;
-	border-radius: 5px;
+    background-color: #33c555; 
+    color: white;
+    padding: 8px 12px;
+    font-size: 13px; 
+    font-weight: bold; 
+    border: none; 
+    border-radius: 4px; 
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; 
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase; 
 }
 
 .view-button1:hover {
-    background-color: #218838;
+    background-color: #065a18;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
 /* Edit Button Styles */
@@ -1658,36 +1660,72 @@ thead {
 	color:  #fcd769;
 }
 
+/* General styles for .patient */
 .patient {
-    display: flex; 
+    display: flex;
     justify-content: space-between;
-    align-items: center; 
+    align-items: center;
 }
 
 .patient h2 {
-	margin: 0;
+    margin: 0;
 }
 
 .patient p {
     margin: 0;
-	color: #6D6D6D;
-	font-weight: bold; 
+    color: #6D6D6D;
+    font-weight: bold;
 }
 
+/* Default styles for all buttons */
 .patient button {
     font-weight: 800;
     color: white;
     background-color: transparent;
     border: none;
     cursor: pointer;
-	padding: 12px;
-	border-radius: 8px;
-	background-color: #fcd769;
+    padding: 12px;
+    border-radius: 8px;
 }
 
-.patient button:hover{
-	background-color: #e4b007;
+/* Save and Cancel buttons (scoped to with-save-cancel class) */
+.patient.with-save-cancel .button-group {
+    display: flex;
+    gap: 10px;
 }
+
+.patient.with-save-cancel .cancel {
+    background-color: gray;
+    color: white;
+	padding-left: 25px;
+	padding-right: 25px;
+}
+
+.patient.with-save-cancel .cancel:hover {
+    background-color: darkgray;
+}
+
+.patient.with-save-cancel .save {
+    background-color: #e4b007; /* Gold color */
+    color: white;
+	padding-left: 25px;
+	padding-right: 25px;
+}
+
+.patient.with-save-cancel .save:hover {
+    background-color: #fcd769; /* Darker gold */
+}
+
+/* Add New Record button */
+.patient .add-record {
+    background-color: #e4b007; /* Green color specific to Add New Record */
+    color: white;
+}
+
+.patient .add-record:hover {
+    background-color: #fcd769; /* Darker green for hover */
+}
+
 
 .view-button {
     display: inline-flex;
@@ -3701,20 +3739,116 @@ thead {
     color: #fff;
     font-weight: bold;
 }
+.details-form1 {
+    display: grid;
+    grid-template-columns: 1fr; /* Single column for the form */
+    gap: 25px; /* Adjust spacing between form elements */
+    padding: 10px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    width: 100%; 
+    box-sizing: border-box; 
+}
+
+.medical-condition-group {
+	margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Responsive columns */
+    gap: 25px; /* Space between items */
+    width: 100%; /* Full width of the container */
+    box-sizing: border-box; /* Include padding in width calculations */
+}
+
+.medical-condition-group label {
+    display: flex;
+    flex-direction: column; /* Stack checkbox and label vertically */
+    align-items: center; /* Center align the checkbox and label */
+    justify-content: center; /* Center content within the label */
+    font-size: 14px;
+    margin: 0;
+    gap: 2px; /* Add space between checkbox and label */
+}
+
+.medical-condition-group input[type="checkbox"] {
+    width: 20px; /* Fixed size for the checkbox */
+    height: 20px;
+    margin: 0; /* Remove extra spacing */
+    cursor: pointer;
+}
+
 
 .info-container {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
     padding: 20px;
-    box-sizing: border-box;
+    background-color: #ffffff;
+    border-radius: 8px;
+	margin-top: -10px;
 }
+
+.info-title {
+    margin: 0 0 20px;
+    font-size: 1.5rem;
+    color: #333;
+    text-align: center;
+}
+
+.details-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+	margin-top: -20px;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+    color: #555;
+    font-weight: bold;
+}
+
+.form-input {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.form-input:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
+/* Specific styling for the patient name */
+.patient-name-group {
+    grid-column: span 2; /* Span the entire width */
+}
+
+.patient-name {
+    font-size: 1.2rem; /* Larger font size for emphasis */
+    font-weight: bold;
+    background-color: #fff8e1; /* Light background to highlight */
+    border: 2px solid #fcd769; /* Border color for emphasis */
+    color: #333;
+}
+
+.patient-name:focus {
+    border-color: #e4b007;
+}
+
 
 .image-upload-container {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	margin-bottom: 40px; /* Adjusts spacing from the bottom */
-	margin-right: 40px;
-	margin-left: 20px;
+	margin-right: 15px;
+	margin-bottom: 20px;
   }
   
   .image-label {
@@ -3722,9 +3856,9 @@ thead {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: 200px;
-	height: 200px;
-	border: 2px solid #ccc;
+	width: 150px;
+	height: 150px;
+	border: 3px solid #ccc;
 	border-radius: 50%;
 	background-color: #f9f9f9;
 	cursor: pointer;
@@ -3743,35 +3877,61 @@ thead {
   .preview-image {
 	width: 100%;
 	height: 100%;
-	object-fit: cover; /* Ensures the image covers the circle */
+	object-fit: cover;
 	display: block;
   }
+
+  #eyeIcon {
+	font-size: 1.2rem;
+	color: #555;
+  }
+  
+  #togglePassword:hover #eyeIcon {
+	color: #000;
+  }
+  
+  .input-group .form-control {
+	border-top-right-radius: 0.375rem; /* Add the default Bootstrap border-radius */
+	border-bottom-right-radius: 0.375rem; /* Add the default Bootstrap border-radius */
+  }
+  
+  .input-group .form-control:focus {
+	border-top-right-radius: 0.375rem;
+	border-bottom-right-radius: 0.375rem;
+  }
+  
+  
   
   .no-file-text {
 	position: absolute;
 	color: #666;
-	font-size: 16px;
+	font-size: 14px;
 	text-align: center;
-	pointer-events: none; /* Prevents interference with clicks */
+	pointer-events: none;
   }
   
-  
   .modal-content {
-	border: 1px solid #ddd; /* Light gray border around the modal */
-	border-radius: 10px; /* Rounded corners */
+	border-radius: 10px;
   }
   
   .modal-header {
-	border-bottom: 1px solid #ddd; /* Border under the header */
+	background-color: #fcd769;
+	border-bottom: 1px solid #ddd;
+  }
+  
+  .modal-header h5 {
+	color: #fff;
+	font-family: Nunito, sans-serif;
+	font-weight: bold;
   }
   
   .form-label {
 	font-weight: bold;
-	color: #555; /* Dark gray color */
+	color: #555;
   }
   
   .btn-outline-secondary {
-	color: #555; /* Dark gray */
+	color: #555;
 	border: 2px solid #555;
   }
   
@@ -3781,34 +3941,17 @@ thead {
   }
   
   .btn-primary {
-	background-color: #007bff; /* Blue button */
+	background-color: #007bff;
 	border: none;
 	color: white;
   }
   
   .btn-primary:hover {
-	background-color: #0056b3; /* Darker blue for hover */
+	background-color: #0056b3;
   }
   
   .modal-body {
 	padding: 20px;
-  }
-  
-  .modal-dialog {
-	max-width: 800px; /* Adjust width for side-by-side layout */
-  }
-  
-  .d-flex {
-	display: flex;
-	align-items: center;
-  }
-  
-  .me-4 {
-	margin-right: 1.5rem; /* Space between the image and form */
-  }
-  
-  .justify-content-between {
-	justify-content: space-between;
   }
   
 

@@ -27,13 +27,13 @@ let currentPage = 1;
 
 // Sample data for table rows
 const tableData = [
-    { id: 1, firstName: "Mark", lastName: "Otto", role: "Admin", created: "November 18, 2024 | 8:25am" },
-    { id: 2, firstName: "Jacob", lastName: "Thornton",  role: "User",  created: "November 18, 2024 | 8:25am" },
-    { id: 3, firstName: "Larry", lastName: "Bird",  role: "User",  created: "November 18, 2024 | 8:25am" },
-    { id: 4, firstName: "Tom", lastName: "Smith",  role: "User",  created: "November 18, 2024 | 8:25am" },
-    { id: 5, firstName: "Jane", lastName: "Doe",  role: "User",  created: "November 18, 2024 | 8:25am" },
-    { id: 6, firstName: "Mike", lastName: "Johnson",  role: "User",  created: "November 18, 2024 | 8:25am" },
-    { id: 7, firstName: "Emily", lastName: "Clark",  role: "uUser",  created: "November 18, 2024 | 8:25am" },
+    { id: 1, created: "November 18, 2024 | 8:25am", doctor: "Dr. Silva", updated: "January 19, 2025 | 9:25am" },
+    { id: 2, created: "November 18, 2024 | 8:25am", doctor: "Dr. Silva", updated: "January 19, 2025 | 9:25am" },
+    { id: 3, created: "November 18, 2024 | 8:25am", doctor: "Dr. Silva", updated: "January 19, 2025 | 9:25am"  },
+    { id: 4, created: "November 18, 2024 | 8:25am", doctor: "Dr. Silva", updated: "January 19, 2025 | 9:25am"  },
+    { id: 5, created: "November 18, 2024 | 8:25am", doctor: "Dr. Silva", updated: "January 19, 2025 | 9:25am"  },
+    { id: 6, created: "November 18, 2024 | 8:25am", doctor: "Dr. Silva", updated: "January 19, 2025 | 9:25am"  },
+    { id: 7, created: "November 18, 2024 | 8:25am", doctor: "Dr. Silva", updated: "January 19, 2025 | 9:25am" },
 ];
 
 // Render table rows
@@ -52,14 +52,24 @@ function renderTable() {
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <th scope="row">${row.id}</th>
-            <td>${row.firstName}</td>
-            <td>${row.lastName}</td>
             <td>${row.created}</td>
-            <td>
+            <td>${row.doctor}</td>
+            <td>${row.updated}</td>
+             <td>
 				<!-- View Button with Tooltip -->
-			<button class="action-button view-button1" title="View Patient Details">
-				View
-			</button>
+				<button class="action-button view-button1" title="View Details">
+					<i class="fas fa-eye"></i> 
+				</button>
+
+				<!-- Edit Button with Tooltip -->
+				<button class="action-button edit-button" title="Edit Details">
+					<i class="fas fa-edit"></i> 
+				</button>
+
+				<!-- Delete Button with Tooltip -->
+				<button class="action-button delete-button" title="Delete Record">
+					<i class="fas fa-trash-alt"></i>
+				</button>
 			</td>
 
 

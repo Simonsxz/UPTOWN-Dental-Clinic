@@ -187,60 +187,66 @@
 					<div>
                     
 			</div>
-
-			<!-- Modal -->
 <!-- Modal -->
 <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
 	  <div class="modal-content" style="background-color: #ffffff;"> <!-- White background -->
 		<div class="modal-header">
-		  <h5 class="modal-title" id="addUserModalLabel" style="color: #333;">Add User Details</h5>
+		  <h5 class="modal-title" id="addUserModalLabel">Add User Details</h5>
 		</div>
 		<div class="modal-body">
-		  <div class="d-flex align-items-center">
-			<!-- Image container -->
-			<!-- Image upload section -->
-		<div class="image-upload-container">
+		  <!-- Image container -->
+		  <div class="image-upload-container text-center">
 			<label for="imageUpload" class="image-label">
-			<input type="file" id="imageUpload" class="d-none" onchange="previewImage()" />
-			<div class="image-preview">
+			  <input type="file" id="imageUpload" class="d-none" onchange="previewImage()" />
+			  <div class="image-preview">
 				<img id="uploadedImage" class="preview-image" src="" />
 				<span class="no-file-text">Upload Image</span>
-			</div>
+			  </div>
 			</label>
-		</div>
-  
-  
-			<!-- Form details -->
-			<div class="w-100">
-			  <form id="addUserForm">
-				<div class="mb-3">
-				  <label for="firstName" class="form-label" style="color: #555;">First Name</label>
-				  <input type="text" class="form-control" id="firstName" required>
-				</div>
-				<div class="mb-3">
-				  <label for="lastName" class="form-label" style="color: #555;">Last Name</label>
-				  <input type="text" class="form-control" id="lastName" required>
-				</div>
-				<div class="mb-3">
-				  <label for="role" class="form-label" style="color: #555;">Role</label>
-				  <select class="form-select" id="role" required>
-					<option value="" disabled selected>Select a role</option>
-					<option value="admin">Admin</option>
-					<option value="doctor">Doctor</option>
-					<option value="receptionist">Receptionist</option>
-				  </select>
-				</div>
-				<!-- Updated buttons section in the modal form -->
-				<div class="d-flex justify-content-end gap-2 mt-4">
-					<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-					<button type="submit" class="btn btn-primary">Save</button>
-				</div>
-  
-  
-			  </form>
-			</div>
 		  </div>
+  
+		  <!-- Form details -->
+		  <form id="addUserForm">
+			<div class="row">
+			  <div class="col-6 mb-2">
+				<label for="firstName" class="form-label">First Name</label>
+				<input type="text" class="form-control" id="firstName" required>
+			  </div>
+			  <div class="col-6 mb-2">
+				<label for="lastName" class="form-label">Last Name</label>
+				<input type="text" class="form-control" id="lastName" required>
+			  </div>
+			  <div class="col-12 mb-2">
+				<label for="username" class="form-label">Username</label>
+				<input type="text" class="form-control" id="username" required>
+			  </div>
+			  <div class="col-12 mb-2 position-relative">
+				<label for="password" class="form-label">Password</label>
+				<div class="input-group position-relative">
+					<input type="password" class="form-control pe-5" id="password" style="border-radius: 0.375rem;" required>
+					<span class="position-absolute top-50 end-0 translate-middle-y me-2" id="togglePassword" style="cursor: pointer;">
+					  <i class="bi bi-eye" id="eyeIcon"></i>
+					</span>
+				  </div>
+				  
+			  </div>
+			  <div class="col-12 mb-2">
+				<label for="role" class="form-label">Role</label>
+				<select class="form-select" id="role" required>
+				  <option value="" disabled selected>Select a role</option>
+				  <option value="admin">Admin</option>
+				  <option value="doctor">Doctor</option>
+				  <option value="receptionist">Receptionist</option>
+				</select>
+			  </div>
+			</div>
+			<!-- Buttons -->
+			<div class="d-flex justify-content-end gap-2 mt-3">
+			  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+			  <button type="submit" class="btn btn-primary">Save</button>
+			</div>
+		  </form>
 		</div>
 	  </div>
 	</div>
@@ -257,6 +263,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script src="\js\doctors.js"></script>
 <script src="\js\functions.js"></script>
