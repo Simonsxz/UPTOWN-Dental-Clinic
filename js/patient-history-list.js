@@ -57,9 +57,14 @@ function renderTable() {
             <td>${row.updated}</td>
              <td>
 				<!-- View Button with Tooltip -->
-				<button class="action-button view-button1" title="View Details">
-					<i class="fas fa-eye"></i> 
-				</button>
+				<a href="patient-info.html">
+					<button class="action-button view-button1" title="View Details">
+						<i class="fas fa-eye"></i> 
+					</button>
+				</a>
+
+		
+
 
 				<!-- Edit Button with Tooltip -->
 				<button class="action-button edit-button" title="Edit Details">

@@ -55,12 +55,15 @@ function renderTable() {
             <td>${row.firstName}</td>
             <td>${row.lastName}</td>
             <td>${row.created}</td>
-            <td>
-				<!-- View Button with Tooltip -->
-			<button class="action-button view-button1" title="View Patient Details">
-				View
-			</button>
+           <td>
+				<!-- View Button with Tooltip wrapped in a link -->
+				<a href="patient-history-list.html">
+					<button class="action-button view-button1" title="View Patient Details">
+						View
+					</button>
+				</a>
 			</td>
+
 
 
         `;
