@@ -67,7 +67,7 @@ li {
     flex-direction: column;
     justify-content: space-between;
     height: 100vh;
-    padding-top: 50px;
+    padding-top: 110px;
 }
 
 .checkbox-container {
@@ -106,7 +106,7 @@ form {
 
 form img {
     height: 80px;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
     border-radius: 15px;
     box-shadow: 2px 5px 5px 0 rgba(0, 0, 0, 0.2);
 }
@@ -135,7 +135,7 @@ form .login-header {
     font-weight: 600;
     font-size: 14px;
     margin-left: 2px;
-    margin-bottom: 25px;
+    margin-bottom: 40px;
     color: var(--dark-grey);
 }
 
@@ -176,7 +176,7 @@ form .btn-login {
     color: var(--light);
     height: 40px;
     width: 100%;
-    margin-top: 10px;
+    margin-top: 25px;
     margin-bottom: 20px;
 }
 

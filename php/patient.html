@@ -37,6 +37,8 @@
 			<li><a href="patient.html" class="active"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
 			<li><a href="xray.html"><i class='bx bxs-barcode icon' ></i> X-ray </a></li>
 			<li><a href=""><i class='bx bxs-photo-album icon' ></i> Oral Photos </a></li>
+			<li><a href=""><i class='bx bxs-report icon'></i> Reports </a></li>
+
 
 			<!-- help -->
 			<li class="divider" data-text="Settings">Settings</li>
@@ -102,21 +104,28 @@
                 <div class="left-container1">
                     <div class="welcome-dashboard-container">
                         <div class="welcome-dashboard-content-container">
-							<div class="patient">
+							<div class="patient with-folder">
 								<div>
 									<h2>List of Patients</h2>
 									<p>Patients List of UPTOWN Dental Clinic</p>
 								</div>
-								<button class="add-record">
-									<i class="fas fa-plus-circle"></i>
-									Add New Patient
-								</button>
+								<div class="button-group">
+									<button class="cancel">Add New Folder</button>
+									<button class="save">Add New Patient</button>
+								</div>						
 							</div>							
                             <div class="table-container">
 								<!-- Controls -->
 								<div class="table-controls">
 									<!-- Filter Dropdown -->
 									<div class="filter-container">
+										<label for="rowsPerPage">Filter:</label>
+									<select id="rowsPerPage" class="rows-per-page" onchange="updateRowsPerPage1()">
+										<option value="patient">Patient</option>
+										<option value="folder">Folder</option>
+									</select>
+
+
 										<label for="rowsPerPage">Show:</label>
 										<select id="rowsPerPage" class="rows-per-page" onchange="updateRowsPerPage()">
 											<option value="3">3</option>
@@ -125,6 +134,8 @@
 											<option value="all">All</option>
 										</select>
 									</div>
+
+									
 							
 									<!-- Search Bar -->
 									<div class="search-container">
@@ -151,6 +162,7 @@
 									</tbody>
 								</table>
 							
+								
 								<div class="pagination-container">
 									<!-- Left: Pagination -->
 									<div class="pagination">

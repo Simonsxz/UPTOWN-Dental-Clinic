@@ -1,6 +1,5 @@
-<!-- <?php require_once "processes/controllerUserData.php"; ?>
-<?php include 'processes/notificationsController.php';?>
-<?php require_once "processes/loggedUserInfo.php"; ?> -->
+<?php include "../functions/function.php"; ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,9 +12,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.1/animate.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <link rel="stylesheet" href="css/modal.css">
-    <link rel="stylesheet" href="\css\style.css">
-    <link rel="icon" type="image/x-icon" href="\assets\uplogo.png">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/x-icon" href="/assets/uplogo.png">
     <title>User Account</title>
 </head>
 <body>
@@ -64,13 +62,6 @@
 			</div>
 			<!-- Space -->
 	
-			<!-- <input type="text" placeholder="Search...">
-			<i class='bx bx-search icon' ></i> -->
-			<!-- <p class="nav-link"></p>
-			<p class="nav-link"></p> -->
-			<!-- Space -->
-			 
-			
 			<!-- Profile -->
 			<div class="profile">
 				<h2 >UP-SC-001</h2>
@@ -105,12 +96,12 @@
                 <div class="left-container1">
                     <div class="welcome-dashboard-container">
                         <div class="welcome-dashboard-content-container">
-							<div class="patient">
+							<div class="patient with-folder">
 								<div>
 									<h2>List of Users</h2>
 									<p>Users List of UPTOWN Dental Clinic</p>
 								</div>
-								<button type="button" class="add-record" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+								<button type="button" class="save" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
 									<i class="fas fa-plus-circle"></i>
 									Add New User
 								  </button>
@@ -152,10 +143,10 @@
 										</tr>
 									</thead>
 									<tbody id="tableBody">
-										<!-- Table rows go here -->
+										<!-- Data will be populated by JavaScript -->
 									</tbody>
 								</table>
-							
+											
 								<div class="pagination-container">
 									<!-- Left: Pagination -->
 									<div class="pagination">
@@ -187,70 +178,71 @@
 					<div>
                     
 			</div>
-<!-- Modal -->
-<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered">
-	  <div class="modal-content" style="background-color: #ffffff;"> <!-- White background -->
-		<div class="modal-header">
-		  <h5 class="modal-title" id="addUserModalLabel">Add User Details</h5>
-		</div>
-		<div class="modal-body">
-		  <!-- Image container -->
-		  <div class="image-upload-container text-center">
-			<label for="imageUpload" class="image-label">
-			  <input type="file" id="imageUpload" class="d-none" onchange="previewImage()" />
-			  <div class="image-preview">
-				<img id="uploadedImage" class="preview-image" src="" />
-				<span class="no-file-text">Upload Image</span>
-			  </div>
-			</label>
-		  </div>
-  
-		  <!-- Form details -->
-		  <form id="addUserForm">
-			<div class="row">
-			  <div class="col-6 mb-2">
-				<label for="firstName" class="form-label">First Name</label>
-				<input type="text" class="form-control" id="firstName" required>
-			  </div>
-			  <div class="col-6 mb-2">
-				<label for="lastName" class="form-label">Last Name</label>
-				<input type="text" class="form-control" id="lastName" required>
-			  </div>
-			  <div class="col-12 mb-2">
-				<label for="username" class="form-label">Username</label>
-				<input type="text" class="form-control" id="username" required>
-			  </div>
-			  <div class="col-12 mb-2 position-relative">
-				<label for="password" class="form-label">Password</label>
-				<div class="input-group position-relative">
-					<input type="password" class="form-control pe-5" id="password" style="border-radius: 0.375rem;" required>
-					<span class="position-absolute top-50 end-0 translate-middle-y me-2" id="togglePassword" style="cursor: pointer;">
-					  <i class="bi bi-eye" id="eyeIcon"></i>
-					</span>
-				  </div>
-				  
-			  </div>
-			  <div class="col-12 mb-2">
-				<label for="role" class="form-label">Role</label>
-				<select class="form-select" id="role" required>
-				  <option value="" disabled selected>Select a role</option>
-				  <option value="admin">Admin</option>
-				  <option value="doctor">Doctor</option>
-				  <option value="receptionist">Receptionist</option>
-				</select>
-			  </div>
-			</div>
-			<!-- Buttons -->
-			<div class="d-flex justify-content-end gap-2 mt-3">
-			  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-			  <button type="submit" class="btn btn-primary">Save</button>
-			</div>
-		  </form>
-		</div>
-	  </div>
-	</div>
-  </div>
+			<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background-color: #ffffff;">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUserModalLabel">Add User Details</h5>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <!-- Form -->
+                <form id="addUserForm" action="doctors.php" method="POST">
+                    <div class="row">
+                        <!-- First Name -->
+                        <div class="col-6 mb-2">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="firstName" name="firstName" required>
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="col-6 mb-2">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" name="lastName" required>
+                        </div>
+
+                        <!-- Username -->
+                        <div class="col-12 mb-2">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="col-12 mb-2 position-relative">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group position-relative">
+                                <input type="password" class="form-control pe-5" id="password" name="password" style="border-radius: 0.375rem;" required>
+                                <span class="position-absolute top-50 end-0 translate-middle-y me-2" id="togglePassword" style="cursor: pointer;">
+                                    <i class="bi bi-eye" id="eyeIcon"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Role -->
+                        <div class="col-12 mb-2">
+                            <label for="role" class="form-label">Role</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="" disabled selected>Select a role</option>
+                                <option value="admin">Admin</option>
+                                <option value="doctor">Doctor</option>
+                                <option value="receptionist">Receptionist</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex justify-content-end gap-2 mt-3">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" onclick="addUser()">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
   
 
 			
@@ -265,7 +257,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="\js\doctors.js"></script>
-<script src="\js\functions.js"></script>
+<script src="/js/doctors.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </html>

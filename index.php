@@ -1,3 +1,5 @@
+<?php include "functions/db_conn.php" ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,23 +33,7 @@
 				<!-- Make the submit button a link to splashscreen.html -->
 				<a href="/php/splashscreen.html" class="btn btn-login" role="button">Submit</a>
                 <div class="main-separator-container">
-                    <hr>
-                    <div class="separator-container">
-                        <p class="separator">or</p>
-                    </div>
-                </div>
-			</form>
-			<form action="index.php" method="POST">
-				<div>
-					<button type="submit" name="google_login" class="other-login-btn">
-						<img class="other-sign-in-img" src="\assets\google.png" />
-						<span class="google-text-sign-in">Continue with Google</span>
-					</button>
-					<input type="hidden" name="google_login" value="1">
-					<a href="register.php"><p class="register-account">Don't have an account? Register now!</p></a>
-					<br>
-				</div>
-			</form>
+                  
 		</div>
 	</div>
 </body>

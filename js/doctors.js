@@ -2,92 +2,105 @@
 const allDropdown = document.querySelectorAll('#sidebar .side-dropdown');
 const sidebar = document.getElementById('sidebar');
 
-allDropdown.forEach(item=> {
-	const a = item.parentElement.querySelector('a:first-child');
-	a.addEventListener('click', function (e) {
-		e.preventDefault();
+allDropdown.forEach(item => {
+    const a = item.parentElement.querySelector('a:first-child');
+    a.addEventListener('click', function (e) {
+        e.preventDefault();
 
-		if(!this.classList.contains('active')) {
-			allDropdown.forEach(i=> {
-				const aLink = i.parentElement.querySelector('a:first-child');
+        if (!this.classList.contains('active')) {
+            allDropdown.forEach(i => {
+                const aLink = i.parentElement.querySelector('a:first-child');
+                aLink.classList.remove('active');
+                i.classList.remove('show');
+            })
+        }
 
-				aLink.classList.remove('active');
-				i.classList.remove('show');
-			})
-		}
-
-		this.classList.toggle('active');
-		item.classList.toggle('show');
-	})
+        this.classList.toggle('active');
+        item.classList.toggle('show');
+    })
 })
 
-// Doctors List
+// Fetch data from the server and render it in the table
+function fetchData() {
+    fetch('../functions/fetch_users.php')
+        .then(response => response.json())
+        .then(data => {
+            // Check if data is valid and render it
+            if (Array.isArray(data)) {
+                tableData = data; // Store the fetched data in the global variable
+                renderTable(tableData);
+            } else {
+                console.error('Failed to fetch data or no data found');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+}
+
+// Call fetchData on page load
+document.addEventListener('DOMContentLoaded', fetchData);
+
+
+// Global variable to store the fetched data
+let tableData = [];
+
+// Rows per page and current page settings
 let rowsPerPage = 3; // Default rows per page
 let currentPage = 1;
 
-// Sample data for table rows
-const tableData = [
-    { id: 1, firstName: "Mark", lastName: "Otto", role: "Admin", created: "November 18, 2024 | 8:25am" },
-    { id: 2, firstName: "Jacob", lastName: "Thornton",  role: "User",  created: "November 18, 2024 | 8:25am" },
-    { id: 3, firstName: "Larry", lastName: "Bird",  role: "User",  created: "November 18, 2024 | 8:25am" },
-    { id: 4, firstName: "Tom", lastName: "Smith",  role: "User",  created: "November 18, 2024 | 8:25am" },
-    { id: 5, firstName: "Jane", lastName: "Doe",  role: "User",  created: "November 18, 2024 | 8:25am" },
-    { id: 6, firstName: "Mike", lastName: "Johnson",  role: "User",  created: "November 18, 2024 | 8:25am" },
-    { id: 7, firstName: "Emily", lastName: "Clark",  role: "uUser",  created: "November 18, 2024 | 8:25am" },
-];
-
 // Render table rows
-function renderTable() {
+// Render table rows using innerHTML
+function renderTable(data) {
     const tableBody = document.getElementById("tableBody");
-    tableBody.innerHTML = "";
+    let tableRows = ""; // Initialize an empty string to hold the table rows
 
-    let data = tableData;
-    if (rowsPerPage !== "all") {
-        const start = (currentPage - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-        data = tableData.slice(start, end);
-    }
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = rowsPerPage === "all" ? data.length : Math.min(currentPage * rowsPerPage, data.length);
+    const paginatedData = data.slice(start, end);
 
-    data.forEach(row => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <th scope="row">${row.id}</th>
-            <td>${row.firstName}</td>
-            <td>${row.lastName}</td>
-             <td>${row.role}</td>
-            <td>${row.created}</td>
-            <td>
-				<!-- View Button with Tooltip -->
-				<button class="action-button view-button1" title="View Details">
-					<i class="fas fa-eye"></i> 
-				</button>
-
-				<!-- Edit Button with Tooltip -->
-				<button class="action-button edit-button" title="Edit Details">
-					<i class="fas fa-edit"></i> 
-				</button>
-
-				<!-- Delete Button with Tooltip -->
-				<button class="action-button delete-button" title="Delete Record">
-					<i class="fas fa-trash-alt"></i>
-				</button>
-			</td>
-
-
+    // Build table rows as a string
+    paginatedData.forEach(row => {
+        tableRows += `
+            <tr>
+                <th scope="row">${row.id}</th>
+                <td>${row.user_fName}</td>
+                <td>${row.user_lName}</td>
+                <td>${row.user_role}</td>
+                <td>${row.user_created}</td>
+                <td>
+                    <button class="action-button view-button1" title="View Details"><i class="fas fa-eye"></i></button>
+                    <button class="action-button edit-button" title="Edit Details"><i class="fas fa-edit"></i></button>
+                    <button class="action-button delete-button" title="Delete Record"><i class="fas fa-trash-alt"></i></button>
+                </td>
+            </tr>
         `;
-        tableBody.appendChild(tr);
     });
 
-    renderPagination();
-    updateEntriesInfo();
+    // Set the innerHTML of the table body to the constructed string
+    tableBody.innerHTML = tableRows;
+
+    renderPagination(data); // Ensure this function is defined elsewhere if needed
+    updateEntriesInfo(data); // Ensure this function is defined elsewhere if needed
 }
 
+// Fetch data from PHP and render it
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('doctors.php') // Replace 'your_php_script.php' with the actual PHP file that provides the JSON data
+        .then(response => response.json())
+        .then(data => {
+            renderTable(data);
+        })
+        .catch(error => console.error('Error fetching data:', error));
+});
+
+
 // Render pagination controls
-function renderPagination() {
+function renderPagination(data) {
     const pageNumbers = document.getElementById("pageNumbers");
     pageNumbers.innerHTML = "";
 
-    const totalPages = rowsPerPage === "all" ? 1 : Math.ceil(tableData.length / rowsPerPage);
+    const totalPages = rowsPerPage === "all" ? 1 : Math.ceil(data.length / rowsPerPage);
 
     for (let i = 1; i <= totalPages; i++) {
         const page = document.createElement("div");
@@ -99,10 +112,9 @@ function renderPagination() {
 }
 
 // Update "Showing X to Y of Z entries" text
-function updateEntriesInfo() {
+function updateEntriesInfo(data) {
     const entriesInfo = document.getElementById("entriesInfo");
-
-    const totalEntries = tableData.length;
+    const totalEntries = data.length;
     const start = rowsPerPage === "all" ? 1 : (currentPage - 1) * rowsPerPage + 1;
     const end = rowsPerPage === "all" ? totalEntries : Math.min(currentPage * rowsPerPage, totalEntries);
 
@@ -112,14 +124,14 @@ function updateEntriesInfo() {
 // Go to a specific page
 function goToPage(page) {
     currentPage = page;
-    renderTable();
+    fetchData(); // Re-fetch data when page changes
 }
 
 // Pagination controls
 function prevPage() {
     if (currentPage > 1) {
         currentPage--;
-        renderTable();
+        fetchData();
     }
 }
 
@@ -127,7 +139,7 @@ function nextPage() {
     const totalPages = rowsPerPage === "all" ? 1 : Math.ceil(tableData.length / rowsPerPage);
     if (currentPage < totalPages) {
         currentPage++;
-        renderTable();
+        fetchData();
     }
 }
 
@@ -136,12 +148,11 @@ function updateRowsPerPage() {
     const dropdown = document.getElementById("rowsPerPage");
     rowsPerPage = dropdown.value === "all" ? "all" : parseInt(dropdown.value, 10);
     currentPage = 1;
-    renderTable();
+    fetchData();
 }
 
-// Initialize table
-renderTable();
-
+// Initial fetch and render
+fetchData();
 
 // Search functionality
 document.querySelector(".search-button").addEventListener("click", () => {
@@ -155,53 +166,46 @@ document.querySelector(".search-button").addEventListener("click", () => {
     tableData.length = 0; // Clear tableData and refill with filtered data
     Array.prototype.push.apply(tableData, filteredData);
     currentPage = 1;
-    renderTable();
+    renderTable(tableData);
 });
-
-// Initialize table
-renderTable();
-
-
-
-
 
 // SIDEBAR COLLAPSE
 const toggleSidebar = document.querySelector('nav .toggle-sidebar');
 const allSideDivider = document.querySelectorAll('#sidebar .divider');
 
-if(sidebar.classList.contains('hide')) {
-	allSideDivider.forEach(item=> {
-		item.textContent = '-'
-	})
-	allDropdown.forEach(item=> {
-		const a = item.parentElement.querySelector('a:first-child');
-		a.classList.remove('active');
-		item.classList.remove('show');
-	})
+if (sidebar.classList.contains('hide')) {
+    allSideDivider.forEach(item => {
+        item.textContent = '-';
+    })
+    allDropdown.forEach(item => {
+        const a = item.parentElement.querySelector('a:first-child');
+        a.classList.remove('active');
+        item.classList.remove('show');
+    })
 } else {
-	allSideDivider.forEach(item=> {
-		item.textContent = item.dataset.text;
-	})
+    allSideDivider.forEach(item => {
+        item.textContent = item.dataset.text;
+    })
 }
 
 toggleSidebar.addEventListener('click', function () {
-	sidebar.classList.toggle('hide');
+    sidebar.classList.toggle('hide');
 
-	if(sidebar.classList.contains('hide')) {
-		allSideDivider.forEach(item=> {
-			item.textContent = '-'
-		})
+    if (sidebar.classList.contains('hide')) {
+        allSideDivider.forEach(item => {
+            item.textContent = '-';
+        })
 
-		allDropdown.forEach(item=> {
-			const a = item.parentElement.querySelector('a:first-child');
-			a.classList.remove('active');
-			item.classList.remove('show');
-		})
-	} else {
-		allSideDivider.forEach(item=> {
-			item.textContent = item.dataset.text;
-		})
-	}
+        allDropdown.forEach(item => {
+            const a = item.parentElement.querySelector('a:first-child');
+            a.classList.remove('active');
+            item.classList.remove('show');
+        })
+    } else {
+        allSideDivider.forEach(item => {
+            item.textContent = item.dataset.text;
+        })
+    }
 })
 
 
@@ -319,6 +323,62 @@ window.addEventListener('click', function (e) {
 	})
 })
 
+// Confirmation before saving
+function showConfirmationAlert() {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to save your changes?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, save it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // User confirmed, proceed with saving
+            showSavingAlert();
+        }
+    });
+}
+
+// Show "Saving..." SweetAlert
+function showSavingAlert() {
+    Swal.fire({
+        title: 'Saving...',
+        text: 'Please wait while we save your changes.',
+        icon: 'info',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+	setTimeout(() => {
+		Swal.close(); // Close the "Saving..." modal
+	
+		// Show success alert
+		Swal.fire({
+			title: 'Saved!',
+			text: 'Your changes have been successfully saved.',
+			icon: 'success',
+			timer: 3000,
+			showConfirmButton: false
+		}).then(() => {
+			// Close the Bootstrap modal after showing the success alert
+			const modal = document.getElementById('addUserModal');
+			const bootstrapModal = bootstrap.Modal.getInstance(modal);
+			bootstrapModal.hide();
+		});
+	}, 5000); // Adjust the delay as needed	
+}
+
+// Prevent default form submission behavior
+document.getElementById('addUserForm').addEventListener('submit', (event) => {
+    event.preventDefault(); // Prevent form submission
+});
 
 
 

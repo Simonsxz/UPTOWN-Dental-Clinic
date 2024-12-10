@@ -1089,6 +1089,8 @@ thead {
     border-radius: 5px;
 }
 
+
+
 .left-container1{
 	width: 100%;
 	display: grid;
@@ -1717,14 +1719,32 @@ thead {
 }
 
 /* Add New Record button */
-.patient .add-record {
-    background-color: #e4b007; /* Green color specific to Add New Record */
-    color: white;
+.patient.with-folder .button-group {
+    display: flex;
+    gap: 10px;
 }
 
-.patient .add-record:hover {
-    background-color: #fcd769; /* Darker green for hover */
+.patient.with-folder .cancel {
+    background-color: gray;
+    color: white;
+	padding-left: 25px;
+	padding-right: 25px;
 }
+
+.patient.with-folder .cancel:hover {
+    background-color: darkgray;
+}
+.patient.with-folder .save {
+    background-color: #e4b007; /* Gold color */
+    color: white;
+	padding-left: 25px;
+	padding-right: 25px;
+}
+
+.patient.with-folder  .save:hover {
+    background-color: #fcd769; /* Darker gold */
+}
+
 
 
 .view-button {
