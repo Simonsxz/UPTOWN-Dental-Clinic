@@ -1,12 +1,6 @@
 <?php 
-
-if (!isset($_SESSION['student_email'])) {
-    // Redirect to login page if student_email is not set
-    header("Location: login.php");
+if (!isset($_SESSION['user_ID'])) {
+    header("Location: ../index.php"); // Redirect to login if not authenticated
     exit;
 }
-
-// Now you can use $_SESSION['student_email'] as needed in your code
-// ...
-
 ?>

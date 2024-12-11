@@ -1,7 +1,14 @@
-<!-- <?php require_once "processes/controllerUserData.php"; ?>
-<?php include 'processes/notificationsController.php';?>
-<?php require_once "processes/loggedUserInfo.php"; ?> -->
+<?php
+session_start();  // Ensure session is started at the very top of the page
 
+include "../functions/db_conn.php";
+if (!isset($_SESSION['user_ID'])) {
+    header("Location: ../index.php"); // Redirect to login if not authenticated
+    exit;
+}
+
+$user_ID = $_SESSION['user_ID']; // Fetch user_ID from session
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,7 +51,7 @@
 			<!-- help -->
 			<li class="divider" data-text="Settings">Settings</li>
             <li><a href="settings.html"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
-            <li><a href="#"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
+            <li><a href="logout.php"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
 		</ul>
 	</section>
 	<!-- Side Bar -->
@@ -62,18 +69,12 @@
 					<input type="text" class="nav-search-input" placeholder="Search..">
 				</div>
 			</div>
-			<!-- Space -->
-	
-			<!-- <input type="text" placeholder="Search...">
-			<i class='bx bx-search icon' ></i> -->
-			<!-- <p class="nav-link"></p>
-			<p class="nav-link"></p> -->
-			<!-- Space -->
-			 
+
 			
 			<!-- Profile -->
 			<div class="profile">
-				<h2 >UP-SC-001</h2>
+			<h2><?php echo htmlspecialchars($user_ID); ?></h2> <!-- Display sanitized user_ID -->
+      
 		
                 <!-- <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Cannot load image data"> -->
 				<img src="\assets\avatar.png" alt="Cannot load image data">

@@ -29,6 +29,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Redirect to the next page after the fade-out
     setTimeout(() => {
-        window.location.href = "dashboard.html"; // Replace with your desired URL
+        window.location.href = "../php/dashboard.php";
     }, 6000); // 3s fadeIn + 5s hold + 2s fadeOut
 });

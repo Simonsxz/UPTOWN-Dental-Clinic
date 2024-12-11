@@ -64,6 +64,7 @@ function renderTable(data) {
         tableRows += `
             <tr>
                 <th scope="row">${row.id}</th>
+                <td>${row.user_ID}</td>
                 <td>${row.user_fName}</td>
                 <td>${row.user_lName}</td>
                 <td>${row.user_role}</td>
@@ -83,6 +84,8 @@ function renderTable(data) {
     renderPagination(data); // Ensure this function is defined elsewhere if needed
     updateEntriesInfo(data); // Ensure this function is defined elsewhere if needed
 }
+
+
 
 // Fetch data from PHP and render it
 document.addEventListener('DOMContentLoaded', function() {
@@ -323,64 +326,6 @@ window.addEventListener('click', function (e) {
 	})
 })
 
-// Confirmation before saving
-function showConfirmationAlert() {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: 'Do you want to save your changes?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, save it!',
-        cancelButtonText: 'Cancel'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // User confirmed, proceed with saving
-            showSavingAlert();
-        }
-    });
-}
-
-// Show "Saving..." SweetAlert
-function showSavingAlert() {
-    Swal.fire({
-        title: 'Saving...',
-        text: 'Please wait while we save your changes.',
-        icon: 'info',
-        showConfirmButton: false,
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-	setTimeout(() => {
-		Swal.close(); // Close the "Saving..." modal
-	
-		// Show success alert
-		Swal.fire({
-			title: 'Saved!',
-			text: 'Your changes have been successfully saved.',
-			icon: 'success',
-			timer: 3000,
-			showConfirmButton: false
-		}).then(() => {
-			// Close the Bootstrap modal after showing the success alert
-			const modal = document.getElementById('addUserModal');
-			const bootstrapModal = bootstrap.Modal.getInstance(modal);
-			bootstrapModal.hide();
-		});
-	}, 5000); // Adjust the delay as needed	
-}
-
-// Prevent default form submission behavior
-document.getElementById('addUserForm').addEventListener('submit', (event) => {
-    event.preventDefault(); // Prevent form submission
-});
-
-
 
 
 // PROGRESSBAR
@@ -390,6 +335,60 @@ allProgress.forEach(item=> {
 	item.style.setProperty('--value', item.dataset.value)
 })
 
+
+function submitAddUserForm() {
+    // Display confirmation alert
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to add this new user?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, add user',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Gather form data
+            const formData = new FormData(document.getElementById("addUserForm"));
+
+            // Send data to the server
+            fetch('../functions/function.php', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.text())
+            .then(result => {
+                // Display success or error message
+                Swal.fire({
+                    title: 'Response',
+                    text: result,
+                    icon: result.includes('successfully') ? 'success' : 'error',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    if (result.includes('successfully')) {
+                        // Optional: Reload or close modal
+                        location.reload(); // Reload the page
+                    }
+                });
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An error occurred. Please try again later.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                console.error('Error:', error);
+            });
+        }
+    });
+}
+
+document.getElementById('cancelButton').addEventListener('click', () => {
+    const form = document.getElementById('addUserForm');
+    form.reset(); // Clears all input fields in the form
+});
 
 
 

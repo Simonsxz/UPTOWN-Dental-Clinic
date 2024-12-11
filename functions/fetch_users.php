@@ -7,7 +7,7 @@ if ($conn->connect_error) {
 }
 
 // Query to fetch data from the table
-$query = "SELECT id, user_fName, user_lName, user_role, user_created FROM tbl_useraccount";
+$query = "SELECT id, user_ID, user_fName, user_lName, user_role, user_created FROM tbl_useraccount";
 $result = $conn->query($query);
 
 // Check if data exists

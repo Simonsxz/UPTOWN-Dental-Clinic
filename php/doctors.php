@@ -135,6 +135,7 @@
 									<thead>
 										<tr>
 											<th scope="col">#</th>
+											<th scope="col">User ID</th>
 											<th scope="col">First Name</th>
 											<th scope="col">Last Name</th>
 											<th scope="col">Role</th>
@@ -178,72 +179,73 @@
 					<div>
                     
 			</div>
+
+			<!-- Add Modal -->
 			<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background-color: #ffffff;">
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h5 class="modal-title" id="addUserModalLabel">Add User Details</h5>
-            </div>
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content" style="background-color: #ffffff;">
+						<!-- Modal Header -->
+						<div class="modal-header">
+							<h5 class="modal-title" id="addUserModalLabel">Add User Details</h5>
+						</div>
 
-            <!-- Modal Body -->
-            <div class="modal-body">
-                <!-- Form -->
-                <form id="addUserForm" action="doctors.php" method="POST">
-                    <div class="row">
-                        <!-- First Name -->
-                        <div class="col-6 mb-2">
-                            <label for="firstName" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="firstName" name="firstName" required>
-                        </div>
+						<!-- Modal Body -->
+						<div class="modal-body">
+							<!-- Form -->
+							<form id="addUserForm" action="doctors.php" method="POST">
+								<div class="row">
+									<!-- First Name -->
+									<div class="col-6 mb-2">
+										<label for="firstName" class="form-label">First Name</label>
+										<input type="text" class="form-control" id="firstName" name="firstName" required>
+									</div>
 
-                        <!-- Last Name -->
-                        <div class="col-6 mb-2">
-                            <label for="lastName" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="lastName" name="lastName" required>
-                        </div>
+									<!-- Last Name -->
+									<div class="col-6 mb-2">
+										<label for="lastName" class="form-label">Last Name</label>
+										<input type="text" class="form-control" id="lastName" name="lastName" required>
+									</div>
 
-                        <!-- Username -->
-                        <div class="col-12 mb-2">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" name="username" required>
-                        </div>
+									<!-- Username -->
+									<div class="col-12 mb-2">
+										<label for="username" class="form-label">Username</label>
+										<input type="text" class="form-control" id="username" name="username" required>
+									</div>
 
-                        <!-- Password -->
-                        <div class="col-12 mb-2 position-relative">
-                            <label for="password" class="form-label">Password</label>
-                            <div class="input-group position-relative">
-                                <input type="password" class="form-control pe-5" id="password" name="password" style="border-radius: 0.375rem;" required>
-                                <span class="position-absolute top-50 end-0 translate-middle-y me-2" id="togglePassword" style="cursor: pointer;">
-                                    <i class="bi bi-eye" id="eyeIcon"></i>
-                                </span>
-                            </div>
-                        </div>
+									<!-- Password -->
+									<div class="col-12 mb-2 position-relative">
+										<label for="password" class="form-label">Password</label>
+										<div class="input-group position-relative">
+											<input type="password" class="form-control pe-5" id="password" name="password" style="border-radius: 0.375rem;" required>
+											<span class="position-absolute top-50 end-0 translate-middle-y me-2" id="togglePassword" style="cursor: pointer;">
+												<i class="bi bi-eye" id="eyeIcon"></i>
+											</span>
+										</div>
+									</div>
 
-                        <!-- Role -->
-                        <div class="col-12 mb-2">
-                            <label for="role" class="form-label">Role</label>
-                            <select class="form-select" id="role" name="role" required>
-                                <option value="" disabled selected>Select a role</option>
-                                <option value="admin">Admin</option>
-                                <option value="doctor">Doctor</option>
-                                <option value="receptionist">Receptionist</option>
-                            </select>
-                        </div>
-                    </div>
+									<!-- Role -->
+									<div class="col-12 mb-2">
+										<label for="role" class="form-label">Role</label>
+										<select class="form-select" id="role" name="role" required>
+											<option value="" disabled selected>Select a role</option>
+											<option value="admin">Admin</option>
+											<option value="doctor">Doctor</option>
+											<option value="receptionist">Receptionist</option>
+										</select>
+									</div>
+								</div>
 
-                    <!-- Buttons -->
-                    <div class="d-flex justify-content-end gap-2 mt-3">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary" onclick="addUser()">Save</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+								<!-- Buttons -->
+								<div class="d-flex justify-content-end gap-2 mt-3">
+								<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" id="cancelButton">Cancel</button>
+									<button type="button" class="btn btn-primary" onclick="submitAddUserForm()">Save</button>
 
-  
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
 
 			
 		</main>
