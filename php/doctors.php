@@ -1,4 +1,18 @@
-<?php include "../functions/function.php"; ?>
+<?php 
+session_start(); 
+include "../functions/db_conn.php";
+include "../functions/function.php"; 
+
+if (!isset($_SESSION['user_ID'])) {
+    header("Location: ../index.php"); // Redirect to login if not authenticated
+    exit;
+}
+
+$user_ID = $_SESSION['user_ID']; // Fetch user_ID from session
+
+
+
+?>
 
 
 <!DOCTYPE html>
@@ -17,7 +31,7 @@
     <title>User Account</title>
 </head>
 <body>
-  
+
     <div id="imageModalClient" class="modal chat-image-modal-client">
 		<div class="modal-image-client-container">
 			<div>
@@ -64,7 +78,7 @@
 	
 			<!-- Profile -->
 			<div class="profile">
-				<h2 >UP-SC-001</h2>
+			<h2><?php echo htmlspecialchars($user_ID); ?></h2> <!-- Display sanitized user_ID -->
 		
                 <!-- <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Cannot load image data"> -->
 				<img src="\assets\avatar.png" alt="Cannot load image data">
@@ -131,23 +145,69 @@
 								</div>
 							
 								<!-- Table -->
+								 
 								<table class="table table-hover">
-									<thead>
+								<thead>
+									<tr>
+										<th scope="col">#</th>
+										<th scope="col">User ID</th>
+										<th scope="col">First Name</th>
+										<th scope="col">Last Name</th>
+										<th scope="col">Role</th>
+										<th scope="col">Created</th>
+										<th scope="col">Actions</th>
+									</tr>
+								</thead>
+								<tbody id="tableBody">
+								<?php
+								// Fetch and display results for tbl_useraccount
+								$sql_admin = "SELECT id, user_ID, user_fName, user_lName, user_role, user_created FROM tbl_useraccount";
+								$stmt_admin = mysqli_prepare($conn, $sql_admin);
+
+								if ($stmt_admin) {
+									mysqli_stmt_execute($stmt_admin);
+
+									// Bind the result variables
+									mysqli_stmt_bind_result($stmt_admin, $id, $user_ID, $first_name, $last_name, $role, $created);
+
+									// Fetch and display results
+									while (mysqli_stmt_fetch($stmt_admin)) {
+								?>
 										<tr>
-											<th scope="col">#</th>
-											<th scope="col">User ID</th>
-											<th scope="col">First Name</th>
-											<th scope="col">Last Name</th>
-											<th scope="col">Role</th>
-											<th scope="col">Created</th>
-											<th scope="col">Actions</th>
+											<td><?php echo $id; ?></td>
+											<td><?php echo htmlspecialchars($user_ID); ?></td>
+											<td><?php echo htmlspecialchars($first_name); ?></td>
+											<td><?php echo htmlspecialchars($last_name); ?></td>
+											<td><?php echo htmlspecialchars($role); ?></td>
+											<td><?php echo htmlspecialchars($created); ?></td>
+											<td>
+												<!-- View User -->
+												<a href="#" class="link-dark1 view-link" data-toggle="modal" data-target="#viewUser" 
+												data-user-id="<?php echo htmlspecialchars($user_ID); ?>" 
+												data-user-name="<?php echo htmlspecialchars($first_name . ' ' . $last_name); ?>">
+													<i class="bx bx-show icon"></i>
+												</a>
+												<?php
+												// Assuming $id is defined before this point
+												if (isset($showAddUserButton) && $showAddUserButton) {
+													echo '<a href="javascript:void(0);" class="link-dark3" onclick="confirmDelete(' . $id . ')"><i class="bx bxs-trash icon"></i></a>';
+												}
+												?>
+											</td>
 										</tr>
-									</thead>
-									<tbody id="tableBody">
-										<!-- Data will be populated by JavaScript -->
-									</tbody>
-								</table>
-											
+								<?php
+									}
+
+									// Close the statement
+									mysqli_stmt_close($stmt_admin);
+								} else {
+									// Handle the error if the statement preparation fails
+									echo "<tr><td colspan='7'>Error: " . mysqli_error($conn) . "</td></tr>";
+								}
+								?>
+								</tbody>
+							</table>
+
 								<div class="pagination-container">
 									<!-- Left: Pagination -->
 									<div class="pagination">
@@ -179,6 +239,62 @@
 					<div>
                     
 			</div>
+
+				<!-- View-Only Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background-color: #ffffff;">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">User Details</h5>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <!-- Form (Read-Only) -->
+                <form id="viewUserForm">
+                    <div class="row">
+                        <!-- First Name -->
+                        <div class="col-6 mb-2">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="firstName" name="firstName" readonly>
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="col-6 mb-2">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" name="lastName" readonly>
+                        </div>
+
+                        <!-- Username -->
+                        <div class="col-12 mb-2">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" readonly>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="col-12 mb-2 position-relative">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="text" class="form-control" id="password" name="password" readonly>
+                        </div>
+
+                        <!-- Role -->
+                        <div class="col-12 mb-2">
+                            <label for="role" class="form-label">Role</label>
+                            <input type="text" class="form-control" id="role" name="role" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex justify-content-end gap-2 mt-3">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" id="cancelButton">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 			<!-- Add Modal -->
 			<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
