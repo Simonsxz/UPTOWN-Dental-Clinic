@@ -39,13 +39,13 @@ function addUser($userData) {
         mysqli_stmt_execute($updateStmt);
 
         mysqli_stmt_close($updateStmt);
+        mysqli_stmt_close($stmt);
 
         return "User added successfully with User ID: " . $userID;
     } else {
-        return "Error: " . mysqli_error($conn);
+        $error = "Error: " . mysqli_error($conn);
+        mysqli_stmt_close($stmt);
+        return $error;
     }
-
-    mysqli_stmt_close($stmt);
 }
-
 ?>
