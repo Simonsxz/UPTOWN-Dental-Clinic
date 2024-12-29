@@ -171,6 +171,87 @@ window.addEventListener('click', function (e) {
 	})
 })
 
+let currentPage = 1;
+let rowsPerPage = 3; // Default rows per page
+let filteredRows = []; // For search functionality
+
+// Update rows per page
+function updateRowsPerPage() {
+    const rowsPerPageValue = document.getElementById('rowsPerPage').value;
+    rowsPerPage = rowsPerPageValue === "all" ? Number.MAX_VALUE : parseInt(rowsPerPageValue, 10);
+    currentPage = 1; // Reset to the first page
+    displayTableRows();
+}
+
+// Search table rows
+function searchTable() {
+    const searchQuery = document.getElementById('tableSearch').value.toLowerCase();
+    const rows = Array.from(document.querySelectorAll('#tableBody tr'));
+
+    // Filter rows based on search query
+    filteredRows = rows.filter(row =>
+        Array.from(row.cells).some(cell =>
+            cell.textContent.toLowerCase().includes(searchQuery)
+        )
+    );
+
+    currentPage = 1; // Reset to the first page
+    displayTableRows();
+}
+
+// Display rows based on pagination and filtering
+function displayTableRows() {
+    const rows = filteredRows.length > 0 ? filteredRows : Array.from(document.querySelectorAll('#tableBody tr'));
+    const totalRows = rows.length;
+
+    // Pagination logic
+    const totalPages = Math.ceil(totalRows / rowsPerPage);
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = currentPage * rowsPerPage;
+
+    // Show or hide rows
+    Array.from(document.querySelectorAll('#tableBody tr')).forEach(row => (row.style.display = 'none'));
+    rows.slice(start, end).forEach(row => (row.style.display = ''));
+
+    renderPagination(totalPages);
+    updateEntriesInfo(totalRows, rows.length);
+}
+
+// Render pagination
+function renderPagination(totalPages) {
+    const paginationContainer = document.getElementById('pageNumbers');
+    paginationContainer.innerHTML = ''; // Clear previous pagination
+
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.className = i === currentPage ? 'active' : '';
+        pageButton.onclick = () => {
+            currentPage = i;
+            displayTableRows();
+        };
+        paginationContainer.appendChild(pageButton);
+    }
+}
+
+// Update entries information text
+function updateEntriesInfo(totalRowsCount, visibleRowsCount) {
+    const entriesInfo = document.getElementById('entriesInfo');
+    entriesInfo.textContent = `Showing ${Math.min(
+        visibleRowsCount,
+        rowsPerPage * currentPage
+    )} of ${totalRowsCount} entries`;
+}
+
+// Initialize search functionality on page load
+document.addEventListener('DOMContentLoaded', () => {
+    // Add event listeners
+    document.getElementById('tableSearch').addEventListener('input', searchTable);
+    document.getElementById('rowsPerPage').addEventListener('change', updateRowsPerPage);
+
+    // Initialize display
+    displayTableRows();
+});
 
 
 // PROGRESSBAR

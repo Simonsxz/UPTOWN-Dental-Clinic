@@ -1270,13 +1270,15 @@ thead {
 .edit-button {
     background-color: #ffc107; /* Yellow */
 	color: white;
-	padding-top: 8px;
-	padding-bottom: 8px;
-	padding-left: 12px;
-	padding-right: 8px;
-	border: none;
-	text-align: center;
-	border-radius: 5px;
+    padding: 8px 12px;
+    font-size: 13px; 
+    font-weight: bold; 
+    border: none; 
+    border-radius: 4px; 
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; 
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase; 
 }
 
 .edit-button:hover {
@@ -1287,13 +1289,15 @@ thead {
 .delete-button {
     background-color: #dc3545; /* Red */
 	color: white;
-	padding-top: 8px;
-	padding-bottom: 8px;
-	padding-left: 12px;
-	padding-right: 8px;
-	border: none;
-	text-align: center;
-	border-radius: 5px;
+    padding: 8px 12px;
+    font-size: 13px; 
+    font-weight: bold; 
+    border: none; 
+    border-radius: 4px; 
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; 
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase; 
 }
 
 .delete-button:hover {
@@ -1311,13 +1315,12 @@ thead {
     visibility: visible;
 }
 
-
 .page-numbers {
     display: flex;
     gap: 5px;
 }
 
-.page-number {
+.pagination button {
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
@@ -1326,13 +1329,13 @@ thead {
     transition: background-color 0.3s ease;
 }
 
-.page-number:hover {
+.pagination button:hover {
     background-color: #f1f0f6;
     color: #6d6d6d;
 }
 
-.page-number.active {
-    background-color: #f1f0f6;
+.pagination button.active {
+    background-color: #b6b6b6;
     color: #1f1f1f;
 }
 

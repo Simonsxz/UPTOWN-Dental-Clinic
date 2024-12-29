@@ -1,5 +1,5 @@
 <?php 
-include "functions/db_conn.php";
+include "../functions/db_conn.php";
 ?>
 
 <?php
@@ -11,6 +11,8 @@ if (isset($_SESSION['user_ID'])) {
     exit();
 }
 ?>
+
+
 
 
 <!DOCTYPE html>
@@ -28,6 +30,7 @@ if (isset($_SESSION['user_ID'])) {
 </head>
 <body>
 	<div class="main-container">
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<div class="container">
 		<form action="index.php" method="POST" autocomplete="off">
 			<img src="/assets/uptownlogo.png" class="uplogo" alt="Aladin's Aviary">
