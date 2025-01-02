@@ -1,8 +1,5 @@
-<?php 
-include "../functions/db_conn.php";
-?>
-
 <?php
+include ("../UPTOWN-Dental-Clinic/functions/db_conn.php");
 session_start();
 if (isset($_SESSION['user_ID'])) {
     // Unset session and redirect to dashboard if already logged in

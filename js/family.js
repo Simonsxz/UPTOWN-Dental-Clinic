@@ -254,26 +254,35 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-function submitAddPatientForm(event) {
+// PROGRESSBAR
+const allProgress = document.querySelectorAll('main .card .progress');
+
+allProgress.forEach(item=> {
+	item.style.setProperty('--value', item.dataset.value)
+})
+
+
+
+function submitAddFamilyForm(event) {
     if (event) event.preventDefault(); // Prevent default form submission behavior
 
     Swal.fire({
         title: 'Are you sure?',
-        text: "Do you want to add this new user?",
+        text: "Do you want to add this new folder?",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, add user',
+        confirmButtonText: 'Yes, add folder',
         cancelButtonText: 'Cancel'
     }).then((result) => {
         if (result.isConfirmed) {
             // Gather form data
-            const form = document.getElementById("addPatientForm");
+            const form = document.getElementById("addFamilyForm");
             const formData = new FormData(form);
 
             // Send data to the server
-            fetch('../functions/patient_add.php', {
+            fetch('../functions/family_add.php', {
                 method: 'POST',
                 body: formData,
             })
@@ -311,8 +320,6 @@ document.getElementById('cancelButton').addEventListener('click', () => {
     const form = document.getElementById('addUserForm');
     form.reset(); // Clears all input fields in the form
 });
-
-
 
 
 
