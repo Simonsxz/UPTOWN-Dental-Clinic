@@ -44,12 +44,15 @@ $user_ID = $_SESSION['user_ID'];
 		<ul class="side-menu">
 			<!-- Main -->
 		
-			<li><a href="dashboard.html"><i class='bx bxs-dashboard icon' ></i>Dashboard</a></li>
+			<li><a href="dashboard.php"><i class='bx bxs-dashboard icon' ></i>Dashboard</a></li>
 			<li class="divider" data-text="main">Main</li>
-            <li><a href="doctors.html" class="active"><i class='bx bxs-user-detail icon' ></i> User Account </a></li>
-			<li><a href="patient.html"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
+            <li><a href="doctors.php" class="active"><i class='bx bxs-user-detail icon' ></i> User Account </a></li>
+			<li><a href="patient.php"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
+            <li><a href="family.php" ><i class='bx bxs-group icon'></i> Family </a></li>
 			<li><a href="xray.html"><i class='bx bxs-barcode icon' ></i> X-ray </a></li>
 			<li><a href=""><i class='bx bxs-photo-album icon' ></i> Oral Photos </a></li>
+			<li><a href=""><i class='bx bxs-report icon'></i> Reports </a></li>
+
 
 			<!-- help -->
 			<li class="divider" data-text="Settings">Settings</li>

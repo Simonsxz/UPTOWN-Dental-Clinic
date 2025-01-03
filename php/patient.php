@@ -43,10 +43,11 @@ $user_ID = $_SESSION['user_ID'];
 		<ul class="side-menu">
 			<!-- Main -->
 		
-			<li><a href="dashboard.html"><i class='bx bxs-dashboard icon' ></i>Dashboard</a></li>
+			<li><a href="dashboard.php"><i class='bx bxs-dashboard icon' ></i>Dashboard</a></li>
 			<li class="divider" data-text="main">Main</li>
-            <li><a href="doctors.html"><i class='bx bxs-user-detail icon' ></i> User Account </a></li>
-			<li><a href="patient.html" class="active"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
+            <li><a href="doctors.php"><i class='bx bxs-user-detail icon' ></i> User Account </a></li>
+			<li><a href="patient.php" class="active"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
+            <li><a href="family.php" ><i class='bx bxs-group icon'></i> Family </a></li>
 			<li><a href="xray.html"><i class='bx bxs-barcode icon' ></i> X-ray </a></li>
 			<li><a href=""><i class='bx bxs-photo-album icon' ></i> Oral Photos </a></li>
 			<li><a href=""><i class='bx bxs-report icon'></i> Reports </a></li>
@@ -112,7 +113,7 @@ $user_ID = $_SESSION['user_ID'];
 									<p>Patients List of UPTOWN Dental Clinic</p>
 								</div>
 								<div class="button-group">
-								<button type="button" class="cancel" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFamilyModal">  <i class="fas fa-plus-circle"></i>  Add New Family</button>
+								
 									<button type="button" class="save" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">  <i class="fas fa-plus-circle"></i>  Add New Patient</button>
 								</div>						
 							</div>							
@@ -258,108 +259,161 @@ $user_ID = $_SESSION['user_ID'];
 								
 							</div>
 	
-		<!-- Add Modal -->
-<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg"> <!-- Added modal-lg for a larger modal -->
-        <div class="modal-content" style="background-color: #ffffff;">
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h5 class="modal-title" id="addUserModalLabel">Add Patient Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+							<!-- Add Modal -->
+							<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered modal-lg">
+									<div class="modal-content">
+										<!-- Modal Header -->
+										<div class="modal-header">
+											<h5 class="modal-title" id="addUserModalLabel">Add Patient Details</h5>
+											<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+										</div>
 
-            <!-- Modal Body -->
-            <div class="modal-body" style="max-height: 80vh; overflow-y: auto;"> <!-- Restrict height and add scrolling -->
-                <!-- Patient Details Form -->
-				<form id="addPatientForm" onsubmit="submitAddPatientForm(event)">
-    <div class="row">
-	<div class="col-md-6 mb-2">
-            <label for="patient-name" class="form-label">Family Member:</label>
-            <input type="text" id="family" name="family" class="form-input form-control" required>
-        </div>
-        <div class="col-md-6 mb-2">
-            <label for="patient-name" class="form-label">Patient's Name:</label>
-            <input type="text" id="patient-name" name="fullName" class="form-input form-control" required>
-        </div>
-        <div class="col-md-6 mb-2">
-            <label for="first-visit" class="form-label">Date of First Visit:</label>
-            <input type="date" id="first-visit" name="firstVisit" class="form-input form-control" required>
-        </div>
-        <div class="col-md-6 mb-2">
-            <label for="checkup-done-by" class="form-label">Check-Up Done By:</label>
-            <input type="text" id="checkup-done-by" name="doctor" class="form-input form-control">
-        </div>
-        <div class="col-md-6 mb-2">
-            <label for="address" class="form-label">Address:</label>
-            <input type="text" id="address" name="address" class="form-input form-control">
-        </div>
-        <div class="col-md-6 mb-2">
-            <label for="dob" class="form-label">Date of Birth:</label>
-            <input type="date" id="dob" name="DOB" class="form-input form-control">
-        </div>
-        <div class="col-md-6 mb-2">
-            <label for="age" class="form-label">Age:</label>
-            <input type="number" id="age" name="age" class="form-input form-control">
-        </div>
-        <div class="col-md-6 mb-2">
-            <label for="gender" class="form-label">Gender:</label>
-            <select id="gender" name="gender" class="form-input form-select">
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-            </select>
-        </div>
-        <div class="col-md-6 mb-2">
-            <label for="height" class="form-label">Height:</label>
-            <input type="text" id="height" name="height" class="form-input form-control">
-        </div>
-        <div class="col-md-6 mb-2">
-            <label for="weight" class="form-label">Weight:</label>
-            <input type="text" id="weight" name="weight" class="form-input form-control">
-        </div>
-        <div class="col-md-6 mb-2">
-            <label for="civil-status" class="form-label">Civil Status:</label>
-            <input type="text" id="civil-status" name="status" class="form-input form-control">
-        </div>
-        <div class="col-md-6 mb-2">
-            <label for="occupation" class="form-label">Occupation:</label>
-            <input type="text" id="occupation" name="occupation" class="form-input form-control">
-        </div>
-        <div class="col-md-6 mb-2">
-            <label for="religion" class="form-label">Religion:</label>
-            <input type="text" id="religion" name="religion" class="form-input form-control">
-        </div>
-        <div class="col-md-6 mb-2">
-            <label for="contact-number" class="form-label">Contact Number:</label>
-            <input type="tel" id="contact-number" name="contact" class="form-input form-control">
-        </div>
-        <div class="col-md-6 mb-2">
-            <label for="facebook-account" class="form-label">Facebook Account:</label>
-            <input type="text" id="facebook-account" name="facebook" class="form-input form-control">
-        </div>
-        <div class="col-md-6 mb-2">
-            <label for="nationality" class="form-label">Nationality:</label>
-            <input type="text" id="nationality" name="nationality" class="form-input form-control">
-        </div>
-        <div class="col-md-6 mb-2">
-            <label for="referred-by" class="form-label">Referred By:</label>
-            <input type="text" id="referred-by" name="referredBy" class="form-input form-control">
-        </div>
-    </div>
+										<!-- Modal Body -->
+										<div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+											<form id="addPatientForm" onsubmit="submitAddPatientForm(event)">
+												<!-- Personal Information -->
+												<div class="mb-3">
+													<h6>Personal Information</h6>
+													<div class="row g-3">
+													<div class="col-md-6">
+														<?php
+														// Fetch family data from the database
+														$queryFamily = "SELECT id, folder_name, folder_head FROM tbl_familyfolder";
+														$resultFamily = $conn->query($queryFamily);
 
-    <!-- Buttons -->
-    <div class="d-flex justify-content-end gap-2 mt-3">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" id="cancelButton">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save</button>
-    </div>
-</form>
+														// Initialize an array to hold family data
+														$families = [];
+														if ($resultFamily && $resultFamily->num_rows > 0) {
+															while ($row = $resultFamily->fetch_assoc()) {
+																$families[] = $row;
+															}
+														}
+														?>
+														<label for="family" class="form-label">Family Member:</label>
+														<select id="family" name="family" class="form-control" required>
+															<option value="" disabled selected>Search or select a family</option>
+															<option value="N/A">N/A</option>
+															<?php foreach ($families as $family): ?>
+																<option value="<?= $family['id']; ?>">
+																	<?= $family['folder_name']; ?> (<?= $family['folder_head']; ?>)
+																</option>
+															<?php endforeach; ?>
+														</select>
+													</div>
+														<div class="col-md-6">
+															<label for="fullName" class="form-label">Patient's Name:</label>
+															<input type="text" id="fullName" name="fullName" class="form-control" placeholder="Enter patient name" required>
+														</div>
+														<div class="col-md-6">
+															<label for="DOB" class="form-label">Date of Birth:</label>
+															<input type="date" id="DOB" name="DOB" class="form-control" required>
+														</div>
+														<div class="col-md-6">
+															<label for="age" class="form-label">Age:</label>
+															<input type="number" id="age" name="age" class="form-control" placeholder="Enter age">
+														</div>
+														<div class="col-md-6">
+															<label for="gender" class="form-label">Gender:</label>
+															<select id="gender" name="gender" class="form-select">
+																<option value="" disabled selected>Select gender</option>
+																<option value="male">Male</option>
+																<option value="female">Female</option>
+																<option value="other">Other</option>
+															</select>
+														</div>
+														<div class="col-md-6">
+														<?php
+														// Fetch doctor data from the database
+														$queryDoctor = "SELECT id, user_fName, user_lName FROM tbl_useraccount WHERE user_role = 'doctor'";
+														$resultDoctor = $conn->query($queryDoctor);
 
-            </div>
-        </div>
-    </div>
-</div>
+														// Initialize an array to hold doctor data
+														$doctors = [];
+														if ($resultDoctor && $resultDoctor->num_rows > 0) {
+															while ($row = $resultDoctor->fetch_assoc()) {
+																$doctors[] = $row;
+															}
+														}
+														?>
+														<label for="doctor" class="form-label">Doctor:</label>
+														<select id="doctor" name="doctor" class="form-control" required>
+															<option value="" disabled selected>Search or select a doctor</option>
+															<?php foreach ($doctors as $doctor): ?>
+																<option value="<?= $doctor['id']; ?>">
+																	Dr. <?= $doctor['user_fName']; ?> <?= $doctor['user_lName']; ?>
+																</option>
+															<?php endforeach; ?>
+														</select>
+													</div>
 
+													</div>
+												</div>
 
+												<!-- Contact Information -->
+												<div class="mb-3">
+													<h6>Contact Information</h6>
+													<div class="row g-3">
+														<div class="col-md-6">
+															<label for="address" class="form-label">Address:</label>
+															<input type="text" id="address" name="address" class="form-control" placeholder="Enter address">
+														</div>
+														<div class="col-md-6">
+															<label for="contact" class="form-label">Contact Number:</label>
+															<input type="tel" id="contact" name="contact" class="form-control" placeholder="Enter contact number">
+														</div>
+														<div class="col-md-6">
+															<label for="facebook" class="form-label">Facebook Account:</label>
+															<input type="text" id="facebook" name="facebook" class="form-control" placeholder="Enter Facebook account">
+														</div>
+														<div class="col-md-6">
+															<label for="nationality" class="form-label">Nationality:</label>
+															<input type="text" id="nationality" name="nationality" class="form-control" placeholder="Enter nationality">
+														</div>
+													</div>
+												</div>
+
+												<!-- Additional Information -->
+												<div class="mb-3">
+													<h6>Additional Information</h6>
+													<div class="row g-3">
+														<div class="col-md-6">
+															<label for="height" class="form-label">Height:</label>
+															<input type="text" id="height" name="height" class="form-control" placeholder="Enter height">
+														</div>
+														<div class="col-md-6">
+															<label for="weight" class="form-label">Weight:</label>
+															<input type="text" id="weight" name="weight" class="form-control" placeholder="Enter weight">
+														</div>
+														<div class="col-md-6">
+															<label for="status" class="form-label">Status:</label>
+															<input type="text" id="status" name="status" class="form-control" placeholder="Enter civil status">
+														</div>
+														<div class="col-md-6">
+															<label for="occupation" class="form-label">Occupation:</label>
+															<input type="text" id="occupation" name="occupation" class="form-control" placeholder="Enter occupation">
+														</div>
+														<div class="col-md-6">
+															<label for="religion" class="form-label">Religion:</label>
+															<input type="text" id="religion" name="religion" class="form-control" placeholder="Enter religion">
+														</div>
+														<div class="col-md-6">
+															<label for="referredBy" class="form-label">Referred By:</label>
+															<input type="text" id="referredBy" name="referredBy" class="form-control" placeholder="Enter referred by">
+														</div>
+													</div>
+												</div>
+
+												<!-- Buttons -->
+												<div class="d-flex justify-content-end gap-2 mt-3">
+													<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" id="cancelButton">Cancel</button>
+													<button type="submit" class="btn btn-primary">Save</button>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
 			
                             
                         </div>

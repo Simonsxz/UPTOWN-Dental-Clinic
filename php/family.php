@@ -25,7 +25,7 @@ $user_ID = $_SESSION['user_ID'];
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="/css/style.css">
     <link rel="icon" type="image/x-icon" href="/assets/uplogo.png">
-    <title>Patient Information</title>
+    <title>Family Information</title>
 </head>
 <body>
   
@@ -92,14 +92,14 @@ $user_ID = $_SESSION['user_ID'];
 		<main>
 			<div class="dash-header">
                 <!-- Page Header -->
-                <h1 class="title">Patient</h1>
+                <h1 class="title">Family Folder</h1>
                 <!-- Page Header -->
 
                 <!-- Breadcrumbs -->
                 <ul class="breadcrumbs">
                     <li><p>Main</p></li>
                     <li class="divider">/</li>
-                    <li><a href="#" class="active">Patient</a></li>
+                    <li><a href="#" class="active">Family</a></li>
                 </ul>
             </div>
 	
@@ -109,8 +109,8 @@ $user_ID = $_SESSION['user_ID'];
                         <div class="welcome-dashboard-content-container">
 							<div class="patient with-folder">
 								<div>
-									<h2>List of Patients</h2>
-									<p>Patients List of UPTOWN Dental Clinic</p>
+									<h2>List of Family</h2>
+									<p>Family List of UPTOWN Dental Clinic</p>
 								</div>
 								<div class="button-group">
 									<button type="button" class="save" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFamilyModal">  <i class="fas fa-plus-circle"></i>  Add New Family</button>
