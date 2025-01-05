@@ -21,11 +21,12 @@ $user_ID = $_SESSION['user_ID'];
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="/css/style.css">
     <link rel="icon" type="image/x-icon" href="/assets/uplogo.png">
-    <title>Family Information</title>
 </head>
 <body>
   
@@ -183,17 +184,24 @@ $user_ID = $_SESSION['user_ID'];
 												<td><?php echo htmlspecialchars($folder_created); ?></td>
 												
 												<td>
-													<!-- View User -->
-										
-												<a href="#" 
-												class="link-dark1 view-link" 
-												data-bs-toggle="modal" 
-												data-bs-target="#StudentViewModal" 
-												data-user-id="<?php echo htmlspecialchars($user_ID); ?>"> <!-- Pass user_ID -->
-													<button class="action-button view-button1" title="View User Details">
-														View
-													</button>
-												</a>
+													   <!-- View Folder -->
+													   <a href="#"
+														class="link-dark1 view-link"
+														data-bs-toggle="modal"
+														data-bs-target="#folderModal"
+														data-folder-id="<?php echo htmlspecialchars($folder_id); ?>"> 
+														<button class="action-button view-button1" title="View Folder Details">View</button>
+														</a>
+
+														<a href="#"
+														class="link-dark1 view-link"
+														data-bs-toggle="modal"
+														data-bs-target="#folderModal"
+														data-folder-id="<?php echo htmlspecialchars($folder_id); ?>"> 
+														<button class="action-button member-button" title="View Members">Members</button>
+														</a>
+
+
 
 												<a href="#" 
 												class="link-dark1 edit-link" 
@@ -294,10 +302,41 @@ $user_ID = $_SESSION['user_ID'];
     </div>
 </div>
 
-
-
-			
-                            
+<!-- Folder Details Modal -->
+<div class="modal fade" id="folderModal" tabindex="-1" aria-labelledby="folderDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="folderDetailsLabel">Folder Details:</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="folderIdView" class="form-label">Folder ID</label>
+                        <input type="text" class="form-control" id="folderIdView" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="folderNameView" class="form-label">Folder Name</label>
+                        <input type="text" class="form-control" id="folderNameView" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="folderHeadView" class="form-label">Folder Head</label>
+                        <input type="text" class="form-control" id="folderHeadView" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="folderCreatedView" class="form-label">Created Date</label>
+                        <input type="text" class="form-control" id="folderCreatedView" readonly>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+        
                         </div>
                     </div>
 					<div>
@@ -307,12 +346,58 @@ $user_ID = $_SESSION['user_ID'];
       
 </body>
 
+<script>
+$(document).ready(function () {
+    // When the "View" button is clicked
+    $(document).on("click", ".view-link", function () {
+        var folder_id = $(this).data('folder-id'); // Get folder ID from the data attribute
+        console.log('Clicked View for Folder ID: ' + folder_id); // Debugging line
+
+        $.ajax({
+            type: "POST",
+            url: "../functions/fetch_family.php", // PHP script to fetch details
+            data: {
+                'checking_view': true,
+                'folder_id': folder_id, // Send the folder ID
+            },
+            success: function (response) {
+                try {
+                    // Parse the response as JSON
+                    var data = JSON.parse(response);
+
+                    if (data.error) {
+                        // Display error if the response contains an error message
+                        alert(data.error);
+                    } else {
+                        // Populate the modal fields with the fetched data
+                        $('#folderIdView').val(data.folder_id); // Folder ID
+                        $('#folderNameView').val(data.folder_name); // Folder Name
+                        $('#folderHeadView').val(data.folder_head); // Folder Head
+                        $('#folderCreatedView').val(data.folder_created); // Created Date
+
+                        // Show the modal
+                        $('#folderModal').modal('show');
+                    }
+                } catch (e) {
+                    console.error('Error parsing response:', e);
+                    alert("There was an error retrieving the folder details.");
+                }
+            },
+            error: function () {
+                alert("An error occurred while fetching the data.");
+            }
+        });
+    });
+});
+
+
+</script>
+
  <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
