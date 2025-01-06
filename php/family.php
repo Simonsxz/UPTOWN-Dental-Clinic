@@ -184,34 +184,37 @@ $user_ID = $_SESSION['user_ID'];
 												<td><?php echo htmlspecialchars($folder_created); ?></td>
 												
 												<td>
-													   <!-- View Folder -->
-													   <a href="#"
-														class="link-dark1 view-link"
-														data-bs-toggle="modal"
-														data-bs-target="#folderModal"
-														data-folder-id="<?php echo htmlspecialchars($folder_id); ?>"> 
+													 <!-- View Folder Button -->
+													<a href="#"
+													class="link-dark1 view-link"
+													data-bs-toggle="modal"
+													data-bs-target="#folderModal"
+													data-folder-id="<?php echo htmlspecialchars($folder_id); ?>"> 
 														<button class="action-button view-button1" title="View Folder Details">View</button>
-														</a>
+													</a>
 
-														<a href="#"
-														class="link-dark1 view-link"
-														data-bs-toggle="modal"
-														data-bs-target="#folderModal"
-														data-folder-id="<?php echo htmlspecialchars($folder_id); ?>"> 
-														<button class="action-button member-button" title="View Members">Members</button>
-														</a>
-
-
-
-												<a href="#" 
-												class="link-dark1 edit-link" 
-												data-bs-toggle="modal" 
-												data-bs-target="#StudentEditModal" 
-												data-user-id="<?php echo htmlspecialchars($user_ID); ?>"> <!-- Pass user_ID -->
-													<button class="action-button edit-button" title="Edit User Details">
-														Edit
+												<!-- Members Button -->
+												<a href="#"
+													class="link-dark1"
+													data-bs-toggle="modal"
+													data-bs-target="#memberModal">
+													<button class="action-button member-button" 
+															title="View Members" 
+															data-folder-id="<?php echo htmlspecialchars($folder_id); ?>">
+														Members
 													</button>
-												</a>
+													</a>
+
+
+
+													<a href="#" 
+														class="link-dark1 edit-link" 
+														data-bs-toggle="modal" 
+														data-bs-target="#FolderEditModal" 
+														data-folder-id="<?php echo htmlspecialchars($folder_id); ?>"> <!-- Pass folder ID -->
+														<button class="action-button edit-button" title="Edit Folder Details">Edit</button>
+													</a>
+
 
 												<a href="#" 
 													class="link-dark1 delete-link" 
@@ -265,77 +268,144 @@ $user_ID = $_SESSION['user_ID'];
 								
 								
 							</div>
+
+							<div class="modal fade" id="FolderEditModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="editModalLabel">Edit Folder Details</h5>
+										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+										<form id="editFolderForm">
+											<div class="mb-3">
+												<label for="editFolderID" class="form-label">Folder ID</label>
+												<input type="text" class="form-control" id="editFolderID" readonly>
+											</div>
+											<div class="mb-3">
+												<label for="editFolderName" class="form-label">Folder Name</label>
+												<input type="text" class="form-control" id="editFolderName">
+											</div>
+											<div class="mb-3">
+												<label for="editFolderHead" class="form-label">Folder Head</label>
+												<input type="text" class="form-control" id="editFolderHead">
+											</div>
+											<div class="mb-3">
+												<label for="editFolderCreated" class="form-label">Created Date</label>
+												<input type="text" class="form-control" id="editFolderCreated" readonly>
+											</div>
+										</form>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+										<button type="button" class="btn btn-primary" id="saveFolderEditButton">Save Changes</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+
+
+							<div class="modal fade" id="memberModal" tabindex="-1" aria-labelledby="folderModalLabel" aria-hidden="true">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="folderModalLabel">Folder Details</h5>
+										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+										<!-- Display folder name and head -->
+										<h5 id="folderName"></h5>
+										<p id="folderHead"></p>
+
+										<!-- Table to display patients -->
+										<table class="table">
+											<thead>
+												<tr>
+													<th>Patient ID</th>
+													<th>Patient Name</th>
+													<th>Action</th>
+												</tr>
+											</thead>
+											<tbody id="patientTableBody">
+												<!-- Patient data will be dynamically inserted here -->
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
 	
-	<!-- Add Modal -->
-<div class="modal fade" id="addFamilyModal" tabindex="-1" aria-labelledby="addFamilyModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content" style="background-color: #ffffff;">
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h5 class="modal-title" id="addFamilyModalLabel">Add Family Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+							<!-- Add Modal -->
+						<div class="modal fade" id="addFamilyModal" tabindex="-1" aria-labelledby="addFamilyModalLabel" aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered modal-lg">
+								<div class="modal-content" style="background-color: #ffffff;">
+									<!-- Modal Header -->
+									<div class="modal-header">
+										<h5 class="modal-title" id="addFamilyModalLabel">Add Family Details</h5>
+										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
 
-            <!-- Modal Body -->
-            <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
-                <!-- Family Details Form -->
-                <form id="addFamilyForm" onsubmit="submitAddFamilyForm(event)">
-                    <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <label for="folder_name" class="form-label">Family Name:</label>
-                            <input type="text" id="folder_name" name="folder_name" class="form-input form-control" required>
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <label for="folder_head" class="form-label">Family Head:</label>
-                            <input type="text" id="folder_head" name="folder_head" class="form-input form-control" required>
-                        </div>
-                    </div>
+									<!-- Modal Body -->
+									<div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+										<!-- Family Details Form -->
+										<form id="addFamilyForm" onsubmit="submitAddFamilyForm(event)">
+											<div class="row">
+												<div class="col-md-6 mb-2">
+													<label for="folder_name" class="form-label">Family Name:</label>
+													<input type="text" id="folder_name" name="folder_name" class="form-input form-control" required>
+												</div>
+												<div class="col-md-6 mb-2">
+													<label for="folder_head" class="form-label">Family Head:</label>
+													<input type="text" id="folder_head" name="folder_head" class="form-input form-control" required>
+												</div>
+											</div>
 
-                    <!-- Buttons -->
-                    <div class="d-flex justify-content-end gap-2 mt-3">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" id="cancelButton">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+											<!-- Buttons -->
+											<div class="d-flex justify-content-end gap-2 mt-3">
+												<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" id="cancelButton">Cancel</button>
+												<button type="submit" class="btn btn-primary">Save</button>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
 
-<!-- Folder Details Modal -->
-<div class="modal fade" id="folderModal" tabindex="-1" aria-labelledby="folderDetailsLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="folderDetailsLabel">Folder Details:</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="mb-3">
-                        <label for="folderIdView" class="form-label">Folder ID</label>
-                        <input type="text" class="form-control" id="folderIdView" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label for="folderNameView" class="form-label">Folder Name</label>
-                        <input type="text" class="form-control" id="folderNameView" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label for="folderHeadView" class="form-label">Folder Head</label>
-                        <input type="text" class="form-control" id="folderHeadView" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label for="folderCreatedView" class="form-label">Created Date</label>
-                        <input type="text" class="form-control" id="folderCreatedView" readonly>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
+						<!-- Folder Details Modal -->
+						<div class="modal fade" id="folderModal" tabindex="-1" aria-labelledby="folderDetailsLabel" aria-hidden="true">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="folderDetailsLabel">Folder Details:</h5>
+										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+										<form>
+											<div class="mb-3">
+												<label for="folderIdView" class="form-label">Folder ID</label>
+												<input type="text" class="form-control" id="folderIdView" readonly>
+											</div>
+											<div class="mb-3">
+												<label for="folderNameView" class="form-label">Folder Name</label>
+												<input type="text" class="form-control" id="folderNameView" readonly>
+											</div>
+											<div class="mb-3">
+												<label for="folderHeadView" class="form-label">Folder Head</label>
+												<input type="text" class="form-control" id="folderHeadView" readonly>
+											</div>
+											<div class="mb-3">
+												<label for="folderCreatedView" class="form-label">Created Date</label>
+												<input type="text" class="form-control" id="folderCreatedView" readonly>
+											</div>
+										</form>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+									</div>
+								</div>
+							</div>
+						</div>
         
                         </div>
                     </div>
@@ -348,8 +418,10 @@ $user_ID = $_SESSION['user_ID'];
 
 <script>
 $(document).ready(function () {
-    // When the "View" button is clicked
-    $(document).on("click", ".view-link", function () {
+    // When the "View" button is clicked (only view modal will open)
+    $(document).on("click", ".view-link", function (event) {
+        event.preventDefault();  // Prevent default action
+        
         var folder_id = $(this).data('folder-id'); // Get folder ID from the data attribute
         console.log('Clicked View for Folder ID: ' + folder_id); // Debugging line
 
@@ -362,20 +434,18 @@ $(document).ready(function () {
             },
             success: function (response) {
                 try {
-                    // Parse the response as JSON
                     var data = JSON.parse(response);
 
                     if (data.error) {
-                        // Display error if the response contains an error message
                         alert(data.error);
                     } else {
                         // Populate the modal fields with the fetched data
-                        $('#folderIdView').val(data.folder_id); // Folder ID
-                        $('#folderNameView').val(data.folder_name); // Folder Name
-                        $('#folderHeadView').val(data.folder_head); // Folder Head
-                        $('#folderCreatedView').val(data.folder_created); // Created Date
+                        $('#folderIdView').val(data.folder_id); 
+                        $('#folderNameView').val(data.folder_name);
+                        $('#folderHeadView').val(data.folder_head);
+                        $('#folderCreatedView').val(data.folder_created); 
 
-                        // Show the modal
+                        // Show only the folder modal
                         $('#folderModal').modal('show');
                     }
                 } catch (e) {
@@ -385,6 +455,177 @@ $(document).ready(function () {
             },
             error: function () {
                 alert("An error occurred while fetching the data.");
+            }
+        });
+    });
+});
+
+$(document).ready(function () {
+    $(document).on("click", ".member-button", function (event) {
+        event.preventDefault();
+
+        var folderId = $(this).data('folder-id');
+        console.log('Clicked Members for Folder ID:', folderId);
+
+        if (!folderId) {
+            console.error('Folder ID is missing');
+            alert('Invalid Folder ID');
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "../functions/fetch_members.php",
+            data: {
+                'checking_members': true,
+                'folder_id': folderId
+            },
+            success: function (response) {
+                console.log('Raw Response:', response);
+
+                // No need for JSON.parse if response is already a JavaScript object
+                if (response.error) {
+                    alert(response.error);
+                } else {
+                    $('#folderName').text(response.folder_name);
+                    $('#folderHead').text("Head: " + response.folder_head);
+
+                    var tableBody = $('#patientTableBody');
+                    tableBody.empty();
+
+                    response.members.forEach(function (member) {
+                        var row = $('<tr>');
+                        row.append('<td>' + member.patient_id + '</td>');
+                        row.append('<td>' + member.patient_fullName + '</td>');
+
+                        // Add "Actions" column with a "View" button
+                        var actionButton = `
+                            <td>
+                                <a href="#" 
+                                   class="link-dark1 view-link" 
+                                   data-bs-toggle="modal" 
+                                   data-bs-target="#folderModal" 
+                                   data-folder-id="${folderId}" 
+                                   data-member-id="${member.patient_id}">
+                                    <button class="action-button view-button1" 
+                                            title="View Details">View</button>
+                                </a>
+                            </td>`;
+                        row.append(actionButton);
+
+                        tableBody.append(row);
+                    });
+
+                    $('#memberModal').modal('show');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX Error:', status, error);
+                alert("An error occurred while fetching the data.");
+            }
+        });
+    });
+});
+
+
+$(document).ready(function () {
+    // When the "Edit" button is clicked (only edit modal will open)
+    $(document).on("click", ".edit-link", function (event) {
+        event.preventDefault();  // Prevent default action
+        
+        var folder_id = $(this).data('folder-id'); // Get folder ID from the data attribute
+        console.log('Clicked Edit for Folder ID: ' + folder_id); // Debugging line
+
+        $.ajax({
+            type: "POST",
+            url: "../functions/fetch_family.php", // PHP script to fetch details
+            data: {
+                'checking_view': true,
+                'folder_id': folder_id, // Send the folder ID
+            },
+            success: function (response) {
+                try {
+                    var data = JSON.parse(response);
+
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        // Populate the Edit modal fields with the fetched data
+                        $('#editFolderID').val(data.folder_id); 
+                        $('#editFolderName').val(data.folder_name);
+                        $('#editFolderHead').val(data.folder_head);
+                        $('#editFolderCreated').val(data.folder_created); 
+
+                        // Show only the Edit modal
+                        $('#FolderEditModal').modal('show');
+                    }
+                } catch (e) {
+                    console.error('Error parsing response:', e);
+                    alert("There was an error retrieving the folder details.");
+                }
+            },
+            error: function () {
+                alert("An error occurred while fetching the data.");
+            }
+        });
+    });
+
+    // Save changes when clicking "Save Changes" in the Edit modal
+    $('#saveFolderEditButton').on('click', function () {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to save the changes?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, save changes!',
+            cancelButtonText: 'No, cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var data = {
+                    update: true, // Action identifier
+                    folder_id: $('#editFolderID').val(),
+                    folder_name: $('#editFolderName').val(),
+                    folder_head: $('#editFolderHead').val(),
+                    folder_created: $('#editFolderCreated').val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "../functions/edit_folder_details.php", // Update path if necessary
+                    data: data,
+                    success: function (response) {
+                        console.log("Server response:", response); // Debug response
+                        if (response.includes("Data Updated")) {
+                            Swal.fire(
+                                'Updated!',
+                                'Folder details have been updated successfully.',
+                                'success'
+                            ).then(() => {
+                                location.reload(); // Reload the page
+                            });
+                        } else {
+                            Swal.fire(
+                                'Failed!',
+                                'There was an error updating the folder.',
+                                'error'
+                            );
+                        }
+                    },
+                    error: function () {
+                        Swal.fire(
+                            'Error!',
+                            'There was an error with the AJAX request.',
+                            'error'
+                        );
+                    }
+                });
+            } else {
+                Swal.fire(
+                    'Cancelled',
+                    'No changes were made.',
+                    'info'
+                );
             }
         });
     });
