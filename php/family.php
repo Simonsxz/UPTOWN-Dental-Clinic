@@ -216,14 +216,17 @@ $user_ID = $_SESSION['user_ID'];
 													</a>
 
 
-												<a href="#" 
+													<a href="#" 
 													class="link-dark1 delete-link" 
-													data-user-id="<?php echo htmlspecialchars($user_ID); ?>" 
-													onclick="confirmDelete('<?php echo htmlspecialchars($user_ID); ?>')"> <!-- Pass user_ID -->
-													<button class="action-button delete-button" title="Delete User">
-														Delete
-													</button>
-												</a>
+													data-folder-id="<?php echo htmlspecialchars($folder_id); ?>" 
+													onclick="confirmDelete('<?php echo htmlspecialchars($folder_id); ?>')">
+														<!-- Pass folder_ID -->
+														<button class="action-button delete-button" title="Delete Folder">
+															Delete
+														</button>
+													</a>
+
+
 											</td>
 
 
@@ -289,10 +292,6 @@ $user_ID = $_SESSION['user_ID'];
 											<div class="mb-3">
 												<label for="editFolderHead" class="form-label">Folder Head</label>
 												<input type="text" class="form-control" id="editFolderHead">
-											</div>
-											<div class="mb-3">
-												<label for="editFolderCreated" class="form-label">Created Date</label>
-												<input type="text" class="form-control" id="editFolderCreated" readonly>
 											</div>
 										</form>
 									</div>
@@ -469,7 +468,6 @@ $(document).ready(function () {
 
         if (!folderId) {
             console.error('Folder ID is missing');
-            alert('Invalid Folder ID');
             return;
         }
 
@@ -483,16 +481,21 @@ $(document).ready(function () {
             success: function (response) {
                 console.log('Raw Response:', response);
 
-                // No need for JSON.parse if response is already a JavaScript object
-                if (response.error) {
-                    alert(response.error);
+                // Clear the table body and the message area
+                var tableBody = $('#patientTableBody');
+                var noDataMessage = $('#noDataMessage');
+                tableBody.empty();
+                noDataMessage.text(''); // Clear any previous message
+
+                // Update folder name and head
+                $('#folderName').text(response.folder_name || "Unknown Folder");
+                $('#folderHead').text("Head: " + (response.folder_head || "Unknown"));
+
+                if (response.error || (response.members && response.members.length === 0)) {
+                    // Display "No data found" message below the table
+                    noDataMessage.text("No members found for this folder.");
                 } else {
-                    $('#folderName').text(response.folder_name);
-                    $('#folderHead').text("Head: " + response.folder_head);
-
-                    var tableBody = $('#patientTableBody');
-                    tableBody.empty();
-
+                    // Populate the table with member data
                     response.members.forEach(function (member) {
                         var row = $('<tr>');
                         row.append('<td>' + member.patient_id + '</td>');
@@ -515,27 +518,27 @@ $(document).ready(function () {
 
                         tableBody.append(row);
                     });
-
-                    $('#memberModal').modal('show');
                 }
+
+                // Show the modal after processing the data
+                $('#memberModal').modal('show');
             },
             error: function (xhr, status, error) {
                 console.error('AJAX Error:', status, error);
-                alert("An error occurred while fetching the data.");
+                $('#noDataMessage').text("An error occurred while fetching the data. Please try again later.");
             }
         });
     });
 });
-
-
 $(document).ready(function () {
-    // When the "Edit" button is clicked (only edit modal will open)
+    // When the "Edit" button is clicked
     $(document).on("click", ".edit-link", function (event) {
-        event.preventDefault();  // Prevent default action
-        
+        event.preventDefault(); // Prevent default action
+
         var folder_id = $(this).data('folder-id'); // Get folder ID from the data attribute
         console.log('Clicked Edit for Folder ID: ' + folder_id); // Debugging line
 
+        // Step 1: Fetch the folder details
         $.ajax({
             type: "POST",
             url: "../functions/fetch_family.php", // PHP script to fetch details
@@ -572,64 +575,198 @@ $(document).ready(function () {
 
     // Save changes when clicking "Save Changes" in the Edit modal
     $('#saveFolderEditButton').on('click', function () {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "Do you want to save the changes?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, save changes!',
-            cancelButtonText: 'No, cancel',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                var data = {
-                    update: true, // Action identifier
-                    folder_id: $('#editFolderID').val(),
-                    folder_name: $('#editFolderName').val(),
-                    folder_head: $('#editFolderHead').val(),
-                    folder_created: $('#editFolderCreated').val()
-                };
+        var folder_id = $('#editFolderID').val(); // Get folder ID from the modal
 
-                $.ajax({
-                    type: "POST",
-                    url: "../functions/edit_folder_details.php", // Update path if necessary
-                    data: data,
-                    success: function (response) {
-                        console.log("Server response:", response); // Debug response
-                        if (response.includes("Data Updated")) {
-                            Swal.fire(
-                                'Updated!',
-                                'Folder details have been updated successfully.',
-                                'success'
-                            ).then(() => {
-                                location.reload(); // Reload the page
+        // First, check if there are any users associated with the folder
+        $.ajax({
+            type: "POST",
+            url: "../functions/edit_folder_details.php", // PHP script to check if the folder has users
+            data: { folder_id: folder_id },
+            success: function (response) {
+                if (response === 'EXISTING_USER') {
+                    // If there is an existing user, show a SweetAlert
+                    Swal.fire(
+                        'Not Allowed!',
+                        'You cannot update this folder because it already has an associated user. Please remove the user first.',
+                        'warning'
+                    );
+                } else {
+                    // If no user is associated, proceed with the update
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "Do you want to save the changes?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, save changes!',
+                        cancelButtonText: 'No, cancel',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            var data = {
+                                update: true, // Action identifier
+                                folder_id: folder_id,
+                                folder_name: $('#editFolderName').val(),
+                                folder_head: $('#editFolderHead').val(),
+                                folder_created: $('#editFolderCreated').val()
+                            };
+
+                            $.ajax({
+                                type: "POST",
+                                url: "../functions/edit_folder_details.php", // Update path if necessary
+                                data: data,
+                                success: function (response) {
+                                    console.log("Server response:", response); // Debug response
+                                    if (response.includes("Data Updated")) {
+                                        Swal.fire(
+                                            'Updated!',
+                                            'Folder details have been updated successfully.',
+                                            'success'
+                                        ).then(() => {
+                                            location.reload(); // Reload the page
+                                        });
+                                    } else {
+										Swal.fire(
+											'Not Allowed!',
+											'You cannot update this folder because it already has an associated user. Please remove the user first.',
+											'warning'
+										);
+                                    }
+                                },
+                                error: function () {
+                                    Swal.fire(
+                                        'Error!',
+                                        'There was an error with the AJAX request.',
+                                        'error'
+                                    );
+                                }
                             });
                         } else {
                             Swal.fire(
-                                'Failed!',
-                                'There was an error updating the folder.',
-                                'error'
+                                'Cancelled',
+                                'No changes were made.',
+                                'info'
                             );
                         }
-                    },
-                    error: function () {
-                        Swal.fire(
-                            'Error!',
-                            'There was an error with the AJAX request.',
-                            'error'
-                        );
-                    }
-                });
-            } else {
+                    });
+                }
+            },
+            error: function () {
                 Swal.fire(
-                    'Cancelled',
-                    'No changes were made.',
-                    'info'
+                    'Error!',
+                    'There was an error with the AJAX request while checking the user.',
+                    'error'
                 );
             }
         });
     });
 });
+
+
+// Function to confirm deletion
+function confirmDelete(folderID) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You will not be able to recover this folder!",
+        icon: 'warning',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
+        confirmButtonText: 'Yes, delete it!',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Proceed to delete the folder if confirmed
+            deleteFolder(folderID);
+        } else {
+            Swal.fire(
+                'Cancelled',
+                'The folder was not deleted.',
+                'info'
+            );
+        }
+    });
+}
+
+// Function to confirm deletion and check for associated users in tbl_familydata
+function confirmDelete(folderID) {
+    // First, check if there are users associated with the folder in tbl_familydata
+    $.ajax({
+        type: "POST",
+        url: "../functions/check_folder_member.php", // PHP script to check if the folder has users
+        data: { folder_id: folderID },
+        success: function(response) {
+            if (response === 'USER_EXISTS') {
+                // If the folder has an associated user, show the SweetAlert
+                Swal.fire(
+                    'Cannot Delete!',
+                    'This folder has users associated with it. Please remove the users first before deleting the folder.',
+                    'warning'
+                );
+            } else {
+                // If no users are associated, proceed with the deletion confirmation
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You will not be able to recover this folder!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    cancelButtonText: 'Cancel',
+                    confirmButtonText: 'Yes, delete it!',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Proceed to delete the folder if confirmed
+                        deleteFolder(folderID);
+                    } else {
+                        Swal.fire(
+                            'Cancelled',
+                            'The folder was not deleted.',
+                            'info'
+                        );
+                    }
+                });
+            }
+        },
+        error: function() {
+            Swal.fire(
+                'Error!',
+                'There was an issue checking the folder association.',
+                'error'
+            );
+        }
+    });
+}
+
+// Function to delete the folder
+function deleteFolder(folderID) {
+    // Create an XMLHttpRequest to send a POST request to the PHP script
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "../functions/delete_folder.php", true); // Update the path if necessary
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    // Define the behavior when the request is completed
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            // If the folder is successfully deleted, reload the page or update the table dynamically
+            Swal.fire(
+                'Deleted!',
+                'Folder has been deleted.',
+                'success'
+            ).then(() => {
+                location.reload(); // Reload the page to reflect changes
+            });
+        } else if (xhr.readyState === 4) {
+            // If there was an error
+            Swal.fire(
+                'Error!',
+                'There was an issue deleting the folder.',
+                'error'
+            );
+        }
+    };
+
+    // Send the folder ID to the delete_folder.php script to delete the folder
+    xhr.send("folder_id=" + folderID); 
+}
+
 
 
 </script>
