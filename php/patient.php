@@ -21,6 +21,7 @@ $user_ID = $_SESSION['user_ID'];
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="/css/style.css">
@@ -186,16 +187,13 @@ $user_ID = $_SESSION['user_ID'];
 												<td>
 													<!-- View User -->
 										
-													<a href="#" 
-													class="link-dark1 view-link" 
-													data-bs-toggle="modal" 
-													data-bs-target="#viewPatientHistory" 
-													data-user-id="<?php echo htmlspecialchars($row['patient_id']); ?>"> <!-- Pass the patient ID -->
-														<button class="action-button view-button1" title="View User Details">
-															View
-														</button>
+													<a href="#"
+													class="link-dark1 view-link"
+													data-bs-toggle="modal"
+													data-bs-target="#memberModal"
+													data-member-id="<?php echo htmlspecialchars($patient_id); ?>"> 
+														<button class="action-button view-button1" title="View Patient Details">View</button>
 													</a>
-
 
 												<a href="#" 
 												class="link-dark1 edit-link" 
@@ -260,26 +258,41 @@ $user_ID = $_SESSION['user_ID'];
 								
 							</div>
 
-							<!-- Modal for Viewing Patient History -->
-							<div class="modal fade" id="viewPatientHistory" tabindex="-1" aria-labelledby="viewPatientHistoryLabel" aria-hidden="true">
-    <div class="modal-dialog">
+							<div class="modal fade" id="memberModal" tabindex="-1" aria-labelledby="folderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="viewPatientHistoryLabel">Patient Details</h5>
+                <h5 class="modal-title" id="folderModalLabel">Patient History Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h5 id="patientName">Loading...</h5>
-                <p id="patientId">Patient ID: Loading...</p>
-                <p id="patientPrescription">Prescription: Loading...</p>
-                <p id="patientDoctor">Doctor: Loading...</p>
-                <p id="patientPayment">Payment Status: Loading...</p>
-                <p id="prescriptionDate">Prescription Date: Loading...</p>
+                <!-- New Record Button -->
+                <div class="mb-3">
+                    <button id="addNewRecord" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Add New Record
+                    </button>
+                </div>
+                
+                <!-- Table to Display Patient History -->
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Patient ID</th>
+                            <th>Prescription</th>
+                            <th>Doctor</th>
+                            <th>Payment</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="patientHistoryTableBody">
+                        <!-- Patient history data will be dynamically inserted here -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
-
 
 
 	
@@ -449,54 +462,72 @@ $user_ID = $_SESSION['user_ID'];
       
 </body>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 $(document).ready(function () {
-    console.log('View-link listener initialized');
-
     $(document).on("click", ".view-link", function (event) {
         event.preventDefault();
 
-        // Fetch patient_id from the data attribute
-        var patientId = $(this).data('user-id');
-        
-        // Log the patient_id to check if it's being passed correctly
-        console.log('Patient ID:', patientId);  // This should print the correct patient_id
+        // Retrieve the patient ID from the clicked element
+        var patientId = $(this).data('member-id');
+        console.log('Fetching history for Patient ID:', patientId);
 
+        // Validate the patient ID
         if (!patientId) {
             console.error('Patient ID is missing');
             return;
         }
 
-        // Continue with your AJAX request
+        // Make an AJAX request to fetch patient history
         $.ajax({
             type: "POST",
-            url: "../functions/fetch_patient_history.php",
+            url: "../functions/fetch_patienthistory.php",
             data: {
                 'fetch_history': true,
                 'patient_id': patientId
             },
             success: function (response) {
                 console.log('Response:', response);
-                // Update the modal with patient details
-                if (response.error) {
-                    alert(response.error);
-                } else {
-                    // Populate the modal with patient details
-                    $('#patientName').text(response.patient_name || "Unknown Patient");
-                    $('#patientId').text("Patient ID: " + (response.patient_id || "N/A"));
-                    $('#patientPrescription').text("Prescription: " + (response.patient_prescription || "N/A"));
-                    $('#patientDoctor').text("Doctor: " + (response.patient_doctor || "N/A"));
-                    $('#patientPayment').text("Payment Status: " + (response.patient_payment || "N/A"));
-                    $('#prescriptionDate').text("Prescription Date: " + (response.prescription_date || "N/A"));
 
-                    // Show the modal
-                    $('#viewPatientHistory').modal('show');
+                var tableBody = $('#patientHistoryTableBody');
+                tableBody.empty();
+
+                // Check for errors or empty history
+                if (response.error || (response.history && response.history.length === 0)) {
+                    tableBody.append('<tr><td colspan="6">No history found for this patient.</td></tr>');
+                } else {
+                    // Populate the modal table with fetched data
+                    response.history.forEach(function (entry) {
+                        var row = $('<tr>');
+                        row.append('<td>' + entry.patient_id + '</td>');
+                        row.append('<td>' + entry.patient_prescription + '</td>');
+                        row.append('<td>' + entry.patient_doctor + '</td>');
+                        row.append('<td>' + entry.patient_payment + '</td>');
+                        row.append('<td>' + entry.prescription_date + '</td>');
+
+                        // Action buttons: View, Edit, Delete
+                        var actionButtons = `
+                            <td>
+                                <button class="btn btn-sm btn-info view-action" data-patient-id="${entry.patient_id}">View</button>
+                                <button class="btn btn-sm btn-warning edit-action" data-patient-id="${entry.patient_id}">Edit</button>
+                                <button class="btn btn-sm btn-danger delete-action" data-patient-id="${entry.patient_id}">Delete</button>
+                            </td>
+                        `;
+                        row.append(actionButtons);
+
+                        // Append the row to the table
+                        tableBody.append(row);
+                    });
                 }
+
+                // Show the modal
+                $('#memberModal').modal('show');
             },
             error: function (xhr, status, error) {
                 console.error('AJAX Error:', status, error);
-                alert("An error occurred while fetching the data.");
+                $('#patientHistoryTableBody').append('<tr><td colspan="6">An error occurred while fetching data.</td></tr>');
             }
         });
     });
@@ -515,6 +546,6 @@ $(document).ready(function () {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="/js/family.js"></script>
+<script src="/js/patient.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </html>
