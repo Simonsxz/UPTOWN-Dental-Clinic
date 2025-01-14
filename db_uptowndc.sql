@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 08, 2025 at 10:58 AM
+-- Generation Time: Jan 14, 2025 at 04:25 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.1.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -119,7 +119,10 @@ CREATE TABLE `tbl_patienthistory` (
 --
 
 INSERT INTO `tbl_patienthistory` (`id`, `patient_id`, `patient_prescription`, `patient_doctor`, `patient_payment`, `prescription_date`) VALUES
-(4, 'UPDC-PT-000004', 'Pasta', 'Dr. silva', 2000, '2025-01-08 04:19:47');
+(4, 'UPDC-PT-000004', 'Pasta', 'Dr. silva', 2000, '2025-01-08 04:19:47'),
+(5, 'UPDC-PT-000004', 'Antibiotics', 'Dr. Adams', 1500, '2025-01-10 06:22:00'),
+(6, 'UPDC-PT-000004', 'X-ray', 'Dr. Lee', 2500, '2025-01-12 01:30:00'),
+(7, 'UPDC-PT-000004', 'Blood Test', 'Dr. Kumar', 1000, '2025-01-14 08:45:30');
 
 -- --------------------------------------------------------
 
@@ -208,7 +211,7 @@ ALTER TABLE `tbl_patientaccount`
 -- AUTO_INCREMENT for table `tbl_patienthistory`
 --
 ALTER TABLE `tbl_patienthistory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `tbl_useraccount`
