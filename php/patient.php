@@ -510,7 +510,7 @@ $(document).ready(function () {
                         // Action buttons: View, Edit, Delete
                         var actionButtons = `
                             <td>
-                                <button class="btn btn-sm btn-info view-action" data-patient-id="${entry.patient_id}">View</button>
+                                <button class="btn btn-sm btn-info view-action" data-patient-id="${entry.patient_id}" data-patient-prescription="${entry.patient_prescription}">View</button>
                                 <button class="btn btn-sm btn-warning edit-action" data-patient-id="${entry.patient_id}">Edit</button>
                                 <button class="btn btn-sm btn-danger delete-action" data-patient-id="${entry.patient_id}">Delete</button>
                             </td>
@@ -532,6 +532,26 @@ $(document).ready(function () {
         });
     });
 });
+
+$(document).ready(function () {
+    // Attach click event listener for dynamically added ".view-action" buttons
+    $(document).on('click', '.view-action', function () {
+        // Retrieve data from button attributes
+        const patientId = $(this).data('patient-id');
+        const patientPrescription = $(this).data('patient-prescription');
+
+        console.log('Redirecting with Patient ID:', patientId, 'and Prescription:', patientPrescription);
+
+        // Redirect with query parameters
+        if (patientId) {
+            const url = `../php/patient-info.php?patient_id=${encodeURIComponent(patientId)}&patient_prescription=${encodeURIComponent(patientPrescription)}`;
+            window.location.href = url;
+        } else {
+            console.error('Patient ID is missing.');
+        }
+    });
+});
+
 
 
 </script>
