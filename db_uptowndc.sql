@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 14, 2025 at 04:25 PM
+-- Generation Time: Jan 21, 2025 at 04:17 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -56,8 +56,71 @@ CREATE TABLE `tbl_familyfolder` (
 
 INSERT INTO `tbl_familyfolder` (`id`, `folder_id`, `folder_name`, `folder_head`, `folder_created`) VALUES
 (1, 'UPDC-FAMILY-000001', 'Simon', 'Manuel Simon', '2025-01-02 09:47:06'),
-(2, 'UPDC-FAMILY-000002', 'Lopena', 'Jodi Lopena', '2025-01-06 07:31:20'),
-(4, 'UPDC-FAMILY-000004', 'Rizals', 'Jose Rizal', '0000-00-00 00:00:00');
+(2, 'UPDC-FAMILY-000002', 'Lopena', 'Jodi Lopena', '2025-01-06 07:31:20');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_medicalhistory`
+--
+
+CREATE TABLE `tbl_medicalhistory` (
+  `id` int(11) NOT NULL,
+  `patient_id` varchar(255) NOT NULL,
+  `patient_prescription` varchar(255) NOT NULL,
+  `aids` tinyint(1) DEFAULT 0,
+  `arthritis` tinyint(1) DEFAULT 0,
+  `rheumatism` tinyint(1) DEFAULT 0,
+  `artificial_heart` tinyint(1) DEFAULT 0,
+  `valves` tinyint(1) DEFAULT 0,
+  `asthma` tinyint(1) DEFAULT 0,
+  `fainting` tinyint(1) DEFAULT 0,
+  `blood_disease` tinyint(1) DEFAULT 0,
+  `cancer` tinyint(1) DEFAULT 0,
+  `chemical_dependency` tinyint(1) DEFAULT 0,
+  `circulatory_problems` tinyint(1) DEFAULT 0,
+  `cortisone_treatment` tinyint(1) DEFAULT 0,
+  `persistent_cough` tinyint(1) DEFAULT 0,
+  `cough_blood` tinyint(1) DEFAULT 0,
+  `diabetes` tinyint(1) DEFAULT 0,
+  `epilepsy` tinyint(1) DEFAULT 0,
+  `mitral_valve_prolapse` tinyint(1) DEFAULT 0,
+  `headaches` tinyint(1) DEFAULT 0,
+  `heart_murmur` tinyint(1) DEFAULT 0,
+  `heart_problems` tinyint(1) DEFAULT 0,
+  `hemophilia` tinyint(1) DEFAULT 0,
+  `high_blood_pressure` tinyint(1) DEFAULT 0,
+  `hepatitis` tinyint(1) DEFAULT 0,
+  `hiv_positive` tinyint(1) DEFAULT 0,
+  `jaw_pain` tinyint(1) DEFAULT 0,
+  `kidney_disease` tinyint(1) DEFAULT 0,
+  `liver_disease` tinyint(1) DEFAULT 0,
+  `back_problem` tinyint(1) DEFAULT 0,
+  `pacemaker` tinyint(1) DEFAULT 0,
+  `psychiatric_care` tinyint(1) DEFAULT 0,
+  `radiation_treatment` tinyint(1) DEFAULT 0,
+  `respiratory_disease` tinyint(1) DEFAULT 0,
+  `rheumatic_fever` tinyint(1) DEFAULT 0,
+  `anemia` tinyint(1) DEFAULT 0,
+  `skin_rash` tinyint(1) DEFAULT 0,
+  `stroke` tinyint(1) DEFAULT 0,
+  `swelling_feet_ankle` tinyint(1) DEFAULT 0,
+  `thyroid_problems` tinyint(1) DEFAULT 0,
+  `nervous_problem` tinyint(1) DEFAULT 0,
+  `tobacco_habit` tinyint(1) DEFAULT 0,
+  `tonsilitis` tinyint(1) DEFAULT 0,
+  `ulcer` tinyint(1) DEFAULT 0,
+  `chemotherapy` tinyint(1) DEFAULT 0,
+  `scarlet_fever` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tbl_medicalhistory`
+--
+
+INSERT INTO `tbl_medicalhistory` (`id`, `patient_id`, `patient_prescription`, `aids`, `arthritis`, `rheumatism`, `artificial_heart`, `valves`, `asthma`, `fainting`, `blood_disease`, `cancer`, `chemical_dependency`, `circulatory_problems`, `cortisone_treatment`, `persistent_cough`, `cough_blood`, `diabetes`, `epilepsy`, `mitral_valve_prolapse`, `headaches`, `heart_murmur`, `heart_problems`, `hemophilia`, `high_blood_pressure`, `hepatitis`, `hiv_positive`, `jaw_pain`, `kidney_disease`, `liver_disease`, `back_problem`, `pacemaker`, `psychiatric_care`, `radiation_treatment`, `respiratory_disease`, `rheumatic_fever`, `anemia`, `skin_rash`, `stroke`, `swelling_feet_ankle`, `thyroid_problems`, `nervous_problem`, `tobacco_habit`, `tonsilitis`, `ulcer`, `chemotherapy`, `scarlet_fever`, `created_at`) VALUES
+(1, 'UPDC-PT-000004', 'Pasta', 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '2025-01-21 14:59:22');
 
 -- --------------------------------------------------------
 
@@ -119,10 +182,39 @@ CREATE TABLE `tbl_patienthistory` (
 --
 
 INSERT INTO `tbl_patienthistory` (`id`, `patient_id`, `patient_prescription`, `patient_doctor`, `patient_payment`, `prescription_date`) VALUES
-(4, 'UPDC-PT-000004', 'Pasta', 'Dr. silva', 2000, '2025-01-08 04:19:47'),
-(5, 'UPDC-PT-000004', 'Antibiotics', 'Dr. Adams', 1500, '2025-01-10 06:22:00'),
+(4, 'UPDC-PT-000004', 'Pasta', 'Dr. silva', 2000, '2025-01-21 14:33:47'),
+(5, 'UPDC-PT-000003', 'Antibiotics', 'Dr. Adams', 1500, '2025-01-21 13:48:45'),
 (6, 'UPDC-PT-000004', 'X-ray', 'Dr. Lee', 2500, '2025-01-12 01:30:00'),
 (7, 'UPDC-PT-000004', 'Blood Test', 'Dr. Kumar', 1000, '2025-01-14 08:45:30');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_patientmedhistory`
+--
+
+CREATE TABLE `tbl_patientmedhistory` (
+  `id` int(11) NOT NULL,
+  `patient_id` varchar(255) NOT NULL,
+  `patient_prescription` varchar(255) NOT NULL,
+  `medhistory_lastvisit` date NOT NULL,
+  `medhistory_genphysician` text NOT NULL,
+  `medhistory_serious` text NOT NULL,
+  `medhistory_ifyesserious` text NOT NULL,
+  `medhistory_bloodtrans` varchar(255) NOT NULL,
+  `medhistory_ifyesdate` text NOT NULL,
+  `medhistory_pregnant` text NOT NULL,
+  `medhistory_birthcontrol` text NOT NULL,
+  `medhistory_takingmed` text NOT NULL,
+  `medhistory_ifyesmed` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tbl_patientmedhistory`
+--
+
+INSERT INTO `tbl_patientmedhistory` (`id`, `patient_id`, `patient_prescription`, `medhistory_lastvisit`, `medhistory_genphysician`, `medhistory_serious`, `medhistory_ifyesserious`, `medhistory_bloodtrans`, `medhistory_ifyesdate`, `medhistory_pregnant`, `medhistory_birthcontrol`, `medhistory_takingmed`, `medhistory_ifyesmed`) VALUES
+(1, 'UPDC-PT-000004', 'Pasta', '2025-01-10', 'Dr. Smith', 'No', 'N/A', 'No', 'N/A', 'No', 'No', 'No', 'N/A');
 
 -- --------------------------------------------------------
 
@@ -173,6 +265,12 @@ ALTER TABLE `tbl_familyfolder`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `tbl_medicalhistory`
+--
+ALTER TABLE `tbl_medicalhistory`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `tbl_patientaccount`
 --
 ALTER TABLE `tbl_patientaccount`
@@ -182,6 +280,12 @@ ALTER TABLE `tbl_patientaccount`
 -- Indexes for table `tbl_patienthistory`
 --
 ALTER TABLE `tbl_patienthistory`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tbl_patientmedhistory`
+--
+ALTER TABLE `tbl_patientmedhistory`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -202,6 +306,12 @@ ALTER TABLE `tbl_familyfolder`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT for table `tbl_medicalhistory`
+--
+ALTER TABLE `tbl_medicalhistory`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `tbl_patientaccount`
 --
 ALTER TABLE `tbl_patientaccount`
@@ -212,6 +322,12 @@ ALTER TABLE `tbl_patientaccount`
 --
 ALTER TABLE `tbl_patienthistory`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `tbl_patientmedhistory`
+--
+ALTER TABLE `tbl_patientmedhistory`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `tbl_useraccount`
