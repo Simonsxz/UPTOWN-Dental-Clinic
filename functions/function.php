@@ -48,4 +48,32 @@ function addUser($userData) {
         return $error;
     }
 }
+
+function getPatientFullName($patientId) {
+    // Database connection
+    $conn = new mysqli('localhost', 'root', '', 'db_uptowndc');
+
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Prepare and execute query
+    $stmt = $conn->prepare("SELECT patient_fullName FROM tbl_patientaccount WHERE patient_id = ?");
+    $stmt->bind_param("s", $patientId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Fetch patient name
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        return $row['patient_fullName'];
+    } else {
+        return "No Name Available"; // Default if not found
+    }
+
+    // Close connection
+    $stmt->close();
+    $conn->close();
+}
 ?>

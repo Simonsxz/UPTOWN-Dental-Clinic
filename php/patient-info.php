@@ -3,6 +3,7 @@
 session_start();  // Ensure session is started at the very top of the page
 
 include "../functions/db_conn.php";         // Include database connection
+include "../functions/function.php"; 
 include "../functions/module_doctors_validation.php"; // Include the validation function
 
 if (!isset($_SESSION['user_ID'])) {
@@ -11,7 +12,24 @@ if (!isset($_SESSION['user_ID'])) {
 }
 
 $user_ID = $_SESSION['user_ID']; // Fetch user_ID from session
+
+if (isset($_GET['patient_id']) && isset($_GET['patient_prescription'])) {
+    $_SESSION['patient_id'] = $_GET['patient_id'];
+    $_SESSION['patient_prescription'] = $_GET['patient_prescription'];
+}
+
+$patientId = $_SESSION['patient_id'] ?? null;
+$patientPrescription = $_SESSION['patient_prescription'] ?? null;
+
+if ($patientId) {
+    // Fetch the patient name from the database using the patient_id
+    // Example function call (make sure to replace with your actual function)
+    $patientFullName = getPatientFullName($patientId); // Implement this function to fetch the name from DB
+} else {
+    $patientFullName = "No Name Available"; // Fallback in case no patient_id is found
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -123,48 +141,51 @@ $user_ID = $_SESSION['user_ID']; // Fetch user_ID from session
                     <div class="welcome-dashboard-container">
                         <div class="welcome-dashboard-content-container">
 							<div class="patient with-save-cancel">
-								<div>
-									<h2>John Doe Smith</h2>
-									<p>All the details of the patient of UPTOWN Dental Clinic</p>
-								</div>
-								<div class="button-group">
-									<button class="cancel">Cancel</button>
-									<button class="save">Save</button>
+							<div>
+								<h2><?php echo htmlspecialchars($patientFullName); ?></h2>
+								<p>All the details of the patient of UPTOWN Dental Clinic</p>
+							</div>
+							<div class="button-group">
+								<a href="patient.php" >
+									<button class="cancel">Go Back</button>
+								</a>
+
 								</div>
 							</div>												
                             <div class="table-container">
 
-								<div class="module-container">
-									<div class="horizontal-nav-bar">				
-										<a href="patient-info.php" class="nav-item-link">
-											<button class="nav-item active">P.I.R</button>
-										</a>
-										<a href="medical-history.php" class="nav-item-link">
-											<button class="nav-item">Medical History</button>
-										</a>                    
-										<a href="medical-condition.html" class="nav-item-link">
-											<button class="nav-item">Medical Condition</button>
-										</a>   
-										<a href="ptp.html" class="nav-item-link">
-											<button class="nav-item">PTP</button>
-										</a>   
-										<a href="procedure.html" class="nav-item-link">
-											<button class="nav-item ">Procedures</button>
-										</a>   
-										<a href="patient-xray.html" class="nav-item-link">
-											<button class="nav-item">Xray</button>
-										</a>  
-										<a href="patient-intra.html" class="nav-item-link">
-											<button class="nav-item">Intra Oral Photos</button>
-										</a>  
-                                        <a href="patient-extra.html" class="nav-item-link">
-											<button class="nav-item">Extra Oral Photos</button>
-										</a>  
-										<a href="notes.html" class="nav-item-link">
-											<button class="nav-item">Notes</button>
-										</a>   
-									</div>
-								</div>
+							<div class="module-container">
+							<div class="horizontal-nav-bar">
+								<a href="patient-info.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
+									<button class="nav-item  active">P.I.R</button>
+								</a>
+								<a href="medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
+									<button class="nav-item">Medical History</button>
+								</a>
+								<a href="medical-condition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
+									<button class="nav-item">Medical Condition</button>
+								</a>
+								<a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
+									<button class="nav-item">PTP</button>
+								</a>
+								<a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
+									<button class="nav-item">Procedures</button>
+								</a>
+								<a href="patient-xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
+									<button class="nav-item">Xray</button>
+								</a>
+								<a href="patient-intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
+									<button class="nav-item">Intra Oral Photos</button>
+								</a>
+								<a href="patient-extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
+									<button class="nav-item">Extra Oral Photos</button>
+								</a>
+								<a href="notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
+									<button class="nav-item">Notes</button>
+								</a>
+							</div>
+						</div>
+
 
 
 			<div class="info-container">
