@@ -108,7 +108,8 @@ if ($patientId) {
 			
 			<!-- Profile -->
 			<div class="profile">
-				<h2 >UP-SC-001</h2>
+			<h2><?php echo htmlspecialchars($user_ID); ?></h2> <!-- Display sanitized user_ID -->
+      
 		
                 <!-- <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Cannot load image data"> -->
 				<img src="\assets\avatar.png" alt="Cannot load image data">

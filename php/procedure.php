@@ -42,8 +42,8 @@ if ($patientId) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.1/animate.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="css/modal.css">
-    <link rel="stylesheet" href="\css\style.css">
-    <link rel="icon" type="image/x-icon" href="\assets\uplogo.png">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/x-icon" href="/assets/uplogo.png">
     <title>Patient Information</title>
 </head>
 <body>
@@ -97,6 +97,15 @@ if ($patientId) {
 				</div>
 			</div>
 			<!-- Space -->
+	
+			<!-- <input type="text" placeholder="Search...">
+			<i class='bx bx-search icon' ></i> -->
+			<!-- <p class="nav-link"></p>
+			<p class="nav-link"></p> -->
+			<!-- Space -->
+			 
+			
+			<!-- Profile -->
 			<div class="profile">
 			<h2><?php echo htmlspecialchars($user_ID); ?></h2> <!-- Display sanitized user_ID -->
       
@@ -128,7 +137,7 @@ if ($patientId) {
                     <div class="welcome-dashboard-container">
                         <div class="welcome-dashboard-content-container">
 							<div class="patient with-save-cancel">
-								<div>
+							<div>
 								<h2><?php echo htmlspecialchars($patientFullName); ?></h2>
 									<p>All the details of the patient of UPTOWN Dental Clinic</p>
 								</div>
@@ -153,10 +162,10 @@ if ($patientId) {
 										<button class="nav-item ">Medical Condition</button>
 									</a>
 									<a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
-										<button class="nav-item active">PTP</button>
+										<button class="nav-item ">PTP</button>
 									</a>
 									<a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
-										<button class="nav-item">Procedures</button>
+										<button class="nav-item active">Procedures</button>
 									</a>
 									<a href="patient-xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
 										<button class="nav-item">Xray</button>
@@ -173,89 +182,88 @@ if ($patientId) {
 								</div>
 							</div>
 
+
 							<?php
-									$patientId = $_SESSION['patient_id'] ?? null;
-									$patientPrescription = $_SESSION['patient_prescription'] ?? null;
+    $patientId = $_SESSION['patient_id'] ?? null;
+    $patientPrescription = $_SESSION['patient_prescription'] ?? null;
 
-									if ($patientId && $patientPrescription) {
-										// Database connection
-										$conn = new mysqli('localhost', 'root', '', 'db_uptowndc');
+    if ($patientId && $patientPrescription) {
+        // Database connection
+        $conn = new mysqli('localhost', 'root', '', 'db_uptowndc');
 
-										// Check connection
-										if ($conn->connect_error) {
-											die("Connection failed: " . $conn->connect_error);
-										}
+        // Check connection
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
 
-										// Fetch data from tbl_ptp
-										$stmt = $conn->prepare("SELECT treatment_plans, images FROM tbl_ptp WHERE patient_id = ? AND patient_prescription = ?");
-										$stmt->bind_param("ss", $patientId, $patientPrescription);
-										$stmt->execute();
-										$result = $stmt->get_result();
+        // Fetch data from tbl_procedure
+        $stmt = $conn->prepare("SELECT procedure_details, images FROM tbl_procedure WHERE patient_id = ? AND patient_prescription = ?");
+        $stmt->bind_param("ss", $patientId, $patientPrescription);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-										// Check if data exists
-										if ($result->num_rows > 0) {
-											$row = $result->fetch_assoc();
-											$treatmentPlans = $row['treatment_plans'];
-											$images = json_decode($row['images']); // Decode JSON array to display images
-										} else {
-											echo "<script>alert('No treatment plans found for this patient.');</script>";
-											$treatmentPlans = '';
-											$images = [];
-										}
+        // Check if data exists
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $procedureDetails = $row['procedure_details'];
+            $images = json_decode($row['images']); // Decode JSON array to display images
+        } else {
+            echo "<script>alert('No procedure data found for this patient.');</script>";
+            $procedureDetails = '';
+            $images = [];
+        }
 
-										$stmt->close();
-										$conn->close();
-									} else {
-										echo "<script>alert('Patient ID or prescription not set.');</script>";
-										$treatmentPlans = '';
-										$images = [];
-									}
-								?>
+        $stmt->close();
+        $conn->close();
+    } else {
+        echo "<script>alert('Patient ID or prescription not set.');</script>";
+        $procedureDetails = '';
+        $images = [];
+    }
+?>
 
-
-<div class="info-container">
-    <h2 class="info-title" style="text-align: center; margin-bottom: 5px; font-family: Arial, sans-serif; color: #333;">Proposed Treatment Plans</h2>
-    <!-- Image upload input -->
-    <form class="details-form1" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
-        <!-- <label for="image-upload" style="font-size: 14px; font-weight: bold; color: #555;">Upload Images (Optional):</label>
-        <input id="image-upload" type="file" accept="image/*" multiple style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;" onchange="displayImages(event)"> -->
-
-    <!-- Text box for treatment plans (read-only) -->
-<textarea id="treatment-plans" name="treatment-plans" class="form-textarea" placeholder="Describe the proposed treatment plans here..." rows="5" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; width: auto; margin-left: 0;" required readonly>
-    <?php echo htmlspecialchars($treatmentPlans); ?>
+			<div class="info-container">
+				<h2 class="info-title" style="text-align: center; margin-bottom: 5px; font-family: Arial, sans-serif; color: #333;">Procedure</h2>
+				<!-- Image upload input -->
+				<form class="details-form1" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
+					<!-- Text box for procedure details (read-only) -->
+<textarea id="procedure-details" name="procedure-details" class="form-textarea" placeholder="Describe the procedures here..." rows="5" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; width: auto; margin-left: 0;" required readonly>
+    <?php echo htmlspecialchars($procedureDetails); ?>
 </textarea>
 
 
-        <!-- Container to display uploaded images -->
-        <div id="uploaded-images-container" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 15px;">
-            <?php
-                if (!empty($images)) {
-                    foreach ($images as $image) {
-                        echo '<div style="width: 120px; text-align: center;">';
-                        echo '<img src="' . htmlspecialchars($image) . '" style="width: 100px; height: 100px; cursor: pointer; object-fit: cover;" onclick="openModal(\'' . htmlspecialchars($image) . '\')">';
-                        echo '</div>';
-                    }
-                }
-            ?>
-        </div>
-    </form>
-</div>
+					<!-- Container to display procedure images -->
+					<div id="uploaded-images-container" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 15px;">
+						<?php
+							if (!empty($images)) {
+								foreach ($images as $image) {
+									echo '<div style="width: 120px; text-align: center;">';
+									echo '<img src="' . htmlspecialchars($image) . '" style="width: 100px; height: 100px; cursor: pointer; object-fit: cover;" onclick="openModal(\'' . htmlspecialchars($image) . '\')">';
+									echo '</div>';
+								}
+							}
+						?>
+					</div>
+				</form>
+			</div>
 
-<!-- Modal for viewing large images -->
-<div id="image-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 1000; flex-direction: column; padding: 20px; box-sizing: border-box;">
-    <img id="modal-image" src="" alt="Large View" style="max-width: 90%; max-height: 80%; border: 5px solid white; margin-bottom: 20px; border-radius: 10px;">
-    <a id="download-link" href="" download style="background-color: #007BFF; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; margin-bottom: 10px;">Download</a>
-    <button onclick="closeModal()" style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;">Close</button>
-</div>
+			<!-- Modal for viewing large images -->
+			<div id="image-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 1000; flex-direction: column; padding: 20px; box-sizing: border-box;">
+				<img id="modal-image" src="" alt="Large View" style="max-width: 90%; max-height: 80%; border: 5px solid white; margin-bottom: 20px; border-radius: 10px;">
+				<a id="download-link" href="" download style="background-color: #007BFF; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; margin-bottom: 10px;">Download</a>
+				<button onclick="closeModal()" style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;">Close</button>
+			</div>
 
+
+            
+			
         </main>
       
 </body>
 
-
 <script>
-	 // Function to display uploaded images
-	 function displayImages(event) {
+	 	 // Function to display uploaded images
+		  function displayImages(event) {
         const uploadedImagesContainer = document.getElementById('uploaded-images-container');
         const files = event.target.files;
         const currentDate = new Date().toLocaleDateString();
@@ -320,7 +328,7 @@ if ($patientId) {
         modal.style.display = 'none';
     }
 </script>
- <!-- Optional JavaScript -->
+<!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
@@ -331,6 +339,6 @@ if ($patientId) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="/js/medical-history.js"></script>
+<script src="/js/procedure.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </html>

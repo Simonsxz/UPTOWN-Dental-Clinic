@@ -29,7 +29,6 @@ if ($patientId) {
     $patientFullName = "No Name Available"; // Fallback in case no patient_id is found
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +41,7 @@ if ($patientId) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.1/animate.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="css/modal.css">
-    <link rel="stylesheet" href="\css\style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="icon" type="image/x-icon" href="\assets\uplogo.png">
     <title>Patient Information</title>
 </head>
@@ -97,10 +96,18 @@ if ($patientId) {
 				</div>
 			</div>
 			<!-- Space -->
+	
+			<!-- <input type="text" placeholder="Search...">
+			<i class='bx bx-search icon' ></i> -->
+			<!-- <p class="nav-link"></p>
+			<p class="nav-link"></p> -->
+			<!-- Space -->
+			 
+			
+			<!-- Profile -->
 			<div class="profile">
 			<h2><?php echo htmlspecialchars($user_ID); ?></h2> <!-- Display sanitized user_ID -->
       
-		
                 <!-- <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Cannot load image data"> -->
 				<img src="\assets\avatar.png" alt="Cannot load image data">
 				<ul class="profile-link">
@@ -128,7 +135,7 @@ if ($patientId) {
                     <div class="welcome-dashboard-container">
                         <div class="welcome-dashboard-content-container">
 							<div class="patient with-save-cancel">
-								<div>
+							<div>
 								<h2><?php echo htmlspecialchars($patientFullName); ?></h2>
 									<p>All the details of the patient of UPTOWN Dental Clinic</p>
 								</div>
@@ -153,13 +160,13 @@ if ($patientId) {
 										<button class="nav-item ">Medical Condition</button>
 									</a>
 									<a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
-										<button class="nav-item active">PTP</button>
+										<button class="nav-item ">PTP</button>
 									</a>
 									<a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
-										<button class="nav-item">Procedures</button>
+										<button class="nav-item ">Procedures</button>
 									</a>
 									<a href="patient-xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
-										<button class="nav-item">Xray</button>
+										<button class="nav-item active">Xray</button>
 									</a>
 									<a href="patient-intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
 										<button class="nav-item">Intra Oral Photos</button>
@@ -173,70 +180,26 @@ if ($patientId) {
 								</div>
 							</div>
 
-							<?php
-									$patientId = $_SESSION['patient_id'] ?? null;
-									$patientPrescription = $_SESSION['patient_prescription'] ?? null;
 
-									if ($patientId && $patientPrescription) {
-										// Database connection
-										$conn = new mysqli('localhost', 'root', '', 'db_uptowndc');
-
-										// Check connection
-										if ($conn->connect_error) {
-											die("Connection failed: " . $conn->connect_error);
-										}
-
-										// Fetch data from tbl_ptp
-										$stmt = $conn->prepare("SELECT treatment_plans, images FROM tbl_ptp WHERE patient_id = ? AND patient_prescription = ?");
-										$stmt->bind_param("ss", $patientId, $patientPrescription);
-										$stmt->execute();
-										$result = $stmt->get_result();
-
-										// Check if data exists
-										if ($result->num_rows > 0) {
-											$row = $result->fetch_assoc();
-											$treatmentPlans = $row['treatment_plans'];
-											$images = json_decode($row['images']); // Decode JSON array to display images
-										} else {
-											echo "<script>alert('No treatment plans found for this patient.');</script>";
-											$treatmentPlans = '';
-											$images = [];
-										}
-
-										$stmt->close();
-										$conn->close();
-									} else {
-										echo "<script>alert('Patient ID or prescription not set.');</script>";
-										$treatmentPlans = '';
-										$images = [];
-									}
-								?>
-
-
-<div class="info-container">
-    <h2 class="info-title" style="text-align: center; margin-bottom: 5px; font-family: Arial, sans-serif; color: #333;">Proposed Treatment Plans</h2>
-    <!-- Image upload input -->
-    <form class="details-form1" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
-        <!-- <label for="image-upload" style="font-size: 14px; font-weight: bold; color: #555;">Upload Images (Optional):</label>
-        <input id="image-upload" type="file" accept="image/*" multiple style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;" onchange="displayImages(event)"> -->
-
-    <!-- Text box for treatment plans (read-only) -->
-<textarea id="treatment-plans" name="treatment-plans" class="form-textarea" placeholder="Describe the proposed treatment plans here..." rows="5" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; width: auto; margin-left: 0;" required readonly>
-    <?php echo htmlspecialchars($treatmentPlans); ?>
-</textarea>
-
-
-        <!-- Container to display uploaded images -->
-        <div id="uploaded-images-container" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 15px;">
-            <?php
-                if (!empty($images)) {
-                    foreach ($images as $image) {
-                        echo '<div style="width: 120px; text-align: center;">';
-                        echo '<img src="' . htmlspecialchars($image) . '" style="width: 100px; height: 100px; cursor: pointer; object-fit: cover;" onclick="openModal(\'' . htmlspecialchars($image) . '\')">';
-                        echo '</div>';
-                    }
-                }
-            ?>
+							<div class="info-container">
+    <h2 class="info-title">Patient Xray</h2>
+    <form class="details-form1">
+        <div class="gallery-container">
+            <!-- Add Image Container -->
+            <div class="images-display" id="imagesDisplay">
+                <div class="add-image-container">
+                    <!-- Add Image Button -->
+                    <button type="button" class="add-image-button" onclick="triggerImageInput()">
+                        <span class="plus-sign">+</span> Add Image
+                    </button>
+                    <!-- Hidden file input to trigger on button click -->
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)" />
+                </div>
+                <!-- Container for displaying uploaded images (Below the button) -->
+                <div id="uploaded-images-container" class="images-container">
+                    <!-- Uploaded images will appear here -->
+                </div>
+            </div>
         </div>
     </form>
 </div>
@@ -248,17 +211,16 @@ if ($patientId) {
     <button onclick="closeModal()" style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;">Close</button>
 </div>
 
-        </main>
-      
-</body>
-
-
 <script>
-	 // Function to display uploaded images
-	 function displayImages(event) {
+    // Trigger the hidden file input when the button is clicked
+    function triggerImageInput() {
+        document.getElementById('imageInput').click();
+    }
+
+    // Handle the image upload and display it
+    function handleImageUpload(event) {
         const uploadedImagesContainer = document.getElementById('uploaded-images-container');
         const files = event.target.files;
-        const currentDate = new Date().toLocaleDateString();
 
         Array.from(files).forEach((file) => {
             if (file) {
@@ -275,26 +237,12 @@ if ($patientId) {
                     img.style.cursor = 'pointer';
                     img.style.objectFit = 'cover';
                     img.style.borderRadius = '5px';
-                    img.style.border = '1px solid #ddd';
+                    img.style.border = '1px solid #ccc';
                     img.onclick = function () {
-                        openModal(e.target.result, file.name);
+                        openModal(e.target.result);
                     };
 
-                    const title = document.createElement('div');
-                    title.textContent = file.name;
-                    title.style.marginTop = '5px';
-                    title.style.fontSize = '12px';
-                    title.style.color = '#555';
-
-                    const date = document.createElement('div');
-                    date.textContent = `Uploaded: ${currentDate}`;
-                    date.style.fontSize = '10px';
-                    date.style.color = '#777';
-
                     imageWrapper.appendChild(img);
-                    imageWrapper.appendChild(title);
-                    imageWrapper.appendChild(date);
-
                     uploadedImagesContainer.appendChild(imageWrapper);
                 };
                 reader.readAsDataURL(file);
@@ -302,25 +250,101 @@ if ($patientId) {
         });
     }
 
-    // Function to open modal with a large image
-    function openModal(imageSrc, fileName) {
+    // Open modal to view the image in larger size
+    function openModal(imageSrc) {
         const modal = document.getElementById('image-modal');
         const modalImage = document.getElementById('modal-image');
         const downloadLink = document.getElementById('download-link');
 
         modalImage.src = imageSrc;
         downloadLink.href = imageSrc;
-        downloadLink.download = fileName;
         modal.style.display = 'flex';
     }
 
-    // Function to close the modal
+    // Close the modal
     function closeModal() {
         const modal = document.getElementById('image-modal');
         modal.style.display = 'none';
     }
 </script>
- <!-- Optional JavaScript -->
+
+<style>
+    /* Fixed position button style */
+    .add-image-container {
+        position: sticky;
+        top: 20px; /* Stick it to the top of the container */
+        z-index: 10;
+        text-align: center;
+        margin-bottom: 20px; /* Add space below the button */
+    }
+
+    .add-image-button {
+        background-color: #007BFF; /* Blue color */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 12px 24px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .add-image-button:hover {
+        background-color: #0056b3; /* Darker blue when hovered */
+    }
+
+    .add-image-button:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5); /* Light blue focus ring */
+    }
+
+    .plus-sign {
+        font-size: 20px;
+    }
+
+    .images-display {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .images-container {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+        padding: 10px;
+        box-sizing: border-box;
+        flex-grow: 1;
+    }
+
+    #uploaded-images-container div {
+        text-align: center;
+        width: 120px;
+    }
+
+    #uploaded-images-container img {
+        width: 100px;
+        height: 100px;
+        cursor: pointer;
+        object-fit: cover;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        transition: transform 0.2s ease;
+    }
+
+    #uploaded-images-container img:hover {
+        transform: scale(1.1); /* Slightly zoom on hover */
+    }
+</style>
+
+<!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
@@ -331,6 +355,6 @@ if ($patientId) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="/js/medical-history.js"></script>
+<script src="/js/patient-xray.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </html>

@@ -159,37 +159,39 @@ allProgress.forEach(item=> {
 
 
 
-function handleImageUpload(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const imagesDisplay = document.getElementById('imagesDisplay');
+const proceduresContainer = document.getElementById('procedures-container');
+const addProcedureButton = document.getElementById('add-procedure');
+let procedureCount = 1;
 
-        // Create a container for the new image and its details
-        const imageContainer = document.createElement('div');
-        imageContainer.className = 'image-container';
+addProcedureButton.addEventListener('click', () => {
+    procedureCount++;
+    const newProcedure = document.createElement('div');
+    newProcedure.className = 'procedure-item';
+    newProcedure.innerHTML = `
+        <label for="procedure-${procedureCount}" class="form-label">Procedure ${procedureCount}:</label>
+        <textarea id="procedure-${procedureCount}" name="procedure-${procedureCount}" class="form-input" placeholder="Enter procedure..." rows="5" required></textarea>
+        <button type="button" class="delete-procedure" onclick="deleteProcedure(this)">Delete</button>
+    `;
+    proceduresContainer.appendChild(newProcedure);
+    updateProcedureNumbers();
+});
 
-        // Add the uploaded image
-        const image = document.createElement('img');
-        image.src = URL.createObjectURL(file);
-        image.alt = 'Patient Xray';
-        image.style.height = '150px';
-        image.style.width = '150px';
-        image.style.objectFit = 'cover';
-        imageContainer.appendChild(image);
+function deleteProcedure(button) {
+    const procedureItem = button.parentElement;
+    proceduresContainer.removeChild(procedureItem);
+    updateProcedureNumbers();
+}
 
-        // Add details below the image
-        const imageDetails = document.createElement('div');
-        imageDetails.className = 'image-details';
-
-        // Get the current date
-        const currentDate = new Date().toLocaleDateString();
-
-        imageDetails.innerHTML = `<p><strong>Image Name:</strong> ${file.name}</p>
-                                  <p><strong>Size:</strong> ${(file.size / 1024).toFixed(2)} KB</p>
-                                  <p><strong>Date:</strong> ${currentDate}</p>`;
-        imageContainer.appendChild(imageDetails);
-
-        // Append the new image container to the gallery after the Add Image container
-        imagesDisplay.appendChild(imageContainer);
-    }
+function updateProcedureNumbers() {
+    const procedureItems = document.querySelectorAll('.procedure-item');
+    procedureCount = 0;
+    procedureItems.forEach((item, index) => {
+        procedureCount++;
+        const label = item.querySelector('label');
+        label.setAttribute('for', `procedure-${procedureCount}`);
+        label.textContent = `Procedure ${procedureCount}:`;
+        const textarea = item.querySelector('textarea');
+        textarea.setAttribute('id', `procedure-${procedureCount}`);
+        textarea.setAttribute('name', `procedure-${procedureCount}`);
+    });
 }
