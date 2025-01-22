@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 21, 2025 at 04:17 PM
+-- Generation Time: Jan 22, 2025 at 11:04 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.1.25
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -219,6 +219,61 @@ INSERT INTO `tbl_patientmedhistory` (`id`, `patient_id`, `patient_prescription`,
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tbl_procedure`
+--
+
+CREATE TABLE `tbl_procedure` (
+  `id` int(11) NOT NULL,
+  `patient_id` varchar(50) NOT NULL,
+  `patient_prescription` text NOT NULL,
+  `procedure_details` text NOT NULL,
+  `images` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`images`)),
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tbl_procedure`
+--
+
+INSERT INTO `tbl_procedure` (`id`, `patient_id`, `patient_prescription`, `procedure_details`, `images`, `created_at`, `updated_at`) VALUES
+(1, 'UPDC-PT-000004', 'Pasta', 'Procedure involves the removal of the gallbladder.', '[\"path/to/procedure_image1.jpg\", \"path/to/procedure_image2.jpg\"]', '2025-01-22 17:36:08', '2025-01-22 17:36:08'),
+(2, 'UPDC-PT-000003', 'Pasta', 'Procedure includes dental implant installation.', '[\"path/to/procedure_image3.jpg\"]', '2025-01-22 17:36:08', '2025-01-22 17:40:15'),
+(3, 'UPDC-PT-000006', 'Pasta', 'Procedure to repair torn ACL ligament.', '[\"path/to/procedure_image4.jpg\", \"path/to/procedure_image5.jpg\"]', '2025-01-22 17:36:08', '2025-01-22 17:36:08'),
+(4, 'UPDC-PT-000007', 'Pasta', 'Procedure for hip replacement surgery.', '[\"path/to/procedure_image6.jpg\", \"path/to/procedure_image7.jpg\"]', '2025-01-22 17:36:08', '2025-01-22 17:36:08'),
+(5, 'UPDC-PT-000008', 'Pasta', 'Procedure to remove cataract and implant lens.', '[\"path/to/procedure_image8.jpg\"]', '2025-01-22 17:36:08', '2025-01-22 17:36:08'),
+(6, 'UPDC-PT-000009', 'Pasta', 'Procedure for knee arthroscopy to repair cartilage.', '[\"path/to/procedure_image9.jpg\", \"path/to/procedure_image10.jpg\"]', '2025-01-22 17:36:08', '2025-01-22 17:36:08'),
+(7, 'UPDC-PT-000010', 'Pasta', 'Procedure to perform a spinal fusion for herniated disc.', '[\"path/to/procedure_image11.jpg\"]', '2025-01-22 17:36:08', '2025-01-22 17:36:08');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_ptp`
+--
+
+CREATE TABLE `tbl_ptp` (
+  `id` int(11) NOT NULL,
+  `patient_id` text NOT NULL,
+  `patient_prescription` text NOT NULL,
+  `treatment_plans` text NOT NULL,
+  `images` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`images`)),
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tbl_ptp`
+--
+
+INSERT INTO `tbl_ptp` (`id`, `patient_id`, `patient_prescription`, `treatment_plans`, `images`, `created_at`, `updated_at`) VALUES
+(1, 'UPDC-PT-000004', 'Pasta', 'The treatment plan includes 10 days of antibiotics and regular follow-up visits.', '[\"path/to/image1.jpg\", \"path/to/image2.jpg\"]', '2025-01-22 16:54:07', '2025-01-22 16:59:24'),
+(2, 'UPDC-PT-000001', 'Pastas', 'The treatment plan involves pain management with over-the-counter medication and physical therapy.', '[\"path/to/image3.jpg\"]', '2025-01-22 16:54:07', '2025-01-22 17:26:10'),
+(3, 'UPDC-PT-000002', 'Pastatas', 'The treatment plan is to manage fever and monitor the patient’s progress over the next 48 hours.', '[\"path/to/image4.jpg\", \"path/to/image5.jpg\", \"path/to/image6.jpg\"]', '2025-01-22 16:54:07', '2025-01-22 16:58:06'),
+(4, 'UPDC-PT-000003', 'Pastass', 'The treatment plan includes dietary changes, blood sugar monitoring, and regular exercise.', '[\"path/to/image7.jpg\", \"path/to/image8.jpg\"]', '2025-01-22 16:54:07', '2025-01-22 16:58:01');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tbl_useraccount`
 --
 
@@ -289,6 +344,18 @@ ALTER TABLE `tbl_patientmedhistory`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `tbl_procedure`
+--
+ALTER TABLE `tbl_procedure`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tbl_ptp`
+--
+ALTER TABLE `tbl_ptp`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `tbl_useraccount`
 --
 ALTER TABLE `tbl_useraccount`
@@ -328,6 +395,18 @@ ALTER TABLE `tbl_patienthistory`
 --
 ALTER TABLE `tbl_patientmedhistory`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `tbl_procedure`
+--
+ALTER TABLE `tbl_procedure`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `tbl_ptp`
+--
+ALTER TABLE `tbl_ptp`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `tbl_useraccount`
