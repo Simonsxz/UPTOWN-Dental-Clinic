@@ -1,9 +1,8 @@
-
 <?php
 session_start();  // Ensure session is started at the very top of the page
 
 include "../functions/db_conn.php";         // Include database connection
-include "../functions/function.php";    
+include "../functions/function.php"; 
 include "../functions/module_doctors_validation.php"; // Include the validation function
 
 if (!isset($_SESSION['user_ID'])) {
@@ -13,22 +12,25 @@ if (!isset($_SESSION['user_ID'])) {
 
 $user_ID = $_SESSION['user_ID']; // Fetch user_ID from session
 
-if (isset($_GET['patient_id']) && isset($_GET['patient_prescription'])) {
-    $_SESSION['patient_id'] = $_GET['patient_id'];
-    $_SESSION['patient_prescription'] = $_GET['patient_prescription'];
+// Check if both patient_id and prescription_id are set in the URL parameters
+if (isset($_GET['patient_id']) && isset($_GET['prescription_id'])) {
+    $_SESSION['patient_id'] = $_GET['patient_id']; // Store patient_id in session
+    $_SESSION['prescription_id'] = $_GET['prescription_id']; // Store prescription_id in session
 }
 
 $patientId = $_SESSION['patient_id'] ?? null;
-$patientPrescription = $_SESSION['patient_prescription'] ?? null;
+$prescriptionId = $_SESSION['prescription_id'] ?? null;
 
 if ($patientId) {
     // Fetch the patient name from the database using the patient_id
-    // Example function call (make sure to replace with your actual function)
     $patientFullName = getPatientFullName($patientId); // Implement this function to fetch the name from DB
 } else {
     $patientFullName = "No Name Available"; // Fallback in case no patient_id is found
 }
+
+// You can now use $patientId and $prescriptionId wherever needed
 ?>
+
 
 
 <!DOCTYPE html>
@@ -71,8 +73,6 @@ if ($patientId) {
 
 			<li><a href="patient.php" class="active"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
             <li><a href="family.php" ><i class='bx bxs-group icon'></i> Family </a></li>
-			<li><a href="xray.html"><i class='bx bxs-barcode icon' ></i> X-ray </a></li>
-			<li><a href=""><i class='bx bxs-photo-album icon' ></i> Oral Photos </a></li>
 			<li><a href=""><i class='bx bxs-report icon'></i> Reports </a></li>
 
 
@@ -93,31 +93,13 @@ if ($patientId) {
 				<i class='bx bx-menu toggle-sidebar' style="margin-left: 30px;"></i>
 			
 				<div class="nav-search-container">
-					<i class="fas fa-search nav-icon-bar"></i> <!-- Search icon -->
-					<input type="text" class="nav-search-input" placeholder="Search..">
 				</div>
 			</div>
 			<!-- Space -->
-	
-			<!-- <input type="text" placeholder="Search...">
-			<i class='bx bx-search icon' ></i> -->
-			<!-- <p class="nav-link"></p>
-			<p class="nav-link"></p> -->
-			<!-- Space -->
-			 
-			
 			<!-- Profile -->
 			<div class="profile">
 			<h2><?php echo htmlspecialchars($user_ID); ?></h2> <!-- Display sanitized user_ID -->
       
-		
-                <!-- <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Cannot load image data"> -->
-				<img src="\assets\avatar.png" alt="Cannot load image data">
-				<ul class="profile-link">
-					<li><a href="profile.php"><i class='bx bxs-user-circle icon'></i> Profile</a></li>
-					<li><a href="financial_reports.php"><i class='bx bxs-report'></i>Reports</a></li>
-					<li><a href="processes/logout.php"><i class='bx bxs-exit'></i> Logout</a></li>
-				</ul>
 			</div>
 		</nav>
 		<!-- Navigation Bar -->
@@ -152,87 +134,91 @@ if ($patientId) {
                             <div class="table-container">
 
 							<div class="module-container">
-								<div class="horizontal-nav-bar">
-									<a href="patient-info.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
-										<button class="nav-item">P.I.R</button>
-									</a>
-									<a href="medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
-										<button class="nav-item active">Medical History</button>
-									</a>
-									<a href="medical-condition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
-										<button class="nav-item">Medical Condition</button>
-									</a>
-									<a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
-										<button class="nav-item">PTP</button>
-									</a>
-									<a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
-										<button class="nav-item">Procedures</button>
-									</a>
-									<a href="patient-xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
-										<button class="nav-item">Xray</button>
-									</a>
-									<a href="patient-intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
-										<button class="nav-item">Intra Oral Photos</button>
-									</a>
-									<a href="patient-extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
-										<button class="nav-item">Extra Oral Photos</button>
-									</a>
-									<a href="notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&patient_prescription=<?php echo urlencode($_SESSION['patient_prescription']); ?>" class="nav-item-link">
-										<button class="nav-item">Notes</button>
-									</a>
-								</div>
+							<div class="horizontal-nav-bar">
+								<a href="patient-info.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+									<button class="nav-item ">P.I.R</button>
+								</a>
+								<a href="medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+									<button class="nav-item active">Medical History</button>
+								</a>
+								<a href="medical-condition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+									<button class="nav-item">Medical Condition</button>
+								</a>
+								<a href="prescription.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+									<button class="nav-item">Prescription</button>
+								</a>
+								<a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+									<button class="nav-item">PTP</button>
+								</a>
+								<a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+									<button class="nav-item">Procedures</button>
+								</a>
+								<a href="patient-xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+									<button class="nav-item">Xray</button>
+								</a>
+								<a href="patient-intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+									<button class="nav-item">Intra Oral Photos</button>
+								</a>
+								<a href="patient-extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+									<button class="nav-item">Extra Oral Photos</button>
+								</a>
+								<a href="notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+									<button class="nav-item">Notes</button>
+								</a>
 							</div>
 
 
-								<?php
+						</div>
 
-								$patientId = $_SESSION['patient_id'] ?? null;
-								$patientPrescription = $_SESSION['patient_prescription'] ?? null;
+						<?php
 
-								if ($patientId && $patientPrescription) {
-									// Database connection
-									$conn = new mysqli('localhost', 'root', '', 'db_uptowndc');
+$patientId = $_SESSION['patient_id'] ?? null;
+$prescriptionId = $_SESSION['prescription_id'] ?? null; // Changed to prescription_id
 
-									// Check connection
-									if ($conn->connect_error) {
-										die("Connection failed: " . $conn->connect_error);
-									}
+if ($patientId && $prescriptionId) {
+    // Database connection
+    $conn = new mysqli('localhost', 'root', '', 'db_uptowndc');
 
-									// Fetch data from tbl_patientmedhistory
-									$stmt = $conn->prepare("SELECT 
-										medhistory_lastvisit,
-										medhistory_genphysician,
-										medhistory_serious,
-										medhistory_ifyesserious,
-										medhistory_bloodtrans,
-										medhistory_ifyesdate,
-										medhistory_pregnant,
-										medhistory_birthcontrol,
-										medhistory_takingmed,
-										medhistory_ifyesmed 
-										FROM tbl_patientmedhistory 
-										WHERE patient_id = ? AND patient_prescription = ?");
-									$stmt->bind_param("ss", $patientId, $patientPrescription);
-									$stmt->execute();
-									$result = $stmt->get_result();
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
 
-									// Check if data exists
-									if ($result->num_rows > 0) {
-										$row = $result->fetch_assoc();
-									} else {
-										echo "<script>alert('No medical history found for this patient.');</script>";
-										$row = [];
-									}
+    // Fetch data from tbl_patientmedhistory
+    $stmt = $conn->prepare("SELECT 
+        medhistory_lastvisit,
+        medhistory_genphysician,
+        medhistory_serious,
+        medhistory_ifyesserious,
+        medhistory_bloodtrans,
+        medhistory_ifyesdate,
+        medhistory_pregnant,
+        medhistory_birthcontrol,
+        medhistory_takingmed,
+        medhistory_ifyesmed 
+    FROM tbl_patientmedhistory 
+    WHERE patient_id = ? AND prescription_id = ?"); // Changed patient_prescription to prescription_id
 
-									$stmt->close();
-									$conn->close();
-								} else {
-									echo "<script>alert('Patient ID or prescription not set.');</script>";
-									$row = [];
-								}
-								
-								?>
+    $stmt->bind_param("ss", $patientId, $prescriptionId); // Use prescription_id instead
+    $stmt->execute();
+    $result = $stmt->get_result();
 
+    // Check if data exists
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+    } else {
+        echo "<script>alert('No medical history found for this patient.');</script>";
+        $row = [];
+    }
+
+    $stmt->close();
+    $conn->close();
+} else {
+    echo "<script>alert('Patient ID or prescription not set.');</script>";
+    $row = [];
+}
+
+?>
 
 <div class="info-container">
     <h2 class="info-title">Medical History</h2>

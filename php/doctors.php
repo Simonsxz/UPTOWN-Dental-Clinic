@@ -49,8 +49,6 @@ $user_ID = $_SESSION['user_ID'];
             <li><a href="doctors.php" class="active"><i class='bx bxs-user-detail icon' ></i> User Account </a></li>
 			<li><a href="patient.php"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
             <li><a href="family.php" ><i class='bx bxs-group icon'></i> Family </a></li>
-			<li><a href="xray.html"><i class='bx bxs-barcode icon' ></i> X-ray </a></li>
-			<li><a href=""><i class='bx bxs-photo-album icon' ></i> Oral Photos </a></li>
 			<li><a href=""><i class='bx bxs-report icon'></i> Reports </a></li>
 
 
@@ -77,14 +75,7 @@ $user_ID = $_SESSION['user_ID'];
 			<!-- Profile -->
 			<div class="profile">
 			<h2><?php echo htmlspecialchars($user_ID); ?></h2> <!-- Display sanitized user_ID -->
-		
-                <!-- <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Cannot load image data"> -->
-				<img src="\assets\avatar.png" alt="Cannot load image data">
-				<ul class="profile-link">
-					<li><a href="profile.php"><i class='bx bxs-user-circle icon'></i> Profile</a></li>
-					<li><a href="financial_reports.php"><i class='bx bxs-report'></i>Reports</a></li>
-					<li><a href="processes/logout.php"><i class='bx bxs-exit'></i> Logout</a></li>
-				</ul>
+	
 			</div>
 		</nav>
 		<!-- Navigation Bar -->

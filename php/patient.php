@@ -49,8 +49,6 @@ $user_ID = $_SESSION['user_ID'];
             <li><a href="doctors.php"><i class='bx bxs-user-detail icon' ></i> User Account </a></li>
 			<li><a href="patient.php" class="active"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
             <li><a href="family.php" ><i class='bx bxs-group icon'></i> Family </a></li>
-			<li><a href="xray.html"><i class='bx bxs-barcode icon' ></i> X-ray </a></li>
-			<li><a href=""><i class='bx bxs-photo-album icon' ></i> Oral Photos </a></li>
 			<li><a href=""><i class='bx bxs-report icon'></i> Reports </a></li>
 
 
@@ -78,13 +76,7 @@ $user_ID = $_SESSION['user_ID'];
 			<div class="profile">
 			<h2><?php echo htmlspecialchars($user_ID); ?></h2> <!-- Display sanitized user_ID -->
 		
-                <!-- <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Cannot load image data"> -->
-				<img src="\assets\avatar.png" alt="Cannot load image data">
-				<ul class="profile-link">
-					<li><a href="profile.php"><i class='bx bxs-user-circle icon'></i> Profile</a></li>
-					<li><a href="financial_reports.php"><i class='bx bxs-report'></i>Reports</a></li>
-					<li><a href="processes/logout.php"><i class='bx bxs-exit'></i> Logout</a></li>
-				</ul>
+
 			</div>
 		</nav>
 		<!-- Navigation Bar -->
@@ -267,32 +259,57 @@ $user_ID = $_SESSION['user_ID'];
             </div>
             <div class="modal-body">
                 <!-- New Record Button -->
-                <div class="mb-3">
-                    <button id="addNewRecord" class="btn btn-primary">
+				<div class="mb-3">
+                    <button id="addNewRecord" class="btn btn-primary" onclick="redirectToAddRecord()">
                         <i class="bi bi-plus-circle"></i> Add New Record
                     </button>
                 </div>
-                
-                <!-- Table to Display Patient History -->
-                <table class="table table-bordered table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Patient ID</th>
-                            <th>Prescription</th>
-                            <th>Doctor</th>
-                            <th>Payment</th>
-                            <th>Date</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="patientHistoryTableBody">
-                        <!-- Patient history data will be dynamically inserted here -->
-                    </tbody>
-                </table>
+
+				<script>
+					let selectedPatientId = null;
+
+					// Capture the patient_id when the modal opens
+					document.querySelectorAll('.view-link').forEach(link => {
+						link.addEventListener('click', function () {
+							selectedPatientId = this.getAttribute('data-member-id');
+							console.log("Selected Patient ID:", selectedPatientId); // Debugging purpose
+						});
+					});
+
+					// Redirect to add_patientinfo.php with the selected patient_id
+					function redirectToAddRecord() {
+						if (selectedPatientId) {
+							const url = `add_patientinfo.php?patient_id=${encodeURIComponent(selectedPatientId)}`;
+							window.location.href = url;
+						} else {
+							alert("No patient ID selected.");
+						}
+					}
+				</script>
+
+								
+             <!-- Table to Display Patient History -->
+			<table class="table table-bordered table-hover" id="patientHistoryTable">
+				<thead class="table-light">
+					<tr>
+						<th>Patient ID</th>
+						<th>Prescription ID</th>
+						<th>Prescription</th>
+						<th>Doctor</th>
+						<th>Payment</th>
+						<th>Date</th>
+						<th style="width: 150px; text-align: center;">Action</th> <!-- Fixed width for the Action column -->
+					</tr>
+				</thead>
+				<tbody id="patientHistoryTableBody">
+					<!-- Patient history data will be dynamically inserted here -->
+				</tbody>
+			</table>
+
             </div>
         </div>
     </div>
-</div>
+							</div>
 
 
 	
@@ -480,10 +497,10 @@ $(document).ready(function () {
             return;
         }
 
-        // Make an AJAX request to fetch patient history
+        // Make an AJAX request to fetch patient history from the view
         $.ajax({
             type: "POST",
-            url: "../functions/fetch_patienthistory.php",
+            url: "../functions/fetch_patienthistory.php", // Use the new PHP script for the view
             data: {
                 'fetch_history': true,
                 'patient_id': patientId
@@ -501,16 +518,18 @@ $(document).ready(function () {
                     // Populate the modal table with fetched data
                     response.history.forEach(function (entry) {
                         var row = $('<tr>');
-                        row.append('<td>' + entry.patient_id + '</td>');
-                        row.append('<td>' + entry.patient_prescription + '</td>');
-                        row.append('<td>' + entry.patient_doctor + '</td>');
-                        row.append('<td>' + entry.patient_payment + '</td>');
-                        row.append('<td>' + entry.prescription_date + '</td>');
+						row.append('<td>' + entry.patient_id + '</td>');
+						row.append('<td>' + entry.prescription_id + '</td>');  // Show prescription_id
+						row.append('<td>' + entry.patient_prescription + '</td>');  // Show patient_prescription
+						row.append('<td>' + entry.patient_doctor + '</td>');
+						row.append('<td>' + entry.patient_payment + '</td>');
+						row.append('<td>' + entry.prescription_date + '</td>');
 
                         // Action buttons: View, Edit, Delete
-                        var actionButtons = `
-                            <td>
-                                <button class="btn btn-sm btn-info view-action" data-patient-id="${entry.patient_id}" data-patient-prescription="${entry.patient_prescription}">View</button>
+						var actionButtons = `
+							<td>
+								<button class="btn btn-sm btn-info view-action" data-patient-id="${entry.patient_id}" data-patient-prescription="${entry.prescription_id}">View</button>
+	
                                 <button class="btn btn-sm btn-warning edit-action" data-patient-id="${entry.patient_id}">Edit</button>
                                 <button class="btn btn-sm btn-danger delete-action" data-patient-id="${entry.patient_id}">Delete</button>
                             </td>
@@ -533,6 +552,7 @@ $(document).ready(function () {
     });
 });
 
+
 $(document).ready(function () {
     // Attach click event listener for dynamically added ".view-action" buttons
     $(document).on('click', '.view-action', function () {
@@ -554,7 +574,60 @@ $(document).ready(function () {
 
 
 
+
 </script>
+
+
+<style>
+	/* Adjust the width of the modal */
+.modal-dialog {
+    max-width: 80%;   /* Adjust the percentage as needed */
+    width: auto;      /* Ensure the modal doesn't stretch too wide */
+}
+
+/* Optionally, you can set a minimum width if needed */
+.modal-dialog {
+    min-width: 600px; /* Adjust as per the desired minimum width */
+}
+
+/* Set the table layout to auto to allow columns to adjust based on content */
+.table {
+    table-layout: auto;   /* Allow the columns to adjust based on content */
+    width: 100%;           /* Ensure the table takes the full width available */
+}
+
+/* Adjust individual column width if necessary */
+.table th, .table td {
+    white-space: nowrap;   /* Prevent the content from wrapping */
+    padding: 10px;         /* Add padding for better readability */
+}
+
+/* Optional: Adjust the column widths based on content */
+.table th:nth-child(1), .table td:nth-child(1) {
+    width: 10%;  /* Adjust the width of the first column */
+}
+
+.table th:nth-child(2), .table td:nth-child(2) {
+    width: 25%;  /* Adjust the width of the second column */
+}
+
+.table th:nth-child(3), .table td:nth-child(3) {
+    width: 30%;  /* Adjust the width of the third column */
+}
+
+.table th:nth-child(4), .table td:nth-child(4) {
+    width: 15%;  /* Adjust the width of the fourth column */
+}
+
+.table th:nth-child(5), .table td:nth-child(5) {
+    width: 15%;  /* Adjust the width of the fifth column */
+}
+
+.table th:nth-child(6), .table td:nth-child(6) {
+    width: 5%;   /* Adjust the width of the sixth column (Actions) */
+}
+
+</style>
  <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
