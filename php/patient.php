@@ -115,18 +115,13 @@ $user_ID = $_SESSION['user_ID'];
 								<div class="table-controls">
 									<!-- Filter Dropdown -->
 									<div class="filter-container">
-										<label for="rowsPerPage">Filter:</label>
-									<select id="rowsPerPage" class="rows-per-page" onchange="updateRowsPerPage1()">
-										<option value="patient">Patient</option>
-										<option value="folder">Folder</option>
-									</select>
 
 
 									<label for="rowsPerPage">Show:</label>
 										<select id="rowsPerPage" class="rows-per-page" onchange="updateRowsPerPage()">
-											<option value="3">3</option>
-											<option value="5">5</option>
-											<option value="10">10</option>
+											<option value="20">20</option>
+											<option value="50">50</option>
+											<option value="100">100</option>
 											<option value="all">All</option>
 										</select>
 									</div>
@@ -142,86 +137,86 @@ $user_ID = $_SESSION['user_ID'];
 									</div>									
 								</div>
 							
-								<!-- Table -->
+							<!-- Table -->
 								<table class="table table-hover">
-								<thead>
-									<tr>
-										<th scope="col">#</th>
-										<th scope="col">Patient ID</th>
-										<th scope="col">Patient Name</th>
-										<th scope="col">Family Member</th>
-										<th scope="col">Created</th>
-										<th scope="col">Actions</th>
-									</tr>
-								</thead>
-								<tbody id="tableBody">
-								<?php
-									// Fetch and display results for tbl_useraccount
-									$sql_admin = "SELECT id, patient_id,  patient_fullName, patient_family, patient_created FROM tbl_patientaccount";
-									$stmt_admin = mysqli_prepare($conn, $sql_admin);
+									<thead>
+										<tr>
+											<th scope="col">#</th>
+											<th scope="col">Patient ID</th>
+											<th scope="col">Patient Name</th>
+											<th scope="col">Family Member</th>
+											<th scope="col">Created</th>
+											<th scope="col">Actions</th>
+										</tr>
+									</thead>
+									<tbody id="tableBody">
+										<?php
+										// Fetch and display results for tbl_patientaccount, sorted by ID in descending order
+										$sql_admin = "SELECT id, patient_id, patient_fullName, patient_family, patient_created FROM tbl_patientaccount ORDER BY id DESC";
+										$stmt_admin = mysqli_prepare($conn, $sql_admin);
 
-									if ($stmt_admin) {
-										mysqli_stmt_execute($stmt_admin);
+										if ($stmt_admin) {
+											mysqli_stmt_execute($stmt_admin);
 
-										// Bind the result variables
-										mysqli_stmt_bind_result($stmt_admin, $id, $patient_id, $patient_fullName, $patient_family, $patient_created);
+											// Bind the result variables
+											mysqli_stmt_bind_result($stmt_admin, $id, $patient_id, $patient_fullName, $patient_family, $patient_created);
 
-										// Fetch and display results
-										while (mysqli_stmt_fetch($stmt_admin)) {
-									?>
-											<tr>
-												<td><?php echo $id; ?></td>
-												<td><?php echo htmlspecialchars($patient_id); ?></td>
-												<td><?php echo htmlspecialchars($patient_fullName); ?></td>
-												<td><?php echo htmlspecialchars($patient_family); ?></td>
-												<td><?php echo htmlspecialchars($patient_created); ?></td>
-												
-												<td>
-													<!-- View User -->
-										
-													<a href="#"
-													class="link-dark1 view-link"
-													data-bs-toggle="modal"
-													data-bs-target="#memberModal"
-													data-member-id="<?php echo htmlspecialchars($patient_id); ?>"> 
-														<button class="action-button view-button1" title="View Patient Details">View</button>
-													</a>
+											// Initialize row number counter
+											$rowIndex = 1;
 
-												<a href="#" 
-												class="link-dark1 edit-link" 
-												data-bs-toggle="modal" 
-												data-bs-target="#StudentEditModal" 
-												data-user-id="<?php echo htmlspecialchars($user_ID); ?>"> <!-- Pass user_ID -->
-													<button class="action-button edit-button" title="Edit User Details">
-														Edit
-													</button>
-												</a>
+											// Fetch and display results
+											while (mysqli_stmt_fetch($stmt_admin)) {
+										?>
+												<tr>
+													<td><?php echo $rowIndex++; ?></td> <!-- Sequential numbering -->
+													<td><?php echo htmlspecialchars($patient_id); ?></td>
+													<td><?php echo htmlspecialchars($patient_fullName); ?></td>
+													<td><?php echo htmlspecialchars($patient_family); ?></td>
+													<td><?php echo htmlspecialchars($patient_created); ?></td>
+													
+													<td>
+														<!-- View User -->
+														<a href="#"
+															class="link-dark1 view-link"
+															data-bs-toggle="modal"
+															data-bs-target="#memberModal"
+															data-member-id="<?php echo htmlspecialchars($patient_id); ?>"> 
+															<button class="action-button view-button1" title="View Patient Details">View</button>
+														</a>
 
-												<a href="#" 
-													class="link-dark1 delete-link" 
-													data-user-id="<?php echo htmlspecialchars($user_ID); ?>" 
-													onclick="confirmDelete('<?php echo htmlspecialchars($user_ID); ?>')"> <!-- Pass user_ID -->
-													<button class="action-button delete-button" title="Delete User">
-														Delete
-													</button>
-												</a>
-											</td>
+														<a href="#" 
+															class="link-dark1 edit-link" 
+															data-bs-toggle="modal" 
+															data-bs-target="#StudentEditModal" 
+															data-user-id="<?php echo htmlspecialchars($patient_id); ?>"> 
+															<button class="action-button edit-button" title="Edit User Details">
+																Edit
+															</button>
+														</a>
 
+														<a href="#" 
+															class="link-dark1 delete-link" 
+															data-user-id="<?php echo htmlspecialchars($patient_id); ?>" 
+															onclick="confirmDelete('<?php echo htmlspecialchars($patient_id); ?>')"> 
+															<button class="action-button delete-button" title="Delete User">
+																Delete
+															</button>
+														</a>
+													</td>
+												</tr>
+										<?php
+											}
 
-												</td>
-											</tr>
-									<?php
+											// Close the statement
+											mysqli_stmt_close($stmt_admin);
+										} else {
+											// Handle the error if the statement preparation fails
+											echo "<tr><td colspan='7'>Error: " . mysqli_error($conn) . "</td></tr>";
 										}
+										?>
+									</tbody>
+								</table>
 
-										// Close the statement
-										mysqli_stmt_close($stmt_admin);
-									} else {
-										// Handle the error if the statement preparation fails
-										echo "<tr><td colspan='7'>Error: " . mysqli_error($conn) . "</td></tr>";
-									}
-									?>
-
-								</tbody>
 							</table>
 							
 								
@@ -416,14 +411,6 @@ $user_ID = $_SESSION['user_ID'];
 															<label for="contact" class="form-label">Contact Number:</label>
 															<input type="tel" id="contact" name="contact" class="form-control" placeholder="Enter contact number">
 														</div>
-														<div class="col-md-6">
-															<label for="facebook" class="form-label">Facebook Account:</label>
-															<input type="text" id="facebook" name="facebook" class="form-control" placeholder="Enter Facebook account">
-														</div>
-														<div class="col-md-6">
-															<label for="nationality" class="form-label">Nationality:</label>
-															<input type="text" id="nationality" name="nationality" class="form-control" placeholder="Enter nationality">
-														</div>
 													</div>
 												</div>
 
@@ -432,28 +419,12 @@ $user_ID = $_SESSION['user_ID'];
 													<h6>Additional Information</h6>
 													<div class="row g-3">
 														<div class="col-md-6">
-															<label for="height" class="form-label">Height:</label>
-															<input type="text" id="height" name="height" class="form-control" placeholder="Enter height">
-														</div>
-														<div class="col-md-6">
-															<label for="weight" class="form-label">Weight:</label>
-															<input type="text" id="weight" name="weight" class="form-control" placeholder="Enter weight">
-														</div>
-														<div class="col-md-6">
 															<label for="status" class="form-label">Status:</label>
 															<input type="text" id="status" name="status" class="form-control" placeholder="Enter civil status">
 														</div>
 														<div class="col-md-6">
 															<label for="occupation" class="form-label">Occupation:</label>
 															<input type="text" id="occupation" name="occupation" class="form-control" placeholder="Enter occupation">
-														</div>
-														<div class="col-md-6">
-															<label for="religion" class="form-label">Religion:</label>
-															<input type="text" id="religion" name="religion" class="form-control" placeholder="Enter religion">
-														</div>
-														<div class="col-md-6">
-															<label for="referredBy" class="form-label">Referred By:</label>
-															<input type="text" id="referredBy" name="referredBy" class="form-control" placeholder="Enter referred by">
 														</div>
 													</div>
 												</div>
@@ -481,6 +452,40 @@ $user_ID = $_SESSION['user_ID'];
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+	#pageNumbers {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+#pageNumbers button {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#pageNumbers button.active {
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+#pageNumbers button:hover {
+    background: #0056b3;
+    color: white;
+}
+
+#pageNumbers span {
+    padding: 5px 10px;
+    font-weight: bold;
+}
+
+</style>
 
 <script>
 $(document).ready(function () {

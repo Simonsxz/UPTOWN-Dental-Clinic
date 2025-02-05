@@ -117,9 +117,9 @@ $user_ID = $_SESSION['user_ID'];
 									<div class="filter-container">
 										<label for="rowsPerPage">Show:</label>
 										<select id="rowsPerPage" class="rows-per-page" onchange="updateRowsPerPage()">
-											<option value="3">3</option>
-											<option value="5">5</option>
-											<option value="10">10</option>
+											<option value="20">20</option>
+											<option value="50">50</option>
+											<option value="100">100</option>
 											<option value="all">All</option>
 										</select>
 									</div>
@@ -148,76 +148,77 @@ $user_ID = $_SESSION['user_ID'];
 									</tr>
 								</thead>
 								<tbody id="tableBody">
-								<?php
-									// Fetch and display results for tbl_useraccount
-									$sql_admin = "SELECT id, user_ID, user_fName, user_lName, user_role, user_created FROM tbl_useraccount";
-									$stmt_admin = mysqli_prepare($conn, $sql_admin);
+    <?php
+        // Initialize row index
+        $rowIndex = 1; // Start from 1
+        // Fetch and display results for tbl_useraccount, ordering by ID in descending order (latest first)
+        $sql_admin = "SELECT id, user_ID, user_fName, user_lName, user_role, user_created FROM tbl_useraccount ORDER BY id DESC";
+        $stmt_admin = mysqli_prepare($conn, $sql_admin);
 
-									if ($stmt_admin) {
-										mysqli_stmt_execute($stmt_admin);
+        if ($stmt_admin) {
+            mysqli_stmt_execute($stmt_admin);
 
-										// Bind the result variables
-										mysqli_stmt_bind_result($stmt_admin, $id, $user_ID, $first_name, $last_name, $role, $created);
+            // Bind the result variables
+            mysqli_stmt_bind_result($stmt_admin, $id, $user_ID, $first_name, $last_name, $role, $created);
 
-										// Fetch and display results
-										while (mysqli_stmt_fetch($stmt_admin)) {
-									?>
-											<tr>
-												<td><?php echo $id; ?></td>
-												<td><?php echo htmlspecialchars($user_ID); ?></td>
-												<td><?php echo htmlspecialchars($first_name); ?></td>
-												<td><?php echo htmlspecialchars($last_name); ?></td>
-												<td><?php echo htmlspecialchars($role); ?></td>
-												<td><?php echo htmlspecialchars($created); ?></td>
-												
-												<td>
-													<!-- View User -->
-										
-												<a href="#" 
-												class="link-dark1 view-link" 
-												data-bs-toggle="modal" 
-												data-bs-target="#StudentViewModal" 
-												data-user-id="<?php echo htmlspecialchars($user_ID); ?>"> <!-- Pass user_ID -->
-													<button class="action-button view-button1" title="View User Details">
-														View
-													</button>
-												</a>
+            // Fetch and display results
+            while (mysqli_stmt_fetch($stmt_admin)) {
+    ?>
+                <tr>
+                    <!-- Use $rowIndex to display the row number -->
+                    <td><?php echo $rowIndex++; ?></td> <!-- Increment the row index for each row -->
+                    <td><?php echo htmlspecialchars($user_ID); ?></td>
+                    <td><?php echo htmlspecialchars($first_name); ?></td>
+                    <td><?php echo htmlspecialchars($last_name); ?></td>
+                    <td><?php echo htmlspecialchars($role); ?></td>
+                    <td><?php echo htmlspecialchars($created); ?></td>
+                    
+                    <td>
+                        <!-- View User -->
+                        <a href="#" 
+                            class="link-dark1 view-link" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#StudentViewModal" 
+                            data-user-id="<?php echo htmlspecialchars($user_ID); ?>"> <!-- Pass user_ID -->
+                            <button class="action-button view-button1" title="View User Details">
+                                View
+                            </button>
+                        </a>
 
-												<a href="#" 
-												class="link-dark1 edit-link" 
-												data-bs-toggle="modal" 
-												data-bs-target="#StudentEditModal" 
-												data-user-id="<?php echo htmlspecialchars($user_ID); ?>"> <!-- Pass user_ID -->
-													<button class="action-button edit-button" title="Edit User Details">
-														Edit
-													</button>
-												</a>
+                        <!-- Edit User -->
+                        <a href="#" 
+                            class="link-dark1 edit-link" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#StudentEditModal" 
+                            data-user-id="<?php echo htmlspecialchars($user_ID); ?>"> <!-- Pass user_ID -->
+                            <button class="action-button edit-button" title="Edit User Details">
+                                Edit
+                            </button>
+                        </a>
 
-												<a href="#" 
-													class="link-dark1 delete-link" 
-													data-user-id="<?php echo htmlspecialchars($user_ID); ?>" 
-													onclick="confirmDelete('<?php echo htmlspecialchars($user_ID); ?>')"> <!-- Pass user_ID -->
-													<button class="action-button delete-button" title="Delete User">
-														Delete
-													</button>
-												</a>
-											</td>
+                        <!-- Delete User -->
+                        <a href="#" 
+                            class="link-dark1 delete-link" 
+                            data-user-id="<?php echo htmlspecialchars($user_ID); ?>" 
+                            onclick="confirmDelete('<?php echo htmlspecialchars($user_ID); ?>')"> <!-- Pass user_ID -->
+                            <button class="action-button delete-button" title="Delete User">
+                                Delete
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+    <?php
+            }
 
+            // Close the statement
+            mysqli_stmt_close($stmt_admin);
+        } else {
+            // Handle the error if the statement preparation fails
+            echo "<tr><td colspan='7'>Error: " . mysqli_error($conn) . "</td></tr>";
+        }
+    ?>
+</tbody>
 
-												</td>
-											</tr>
-									<?php
-										}
-
-										// Close the statement
-										mysqli_stmt_close($stmt_admin);
-									} else {
-										// Handle the error if the statement preparation fails
-										echo "<tr><td colspan='7'>Error: " . mysqli_error($conn) . "</td></tr>";
-									}
-									?>
-
-								</tbody>
 							</table>
 
 								<div class="pagination-container">
@@ -403,6 +404,40 @@ $user_ID = $_SESSION['user_ID'];
 		
       
 </body>
+
+<style>
+	#pageNumbers {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+#pageNumbers button {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#pageNumbers button.active {
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+#pageNumbers button:hover {
+    background: #0056b3;
+    color: white;
+}
+
+#pageNumbers span {
+    padding: 5px 10px;
+    font-weight: bold;
+}
+
+</style>
 
  <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

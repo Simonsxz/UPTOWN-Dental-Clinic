@@ -12,7 +12,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     echo addUser($userData);
 }
-
 function addUser($userData) {
     global $conn;
 
@@ -23,6 +22,33 @@ function addUser($userData) {
     $password = password_hash($userData['password'], PASSWORD_DEFAULT);
     $role = $userData['role'];
 
+    // Check if the username already exists
+    $dupCheckQuery = "SELECT COUNT(*) FROM tbl_useraccount WHERE user_userName = ?";
+    $dupCheckStmt = mysqli_prepare($conn, $dupCheckQuery);
+    mysqli_stmt_bind_param($dupCheckStmt, "s", $username);
+    mysqli_stmt_execute($dupCheckStmt);
+    mysqli_stmt_bind_result($dupCheckStmt, $count);
+    mysqli_stmt_fetch($dupCheckStmt);
+    mysqli_stmt_close($dupCheckStmt);
+
+    if ($count > 0) {
+        return "The username already exists. Please choose another one.";
+    }
+
+    // Check if the first and last name combination already exists
+    $nameCheckQuery = "SELECT COUNT(*) FROM tbl_useraccount WHERE user_fName = ? AND user_lName = ?";
+    $nameCheckStmt = mysqli_prepare($conn, $nameCheckQuery);
+    mysqli_stmt_bind_param($nameCheckStmt, "ss", $firstName, $lastName);
+    mysqli_stmt_execute($nameCheckStmt);
+    mysqli_stmt_bind_result($nameCheckStmt, $nameCount);
+    mysqli_stmt_fetch($nameCheckStmt);
+    mysqli_stmt_close($nameCheckStmt);
+
+    if ($nameCount > 0) {
+        return "The combination of first name and last name already exists. Please use different names.";
+    }
+
+    // Proceed with inserting the new user
     $sql = "INSERT INTO tbl_useraccount (user_fName, user_lName, user_userName, user_password, user_role, user_created)
             VALUES (?, ?, ?, ?, ?, NOW())";
 
@@ -48,6 +74,7 @@ function addUser($userData) {
         return $error;
     }
 }
+
 
 function getPatientFullName($patientId) {
     // Database connection

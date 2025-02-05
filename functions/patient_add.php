@@ -9,15 +9,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'DOB' => $_POST['DOB'],
         'age' => $_POST['age'],
         'gender' => $_POST['gender'],
-        'height' => $_POST['height'],
-        'weight' => $_POST['weight'],
         'status' => $_POST['status'],
         'occupation' => $_POST['occupation'],
-        'religion' => $_POST['religion'],
         'contact' => $_POST['contact'],
-        'facebook' => $_POST['facebook'],
-        'nationality' => $_POST['nationality'],
-        'referredBy' => $_POST['referredBy'],
         'family' => $_POST['family']
     ];
 
@@ -34,15 +28,9 @@ function addPatient($patientData) {
     $DOB = $patientData['DOB'];
     $age = $patientData['age'];
     $gender = $patientData['gender'];
-    $height = $patientData['height'];
-    $weight = $patientData['weight'];
     $status = $patientData['status'];
     $occupation = $patientData['occupation'];
-    $religion = $patientData['religion'];
     $contact = $patientData['contact'];
-    $facebook = $patientData['facebook'];
-    $nationality = $patientData['nationality'];
-    $referredBy = $patientData['referredBy'];
     $familyId = $patientData['family'];
 
     // Fetch the full family details
@@ -61,6 +49,20 @@ function addPatient($patientData) {
         }
     }
 
+    // Check if a patient with the same fullName and family already exists
+    $dupCheckQuery = "SELECT COUNT(*) FROM tbl_patientaccount WHERE patient_fullName = ? AND patient_family = ?";
+    $dupCheckStmt = mysqli_prepare($conn, $dupCheckQuery);
+    mysqli_stmt_bind_param($dupCheckStmt, "ss", $fullName, $family);
+    mysqli_stmt_execute($dupCheckStmt);
+    mysqli_stmt_bind_result($dupCheckStmt, $count);
+    mysqli_stmt_fetch($dupCheckStmt);
+    mysqli_stmt_close($dupCheckStmt);
+
+    if ($count > 0) {
+        return "A patient with the same name and family already exists.";
+    }
+
+    // Insert patient data
     $sql = "INSERT INTO tbl_patientaccount (
                 patient_fullName,
                 patient_doctor,
@@ -68,18 +70,12 @@ function addPatient($patientData) {
                 patient_DOB,
                 patient_age,
                 patient_gender,
-                patient_height,
-                patient_weight,
                 patient_status,
                 patient_occupation,
-                patient_religion,
                 patient_contact,
-                patient_facebook,
-                patient_nationality,
-                patient_referrredby,
                 patient_created,
                 patient_family
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)";
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)";
 
     $stmt = mysqli_prepare($conn, $sql);
 
@@ -90,22 +86,16 @@ function addPatient($patientData) {
     // Adjusted the number of parameters to match placeholders
     mysqli_stmt_bind_param(
         $stmt,
-        "ssssssssssssssss", 
+        "ssssssssss", // Adjusted to match number of values being passed
         $fullName,
         $doctor,
         $address,
         $DOB,
         $age,
         $gender,
-        $height,
-        $weight,
         $status,
         $occupation,
-        $religion,
         $contact,
-        $facebook,
-        $nationality,
-        $referredBy,
         $family
     );
 

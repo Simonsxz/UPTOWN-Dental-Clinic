@@ -18,23 +18,27 @@ allDropdown.forEach(item => {
         this.classList.toggle('active');
         item.classList.toggle('show');
     })
-})
-
-
-// Search functionality
-document.querySelector(".search-button").addEventListener("click", () => {
-    const searchTerm = document.getElementById("tableSearch").value.toLowerCase();
-    const filteredData = tableData.filter(row =>
-        row.firstName.toLowerCase().includes(searchTerm) ||
-        row.lastName.toLowerCase().includes(searchTerm) ||
-        row.date.toLowerCase().includes(searchTerm)
-    );
-
-    tableData.length = 0; // Clear tableData and refill with filtered data
-    Array.prototype.push.apply(tableData, filteredData);
-    currentPage = 1;
-    renderTable(tableData);
 });
+
+
+function searchTable() {
+    const searchQuery = document.getElementById('tableSearch').value.toLowerCase();
+    const rows = Array.from(document.querySelectorAll('#tableBody tr'));
+
+    if (searchQuery.trim() === "") {
+        filteredRows = rows; // Show all rows if search is empty
+    } else {
+        filteredRows = rows.filter(row =>
+            Array.from(row.cells).some(cell =>
+                cell.textContent.toLowerCase().includes(searchQuery)
+            )
+        );
+    }
+
+    currentPage = 1;
+    displayTableRows();
+}
+
 
 // SIDEBAR COLLAPSE
 const toggleSidebar = document.querySelector('nav .toggle-sidebar');
@@ -76,106 +80,11 @@ toggleSidebar.addEventListener('click', function () {
 })
 
 
-  document.getElementById("togglePassword").addEventListener("click", function () {
-	const passwordInput = document.getElementById("password");
-	const eyeIcon = document.getElementById("eyeIcon");
-	if (passwordInput.type === "password") {
-	  passwordInput.type = "text";
-	  eyeIcon.classList.replace("bi-eye", "bi-eye-slash");
-	} else {
-	  passwordInput.type = "password";
-	  eyeIcon.classList.replace("bi-eye-slash", "bi-eye");
-	}
-  });
-  
-
-
-
-sidebar.addEventListener('mouseleave', function () {
-	if(this.classList.contains('hide')) {
-		allDropdown.forEach(item=> {
-			const a = item.parentElement.querySelector('a:first-child');
-			a.classList.remove('active');
-			item.classList.remove('show');
-		})
-		allSideDivider.forEach(item=> {
-			item.textContent = '-'
-		})
-	}
-})
-
-
-
-sidebar.addEventListener('mouseenter', function () {
-	if(this.classList.contains('hide')) {
-		allDropdown.forEach(item=> {
-			const a = item.parentElement.querySelector('a:first-child');
-			a.classList.remove('active');
-			item.classList.remove('show');
-		})
-		allSideDivider.forEach(item=> {
-			item.textContent = item.dataset.text;
-		})
-	}
-})
-
-
-
-
-// PROFILE DROPDOWN
-const profile = document.querySelector('nav .profile');
-const imgProfile = profile.querySelector('img');
-const dropdownProfile = profile.querySelector('.profile-link');
-
-imgProfile.addEventListener('click', function () {
-	dropdownProfile.classList.toggle('show');
-})
-
-
-
-
-// MENU
-const allMenu = document.querySelectorAll('main .content-data .head .menu');
-
-allMenu.forEach(item=> {
-	const icon = item.querySelector('.icon');
-	const menuLink = item.querySelector('.menu-link');
-
-	icon.addEventListener('click', function () {
-		menuLink.classList.toggle('show');
-	})
-})
-
-
-
-window.addEventListener('click', function (e) {
-	if(e.target !== imgProfile) {
-		if(e.target !== dropdownProfile) {
-			if(dropdownProfile.classList.contains('show')) {
-				dropdownProfile.classList.remove('show');
-			}
-		}
-	}
-
-	allMenu.forEach(item=> {
-		const icon = item.querySelector('.icon');
-		const menuLink = item.querySelector('.menu-link');
-
-		if(e.target !== icon) {
-			if(e.target !== menuLink) {
-				if (menuLink.classList.contains('show')) {
-					menuLink.classList.remove('show')
-				}
-			}
-		}
-	})
-})
-
 let currentPage = 1;
-let rowsPerPage = 3; // Default rows per page
-let filteredRows = []; // For search functionality
+let rowsPerPage = 20; // Default rows per page
+let filteredRows = []; // Store filtered rows separately
 
-// Update rows per page
+// Update rows per page based on selection
 function updateRowsPerPage() {
     const rowsPerPageValue = document.getElementById('rowsPerPage').value;
     rowsPerPage = rowsPerPageValue === "all" ? Number.MAX_VALUE : parseInt(rowsPerPageValue, 10);
@@ -183,75 +92,120 @@ function updateRowsPerPage() {
     displayTableRows();
 }
 
-// Search table rows
+// Search function
 function searchTable() {
     const searchQuery = document.getElementById('tableSearch').value.toLowerCase();
     const rows = Array.from(document.querySelectorAll('#tableBody tr'));
 
-    // Filter rows based on search query
-    filteredRows = rows.filter(row =>
-        Array.from(row.cells).some(cell =>
-            cell.textContent.toLowerCase().includes(searchQuery)
-        )
-    );
+    if (searchQuery.trim() === "") {
+        filteredRows = rows; // Show all rows if search is empty
+    } else {
+        filteredRows = rows.filter(row =>
+            Array.from(row.cells).some(cell =>
+                cell.textContent.toLowerCase().includes(searchQuery)
+            )
+        );
+    }
 
-    currentPage = 1; // Reset to the first page
+    currentPage = 1; // Reset to first page when searching
     displayTableRows();
 }
 
-// Display rows based on pagination and filtering
+// Display table rows based on pagination and filtering
 function displayTableRows() {
     const rows = filteredRows.length > 0 ? filteredRows : Array.from(document.querySelectorAll('#tableBody tr'));
     const totalRows = rows.length;
 
-    // Pagination logic
-    const totalPages = Math.ceil(totalRows / rowsPerPage);
+    // Hide all rows initially
+    document.querySelectorAll('#tableBody tr').forEach(row => row.style.display = 'none');
+
+    // Determine the range of rows to display
     const start = (currentPage - 1) * rowsPerPage;
-    const end = currentPage * rowsPerPage;
+    const end = start + rowsPerPage;
+    const visibleRows = rows.slice(start, end);
 
-    // Show or hide rows
-    Array.from(document.querySelectorAll('#tableBody tr')).forEach(row => (row.style.display = 'none'));
-    rows.slice(start, end).forEach(row => (row.style.display = ''));
+    // Show only the relevant rows
+    visibleRows.forEach(row => row.style.display = '');
 
-    renderPagination(totalPages);
-    updateEntriesInfo(totalRows, rows.length);
+    renderPagination(totalRows);
+    updateEntriesInfo(totalRows, visibleRows.length);
 }
 
-// Render pagination
-function renderPagination(totalPages) {
+// Attach search function to input event
+document.getElementById('tableSearch').addEventListener('input', searchTable);
+
+// Initialize event listeners on page load
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('rowsPerPage').addEventListener('change', updateRowsPerPage);
+    filteredRows = Array.from(document.querySelectorAll('#tableBody tr')); // Initialize filtered rows with all rows
+    displayTableRows();
+});
+
+
+// Render pagination controls
+function renderPagination(totalRows) {
     const paginationContainer = document.getElementById('pageNumbers');
     paginationContainer.innerHTML = ''; // Clear previous pagination
 
-    for (let i = 1; i <= totalPages; i++) {
+    if (rowsPerPage === Number.MAX_VALUE) {
+        return; // No pagination needed if "All" is selected
+    }
+
+    const totalPages = Math.ceil(totalRows / rowsPerPage);
+    const maxVisibleButtons = 5; // Limit visible pagination buttons
+
+    if (totalPages <= 1) return; // Hide pagination if only one page
+
+    function createPageButton(pageNumber, isActive = false) {
         const pageButton = document.createElement('button');
-        pageButton.textContent = i;
-        pageButton.className = i === currentPage ? 'active' : '';
+        pageButton.textContent = pageNumber;
+        pageButton.className = isActive ? 'active' : '';
         pageButton.onclick = () => {
-            currentPage = i;
+            currentPage = pageNumber;
             displayTableRows();
         };
-        paginationContainer.appendChild(pageButton);
+        return pageButton;
     }
+
+    paginationContainer.appendChild(createPageButton(1, currentPage === 1));
+
+    if (currentPage > 3) {
+        const dots = document.createElement('span');
+        dots.textContent = "...";
+        paginationContainer.appendChild(dots);
+    }
+
+    let startPage = Math.max(2, currentPage - 2);
+    let endPage = Math.min(totalPages - 1, currentPage + 2);
+
+    for (let i = startPage; i <= endPage; i++) {
+        paginationContainer.appendChild(createPageButton(i, i === currentPage));
+    }
+
+    if (currentPage < totalPages - 2) {
+        const dots = document.createElement('span');
+        dots.textContent = "...";
+        paginationContainer.appendChild(dots);
+    }
+
+    paginationContainer.appendChild(createPageButton(totalPages, currentPage === totalPages));
+
+    paginationContainer.style.display = 'flex'; // Ensure pagination is displayed correctly
+    paginationContainer.style.flexWrap = 'wrap'; // Prevent overlap when too many pages
 }
 
 // Update entries information text
-function updateEntriesInfo(totalRowsCount, visibleRowsCount) {
+function updateEntriesInfo(totalRows, visibleRowsCount) {
     const entriesInfo = document.getElementById('entriesInfo');
-    entriesInfo.textContent = `Showing ${Math.min(
-        visibleRowsCount,
-        rowsPerPage * currentPage
-    )} of ${totalRowsCount} entries`;
+    entriesInfo.textContent = `Showing ${Math.min(visibleRowsCount, rowsPerPage)} of ${totalRows} entries`;
 }
 
-// Initialize search functionality on page load
+// Initialize event listeners on page load
 document.addEventListener('DOMContentLoaded', () => {
-    // Add event listeners
-    document.getElementById('tableSearch').addEventListener('input', searchTable);
     document.getElementById('rowsPerPage').addEventListener('change', updateRowsPerPage);
-
-    // Initialize display
     displayTableRows();
 });
+
 
 
 function submitAddPatientForm(event) {
@@ -311,11 +265,6 @@ document.getElementById('cancelButton').addEventListener('click', () => {
     const form = document.getElementById('addUserForm');
     form.reset(); // Clears all input fields in the form
 });
-
-
-
-
-
 
 
 

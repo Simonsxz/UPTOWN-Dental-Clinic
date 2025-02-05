@@ -112,23 +112,14 @@ $user_ID = $_SESSION['user_ID'];
 								<div class="table-controls">
 									<!-- Filter Dropdown -->
 									<div class="filter-container">
-										<label for="rowsPerPage">Filter:</label>
-									<select id="rowsPerPage" class="rows-per-page" onchange="updateRowsPerPage1()">
-										<option value="patient">Patient</option>
-										<option value="folder">Folder</option>
-									</select>
-
-
-									<label for="rowsPerPage">Show:</label>
+										<label for="rowsPerPage">Show:</label>
 										<select id="rowsPerPage" class="rows-per-page" onchange="updateRowsPerPage()">
-											<option value="3">3</option>
-											<option value="5">5</option>
-											<option value="10">10</option>
+											<option value="20">20</option>
+											<option value="50">50</option>
+											<option value="100">100</option>
 											<option value="all">All</option>
 										</select>
 									</div>
-
-									
 							
 									<!-- Search Bar -->
 									<div class="search-container">
@@ -151,89 +142,85 @@ $user_ID = $_SESSION['user_ID'];
 										<th scope="col">Actions</th>
 									</tr>
 								</thead>
-								<tbody id="tableBody">
-								<?php
-									// Fetch and display results for tbl_useraccount
-									$sql_admin = "SELECT id, folder_id,  folder_name, folder_head, folder_created FROM tbl_familyfolder";
-									$stmt_admin = mysqli_prepare($conn, $sql_admin);
+                                <tbody id="tableBody">
+                                    <?php
+                                    // Fetch and display results for tbl_familyfolder, sorted by ID in descending order
+                                    $sql_admin = "SELECT id, folder_id, folder_name, folder_head, folder_created FROM tbl_familyfolder ORDER BY id DESC";
+                                    $stmt_admin = mysqli_prepare($conn, $sql_admin);
 
-									if ($stmt_admin) {
-										mysqli_stmt_execute($stmt_admin);
+                                    if ($stmt_admin) {
+                                        mysqli_stmt_execute($stmt_admin);
 
-										// Bind the result variables
-										mysqli_stmt_bind_result($stmt_admin, $id, $folder_id, $folder_name, $folder_head, $folder_created);
+                                        // Bind the result variables
+                                        mysqli_stmt_bind_result($stmt_admin, $id, $folder_id, $folder_name, $folder_head, $folder_created);
 
-										// Fetch and display results
-										while (mysqli_stmt_fetch($stmt_admin)) {
-									?>
-											<tr>
-												<td><?php echo $id; ?></td>
-												<td><?php echo htmlspecialchars($folder_id); ?></td>
-												<td><?php echo htmlspecialchars($folder_name); ?></td>
-												<td><?php echo htmlspecialchars($folder_head); ?></td>
-												<td><?php echo htmlspecialchars($folder_created); ?></td>
-												
-												<td>
-													 <!-- View Folder Button -->
-													<a href="#"
-													class="link-dark1 view-link"
-													data-bs-toggle="modal"
-													data-bs-target="#folderModal"
-													data-folder-id="<?php echo htmlspecialchars($folder_id); ?>"> 
-														<button class="action-button view-button1" title="View Folder Details">View</button>
-													</a>
+                                        // Initialize row number counter
+                                        $rowIndex = 1;
 
-												<!-- Members Button -->
-												<a href="#"
-													class="link-dark1"
-													data-bs-toggle="modal"
-													data-bs-target="#memberModal">
-													<button class="action-button member-button" 
-															title="View Members" 
-															data-folder-id="<?php echo htmlspecialchars($folder_id); ?>">
-														Members
-													</button>
-													</a>
+                                        // Fetch and display results
+                                        while (mysqli_stmt_fetch($stmt_admin)) {
+                                    ?>
+                                            <tr>
+                                                <td><?php echo $rowIndex++; ?></td> <!-- Sequential numbering -->
+                                                <td><?php echo htmlspecialchars($folder_id); ?></td>
+                                                <td><?php echo htmlspecialchars($folder_name); ?></td>
+                                                <td><?php echo htmlspecialchars($folder_head); ?></td>
+                                                <td><?php echo htmlspecialchars($folder_created); ?></td>
+                                                
+                                                <td>
+                                                    <!-- View Folder Button -->
+                                                    <a href="#"
+                                                        class="link-dark1 view-link"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#folderModal"
+                                                        data-folder-id="<?php echo htmlspecialchars($folder_id); ?>"> 
+                                                        <button class="action-button view-button1" title="View Folder Details">View</button>
+                                                    </a>
 
+                                                    <!-- Members Button -->
+                                                    <a href="#"
+                                                        class="link-dark1"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#memberModal">
+                                                        <button class="action-button member-button" 
+                                                                title="View Members" 
+                                                                data-folder-id="<?php echo htmlspecialchars($folder_id); ?>">
+                                                            Members
+                                                        </button>
+                                                    </a>
 
+                                                    <!-- Edit Folder Button -->
+                                                    <a href="#" 
+                                                        class="link-dark1 edit-link" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#FolderEditModal" 
+                                                        data-folder-id="<?php echo htmlspecialchars($folder_id); ?>">
+                                                        <button class="action-button edit-button" title="Edit Folder Details">Edit</button>
+                                                    </a>
 
-													<a href="#" 
-														class="link-dark1 edit-link" 
-														data-bs-toggle="modal" 
-														data-bs-target="#FolderEditModal" 
-														data-folder-id="<?php echo htmlspecialchars($folder_id); ?>"> <!-- Pass folder ID -->
-														<button class="action-button edit-button" title="Edit Folder Details">Edit</button>
-													</a>
+                                                    <!-- Delete Folder Button -->
+                                                    <a href="#" 
+                                                        class="link-dark1 delete-link" 
+                                                        data-folder-id="<?php echo htmlspecialchars($folder_id); ?>" 
+                                                        onclick="confirmDelete('<?php echo htmlspecialchars($folder_id); ?>')">
+                                                        <button class="action-button delete-button" title="Delete Folder">
+                                                            Delete
+                                                        </button>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                    <?php
+                                        }
 
+                                        // Close the statement
+                                        mysqli_stmt_close($stmt_admin);
+                                    } else {
+                                        // Handle the error if the statement preparation fails
+                                        echo "<tr><td colspan='7'>Error: " . mysqli_error($conn) . "</td></tr>";
+                                    }
+                                    ?>
+                                </tbody>
 
-													<a href="#" 
-													class="link-dark1 delete-link" 
-													data-folder-id="<?php echo htmlspecialchars($folder_id); ?>" 
-													onclick="confirmDelete('<?php echo htmlspecialchars($folder_id); ?>')">
-														<!-- Pass folder_ID -->
-														<button class="action-button delete-button" title="Delete Folder">
-															Delete
-														</button>
-													</a>
-
-
-											</td>
-
-
-												</td>
-											</tr>
-									<?php
-										}
-
-										// Close the statement
-										mysqli_stmt_close($stmt_admin);
-									} else {
-										// Handle the error if the statement preparation fails
-										echo "<tr><td colspan='7'>Error: " . mysqli_error($conn) . "</td></tr>";
-									}
-									?>
-
-								</tbody>
 							</table>
 							
 								
@@ -404,6 +391,42 @@ $user_ID = $_SESSION['user_ID'];
 		</main>
       
 </body>
+
+
+<style>
+	#pageNumbers {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+#pageNumbers button {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#pageNumbers button.active {
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+#pageNumbers button:hover {
+    background: #0056b3;
+    color: white;
+}
+
+#pageNumbers span {
+    padding: 5px 10px;
+    font-weight: bold;
+}
+
+</style>
+
 
 <script>
 $(document).ready(function () {

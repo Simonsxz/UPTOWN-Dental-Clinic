@@ -10,8 +10,6 @@ if (isset($_SESSION['user_ID'])) {
 ?>
 
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
