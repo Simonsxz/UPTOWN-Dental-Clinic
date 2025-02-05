@@ -144,9 +144,6 @@ if ($patientId) {
 								<a href="medical-condition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
 									<button class="nav-item">Medical Condition</button>
 								</a>
-								<a href="prescription.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
-									<button class="nav-item">Prescription</button>
-								</a>
 								<a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
 									<button class="nav-item">PTP</button>
 								</a>

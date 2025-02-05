@@ -133,9 +133,6 @@ if ($patientId) {
                                 <a href="add_patientinfo.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
                                     <button class="nav-item " disabled style="cursor: not-allowed;">P.I.R</button>
                                 </a>
-                                <a href="add_prescription.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item " disabled style="cursor: not-allowed;">Prescription</button>
-                                </a>
                                 <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
                                     <button class="nav-item active" disabled style="cursor: not-allowed;">Medical History</button>
                                 </a>

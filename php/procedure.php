@@ -34,7 +34,7 @@ if ($patientId) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -43,8 +43,8 @@ if ($patientId) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.1/animate.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="css/modal.css">
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="icon" type="image/x-icon" href="/assets/uplogo.png">
+    <link rel="stylesheet" href="\css\style.css">
+    <link rel="icon" type="image/x-icon" href="\assets\uplogo.png">
     <title>Patient Information</title>
 </head>
 <body>
@@ -105,7 +105,7 @@ if ($patientId) {
 			<!-- Profile -->
 			<div class="profile">
 			<h2><?php echo htmlspecialchars($user_ID); ?></h2> <!-- Display sanitized user_ID -->
-      
+		
 			</div>
 		</nav>
 		<!-- Navigation Bar -->
@@ -150,14 +150,11 @@ if ($patientId) {
 								<a href="medical-condition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
 									<button class="nav-item ">Medical Condition</button>
 								</a>
-								<a href="prescription.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
-									<button class="nav-item ">Prescription</button>
-								</a>
 								<a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
 									<button class="nav-item">PTP</button>
 								</a>
 								<a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
-									<button class="nav-item active">Procedures</button>
+									<button class="nav-item">Procedures</button>
 								</a>
 								<a href="patient-xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
 									<button class="nav-item">Xray</button>
@@ -172,166 +169,90 @@ if ($patientId) {
 									<button class="nav-item">Notes</button>
 								</a>
 							</div>
+
 							</div>
 
-
                             <?php
-$patientId = $_SESSION['patient_id'] ?? null;
-$prescriptionId = $_SESSION['prescription_id'] ?? null; // Changed from patient_prescription to prescription_id
+                            $patientId = $_SESSION['patient_id'] ?? null;
+                            $patientPrescription = $_SESSION['patient_prescription'] ?? null;
 
-if ($patientId && $prescriptionId) {
-    // Database connection
-    $conn = new mysqli('localhost', 'root', '', 'db_uptowndc');
+                            if ($patientId && $patientPrescription) {
+                                // Database connection
+                                $conn = new mysqli('localhost', 'root', '', 'db_uptowndc');
 
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
+                                // Check connection
+                                if ($conn->connect_error) {
+                                    die("Connection failed: " . $conn->connect_error);
+                                }
 
-    // Fetch data from tbl_procedure
-    $stmt = $conn->prepare("SELECT procedure_details, images FROM tbl_procedure WHERE patient_id = ? AND prescription_id = ?"); // Updated patient_prescription to prescription_id
-    $stmt->bind_param("ss", $patientId, $prescriptionId); // Changed patient_prescription to prescription_id
-    $stmt->execute();
-    $result = $stmt->get_result();
+                                // Fetch title and notes from tbl_patientprescription
+                                $stmt = $conn->prepare("SELECT patient_prescription AS title, description AS notes FROM tbl_patientprescription WHERE patient_id = ? AND patient_prescription = ?");
+                                $stmt->bind_param("ss", $patientId, $patientPrescription);
+                                $stmt->execute();
+                                $result = $stmt->get_result();
 
-    // Check if data exists
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $procedureDetails = $row['procedure_details'];
-        $images = json_decode($row['images']); // Decode JSON array to display images
-    } else {
-        echo "<script>alert('No procedure data found for this patient.');</script>";
-        $procedureDetails = '';
-        $images = [];
-    }
+                                // Check if data exists
+                                if ($result->num_rows > 0) {
+                                    $row = $result->fetch_assoc();
+                                    $title = $row['title']; // Prescription title
+                                    $notes = $row['notes']; // Notes content
+                                } else {
+                                    echo "<script>alert('No prescription notes found for this patient.');</script>";
+                                    $title = '';
+                                    $notes = '';
+                                }
 
-    $stmt->close();
-    $conn->close();
-} else {
-    echo "<script>alert('Patient ID or prescription not set.');</script>";
-    $procedureDetails = '';
-    $images = [];
-}
-?>
-
-
-			<div class="info-container">
-				<h2 class="info-title" style="text-align: center; margin-bottom: 5px; font-family: Arial, sans-serif; color: #333;">Procedure</h2>
-				<!-- Image upload input -->
-				<form class="details-form1" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
-					<!-- Text box for procedure details (read-only) -->
-<textarea id="procedure-details" name="procedure-details" class="form-textarea" placeholder="Describe the procedures here..." rows="5" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; width: auto; margin-left: 0;" required readonly>
-    <?php echo htmlspecialchars($procedureDetails); ?>
-</textarea>
+                                $stmt->close();
+                                $conn->close();
+                            } else {
+                                echo "<script>alert('Patient ID or prescription not set.');</script>";
+                                $title = '';
+                                $notes = '';
+                            }
+                            ?>
 
 
-					<!-- Container to display procedure images -->
-					<div id="uploaded-images-container" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 15px;">
-						<?php
-							if (!empty($images)) {
-								foreach ($images as $image) {
-									echo '<div style="width: 120px; text-align: center;">';
-									echo '<img src="' . htmlspecialchars($image) . '" style="width: 100px; height: 100px; cursor: pointer; object-fit: cover;" onclick="openModal(\'' . htmlspecialchars($image) . '\')">';
-									echo '</div>';
-								}
-							}
-						?>
-					</div>
-				</form>
-			</div>
+<div class="info-container" style="padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+    <h2 class="info-title" style="font-size: 24px; margin-bottom: 15px; color: #333;">Notes</h2>
+    <form class="details-form1">
+        <!-- Title Text Box -->
+        <label for="note-title" style="display: block; font-size: 16px; margin-bottom: 8px; color: #555;">Prescription Title:</label>
+        <input 
+            type="text" 
+            id="note-title" 
+            name="note-title" 
+            class="form-input" 
+            placeholder="Enter prescription title here..." 
+            value="<?php echo htmlspecialchars($title ?? ''); ?>" 
+            style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; background-color: #f4f4f4; color: #333; margin-bottom: 15px;" 
+            readonly
+        />
 
-			<!-- Modal for viewing large images -->
-			<div id="image-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 1000; flex-direction: column; padding: 20px; box-sizing: border-box;">
-				<img id="modal-image" src="" alt="Large View" style="max-width: 90%; max-height: 80%; border: 5px solid white; margin-bottom: 20px; border-radius: 10px;">
-				<a id="download-link" href="" download style="background-color: #007BFF; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; margin-bottom: 10px;">Download</a>
-				<button onclick="closeModal()" style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;">Close</button>
-			</div>
+        <!-- Notes Text Area -->
+        <label for="treatment-plans" style="display: block; font-size: 16px; margin-bottom: 8px; color: #555;">View patient notes:</label>
+        <textarea 
+            id="treatment-plans" 
+            name="treatment-plans" 
+            class="form-textarea" 
+            placeholder="Notes for this patient..." 
+            rows="6" 
+            style="width: 100%; padding: 12px 12px 12px 0; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; resize: vertical; background-color: #f4f4f4; color: #333; text-align: left;" 
+            readonly>
+            <?php echo htmlspecialchars($notes); ?>
+        </textarea>
+    </form>
+</div>
 
 
-            
 			
         </main>
       
 </body>
-
-<script>
-	 	 // Function to display uploaded images
-		  function displayImages(event) {
-        const uploadedImagesContainer = document.getElementById('uploaded-images-container');
-        const files = event.target.files;
-        const currentDate = new Date().toLocaleDateString();
-
-        Array.from(files).forEach((file) => {
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const imageWrapper = document.createElement('div');
-                    imageWrapper.style.width = '120px';
-                    imageWrapper.style.textAlign = 'center';
-
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.style.width = '100px';
-                    img.style.height = '100px';
-                    img.style.cursor = 'pointer';
-                    img.style.objectFit = 'cover';
-                    img.style.borderRadius = '5px';
-                    img.style.border = '1px solid #ddd';
-                    img.onclick = function () {
-                        openModal(e.target.result, file.name);
-                    };
-
-                    const title = document.createElement('div');
-                    title.textContent = file.name;
-                    title.style.marginTop = '5px';
-                    title.style.fontSize = '12px';
-                    title.style.color = '#555';
-
-                    const date = document.createElement('div');
-                    date.textContent = `Uploaded: ${currentDate}`;
-                    date.style.fontSize = '10px';
-                    date.style.color = '#777';
-
-                    imageWrapper.appendChild(img);
-                    imageWrapper.appendChild(title);
-                    imageWrapper.appendChild(date);
-
-                    uploadedImagesContainer.appendChild(imageWrapper);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-
-    // Function to open modal with a large image
-    function openModal(imageSrc, fileName) {
-        const modal = document.getElementById('image-modal');
-        const modalImage = document.getElementById('modal-image');
-        const downloadLink = document.getElementById('download-link');
-
-        modalImage.src = imageSrc;
-        downloadLink.href = imageSrc;
-        downloadLink.download = fileName;
-        modal.style.display = 'flex';
-    }
-
-    // Function to close the modal
-    function closeModal() {
-        const modal = document.getElementById('image-modal');
-        modal.style.display = 'none';
-    }
-</script>
-<!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="/js/procedure.js"></script>
+<script src="/js/patient-info.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </html>

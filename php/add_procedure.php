@@ -13,13 +13,11 @@ if (!isset($_SESSION['user_ID'])) {
 
 $user_ID = $_SESSION['user_ID']; // Fetch user_ID from session
 
-if (isset($_GET['patient_id']) && isset($_GET['patient_prescription'])) {
+if (isset($_GET['patient_id'])) {
     $_SESSION['patient_id'] = $_GET['patient_id'];
-    $_SESSION['patient_prescription'] = $_GET['patient_prescription'];
 }
 
 $patientId = $_SESSION['patient_id'] ?? null;
-$patientPrescription = $_SESSION['patient_prescription'] ?? null;
 
 if ($patientId) {
     // Fetch the patient name from the database using the patient_id
@@ -29,12 +27,10 @@ if ($patientId) {
     $patientFullName = "No Name Available"; // Fallback in case no patient_id is found
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -43,8 +39,8 @@ if ($patientId) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.1/animate.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="css/modal.css">
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="icon" type="image/x-icon" href="/assets/uplogo.png">
+    <link rel="stylesheet" href="\css\style.css">
+    <link rel="icon" type="image/x-icon" href="\assets\uplogo.png">
     <title>Patient Information</title>
 </head>
 <body>
@@ -105,7 +101,7 @@ if ($patientId) {
 			<!-- Profile -->
 			<div class="profile">
 			<h2><?php echo htmlspecialchars($user_ID); ?></h2> <!-- Display sanitized user_ID -->
-      
+		
 			</div>
 		</nav>
 		<!-- Navigation Bar -->
@@ -131,11 +127,12 @@ if ($patientId) {
 									<p>All the details of the patient of UPTOWN Dental Clinic</p>
 								</div>
                                 <div class="button-group">
-                                    <a href="patient.php" id="cancelLink">
-                                        <button type="button" class="cancel">Cancel</button>
-                                    </a>
-                                    <button type="button" class="save" id="saveButton">Next</button>
-                                </div>
+                                <a href="patient.php" id="cancelLink">
+                                    <button type="button" class="cancel">Cancel</button>
+                                </a>
+                                <button type="button" class="save" onclick="savePrescription()">Next</button>
+								</div>
+							</div>	
 							</div>												
                             <div class="table-container">
 
@@ -144,17 +141,14 @@ if ($patientId) {
                                 <a href="add_patientinfo.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
                                     <button class="nav-item " disabled style="cursor: not-allowed;">P.I.R</button>
                                 </a>
-                                <a href="add_prescription.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item " disabled style="cursor: not-allowed;">Prescription</button>
-                                </a>
                                 <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item " disabled style="cursor: not-allowed;">Medical History</button>
+                                    <button class="nav-item" disabled style="cursor: not-allowed;">Medical History</button>
                                 </a>
                                 <a href="medical-condition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item " disabled style="cursor: not-allowed;">Medical Condition</button>
+                                    <button class="nav-item" disabled style="cursor: not-allowed;">Medical Condition</button>
                                 </a>
                                 <a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item " disabled style="cursor: not-allowed;">PTP</button>
+                                    <button class="nav-item" disabled style="cursor: not-allowed;">PTP</button>
                                 </a>
                                 <a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
                                     <button class="nav-item active" disabled style="cursor: not-allowed;">Procedures</button>
@@ -174,135 +168,187 @@ if ($patientId) {
                             </div>
 							</div>
 
-                            <div class="info-container">
-                    <h2 class="info-title" style="text-align: center; margin-bottom: 5px; font-family: Arial, sans-serif; color: #333;">Procedure</h2>
-                    
-                    <!-- Image upload input -->
-                    <form class="details-form1" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
-                        <label for="image-upload" style="font-size: 14px; font-weight: bold; color: #555;">Upload Images (Optional):</label>
-                        <input id="image-upload" type="file" accept="image/*" multiple style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;" onchange="displayImages(event)">
+              <div class="info-container" style="padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+    <h2 class="info-title" style="font-size: 20px; font-weight: 600; margin-bottom: 15px; color: #333;">Patient Procedure</h2>
+    <form class="details-form1" id="procedureForm" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <!-- Procedure Title Input -->
+        <input 
+            type="text" 
+            id="procedure-title" 
+            name="procedure-title" 
+            class="form-input" 
+            placeholder="Enter procedure title..." 
+            style="flex: 2; min-width: 200px; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; background-color: #fff; color: #333;" 
+            required
+        />
+        
+        <!-- Price Input -->
+        <input 
+            type="number" 
+            id="procedure-price" 
+            name="procedure-price" 
+            class="form-input" 
+            placeholder="₱ Price..." 
+            style="flex: 1; min-width: 100px; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; background-color: #fff; color: #333;" 
+            required
+        />
+        
+        <!-- Add Button -->
+        <button type="button" id="addProcedure" style="padding: 10px 15px; background-color: #28a745; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Add</button>
+    </form>
+    
+    <!-- List of Added Procedures -->
+    <h3 style="margin-top: 20px; font-size: 18px; font-weight: 600; color: #333;">Added Procedures</h3>
+    <div id="procedureListContainer" style="display: flex; gap: 10px; overflow-x: auto; white-space: nowrap; padding: 10px; background: #fff; border-radius: 5px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); max-width: 100%;"></div>
+    
+    <!-- Patient Notes -->
+    <label for="treatment-plans">Procedure Notes:</label>
+    <textarea 
+        id="treatment-plans" 
+        name="treatment-plans" 
+        class="form-textarea" 
+        placeholder="Enter notes for this patient..." 
+        rows="6" 
+        style="width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; resize: vertical; background-color: #fff; color: #333; text-align: left;" 
+        required>
+    </textarea>
+</div>
 
-                        <!-- Editable text box for procedure details -->
-                        <textarea id="procedure-details" name="procedure-details" class="form-textarea" placeholder="Describe the procedures here..." rows="5" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; width: auto; margin-left: 0;" required></textarea>
-
-                        <!-- Container to display uploaded images -->
-                        <div id="uploaded-images-container" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 15px;">
-                            <!-- Images uploaded via the form will be displayed here dynamically -->
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Modal for viewing large images -->
-                <div id="image-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 1000; flex-direction: column; padding: 20px; box-sizing: border-box;">
-                    <img id="modal-image" src="" alt="Large View" style="max-width: 90%; max-height: 80%; border: 5px solid white; margin-bottom: 20px; border-radius: 10px;">
-                    <a id="download-link" href="" download style="background-color: #007BFF; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; margin-bottom: 10px;">Download</a>
-                    <button onclick="closeModal()" style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;">Close</button>
-                    <button onclick="removeImage()" style="background-color: #28a745; color: white; border: none; margin-top:5px; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;">Remove Image</button>
-                </div>
-
-			
         </main>
       
 </body>
 <script>
-    const selectedFiles = []; // Array to store all selected files
-
-    // Function to display uploaded images
-    function displayImages(event) {
-        const uploadedImagesContainer = document.getElementById('uploaded-images-container');
-        const files = Array.from(event.target.files); // Get newly selected files
-        const currentDate = new Date().toLocaleDateString();
-
-        // Add new files to the selectedFiles array
-        selectedFiles.push(...files);
-
-        console.log("Selected Files:", selectedFiles); // Log all selected files
-
-        // Display files in the container
-        uploadedImagesContainer.innerHTML = ""; // Clear container to avoid duplicates
-        selectedFiles.forEach((file, index) => {
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const imageWrapper = document.createElement('div');
-                    imageWrapper.style.width = '120px';
-                    imageWrapper.style.textAlign = 'center';
-
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.style.width = '100px';
-                    img.style.height = '100px';
-                    img.style.cursor = 'pointer';
-                    img.style.objectFit = 'cover';
-                    img.style.borderRadius = '5px';
-                    img.style.border = '1px solid #ddd';
-                    img.onclick = function () {
-                        openModal(e.target.result, file.name);
-                    };
-
-                    const title = document.createElement('div');
-                    title.textContent = file.name;
-                    title.style.marginTop = '5px';
-                    title.style.fontSize = '12px';
-                    title.style.color = '#555';
-
-                    const date = document.createElement('div');
-                    date.textContent = `Uploaded: ${currentDate}`;
-                    date.style.fontSize = '10px';
-                    date.style.color = '#777';
-
-                    imageWrapper.appendChild(img);
-                    imageWrapper.appendChild(title);
-                    imageWrapper.appendChild(date);
-
-                    uploadedImagesContainer.appendChild(imageWrapper);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-
-    // Function to open modal with a large image
-    function openModal(imageSrc, fileName) {
-        const modal = document.getElementById('image-modal');
-        const modalImage = document.getElementById('modal-image');
-        const downloadLink = document.getElementById('download-link');
-
-        modalImage.src = imageSrc;
-        downloadLink.href = imageSrc;
-        downloadLink.download = fileName;
-        modal.style.display = 'flex';
-    }
-
-    // Close the modal
-    function closeModal() {
-        const modal = document.getElementById('image-modal');
-        modal.style.display = 'none';
-    }
-
-    // Remove the image from the container
-    function removeImage() {
-        const modalImage = document.getElementById('modal-image');
-        const uploadedImagesContainer = document.getElementById('uploaded-images-container');
-
-        // Find the image container to remove
-        const imageContainers = uploadedImagesContainer.children;
-        for (let i = 0; i < imageContainers.length; i++) {
-            const imgElement = imageContainers[i].querySelector('img');
-            if (imgElement && imgElement.src === modalImage.src) {
-                uploadedImagesContainer.removeChild(imageContainers[i]);
-                selectedFiles.splice(i, 1); // Remove the file from the selectedFiles array
-                break;
-            }
+   document.getElementById('addProcedure').addEventListener('click', function() {
+        const procedureTitle = document.getElementById('procedure-title').value.trim();
+        const procedurePrice = document.getElementById('procedure-price').value.trim();
+        const procedureListContainer = document.getElementById('procedureListContainer');
+        
+        if (procedureTitle !== "" && procedurePrice !== "") {
+            const listItem = document.createElement('div');
+            listItem.style.display = "flex";
+            listItem.style.alignItems = "center";
+            listItem.style.justifyContent = "space-between";
+            listItem.style.padding = "10px";
+            listItem.style.marginRight = "10px";
+            listItem.style.background = "#f8f9fa";
+            listItem.style.borderRadius = "5px";
+            listItem.style.border = "1px solid #ddd";
+            listItem.style.whiteSpace = "nowrap";
+            listItem.style.flex = "0 0 auto";
+            
+            listItem.innerHTML = `<span style="margin-right: 10px; font-weight: bold;">${procedureTitle}</span>
+                                  <span style="margin-right: 10px;">₱${procedurePrice}</span>
+                                  <button class="delete-btn" style="padding: 5px 10px; background-color: #dc3545; color: #fff; border: none; border-radius: 5px; cursor: pointer;">✖</button>`;
+            
+            procedureListContainer.appendChild(listItem);
+            
+            listItem.querySelector('.delete-btn').addEventListener('click', function() {
+                procedureListContainer.removeChild(listItem);
+            });
+            
+            // Clear input fields
+            document.getElementById('procedure-title').value = "";
+            document.getElementById('procedure-price').value = "";
+        } else {
+            alert("Please enter both procedure title and price.");
         }
+    });
 
-        // Close the modal after removal
-        closeModal();
+function savePrescription() {
+  const title = document.getElementById('note-title').value.trim();
+  const notes = document.getElementById('treatment-plans').value.trim();
+  const patientId = '<?php echo $_SESSION['patient_id']; ?>'; // Assuming it's set in the session
+
+  // Check if all fields are filled
+  if (!title || !notes) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Please fill out all fields.'
+    });
+    return;
+  }
+
+  // Ask the user whether they want to save or edit the data
+  Swal.fire({
+    title: 'Do you want to save the prescription?',
+    text: 'Please confirm if you want to proceed with saving this prescription.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Save it',
+    cancelButtonText: 'No, Edit the Data'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Proceed with saving the data if the user clicks "Yes"
+      const data = {
+        patient_id: patientId,
+        patient_prescription: title,
+        description: notes
+      };
+
+      // Send data to the server using fetch
+      fetch('../functions/add_prescription.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data); // Log the response data to check if prescription_id is returned
+        if (data.success) {
+          const prescriptionId = data.prescription_id; // Get prescription_id from the response
+
+          // Check if prescription_id is returned
+          if (prescriptionId) {
+            // Show a success SweetAlert
+            Swal.fire({
+              icon: 'success',
+              title: 'Successfully Saved!',
+              text: 'Prescription has been saved successfully.',
+              showConfirmButton: false,
+              timer: 1500  // Display the message for 1.5 seconds
+            }).then(() => {
+              // Redirect to the next page with patient_id and prescription_id
+              window.location.href = `add_medical-history.php?patient_id=${encodeURIComponent(patientId)}&prescription_id=${encodeURIComponent(prescriptionId)}`;
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error!',
+              text: 'Prescription ID not found in response.'
+            });
+          }
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'Error saving prescription: ' + data.message
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'An error occurred while saving the prescription.'
+        });
+      });
+    } else {
+      // User clicked "No, Edit the Data", show a message and allow them to stay on the form
+      Swal.fire({
+        icon: 'info',
+        title: 'You can edit the data.',
+        text: 'Please make changes and try saving again.'
+      });
     }
+  });
+}
 
-    document.getElementById('cancelLink').addEventListener('click', function(event) {
+
+document.getElementById('cancelLink').addEventListener('click', function(event) {
         event.preventDefault(); // Prevent the default action (navigation)
-
+        
         // SweetAlert confirmation
         Swal.fire({
             title: 'Are you sure?',
@@ -321,105 +367,12 @@ if ($patientId) {
             }
         });
     });
-
-    document.getElementById("saveButton").addEventListener("click", function () {
-        const procedureDetails = document.getElementById("procedure-details").value.trim();
-
-        // Collect uploaded images
-        const imageInput = document.getElementById("image-upload");
-        const images = imageInput.files;
-
-        // Validate required fields
-        if (!procedureDetails) {
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Procedure details cannot be empty!",
-            });
-            return;
-        }
-
-        // Get patient_id and prescription_id from PHP session variables
-        const patientId = '<?php echo $_SESSION["patient_id"] ?? ""; ?>';
-        const prescriptionId = '<?php echo $_SESSION["prescription_id"] ?? ""; ?>';
-
-        // Ask the user whether to save or edit the data
-        Swal.fire({
-            title: "Do you want to save the data?",
-            text: "Please confirm if you want to proceed with saving your Procedure details.",
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonText: "Yes, Save it",
-            cancelButtonText: "No, Edit the Data",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Proceed with saving the data
-                const formData = new FormData();
-                formData.append("patient_id", patientId);
-                formData.append("prescription_id", prescriptionId);
-                formData.append("procedure_details", procedureDetails);
-
-                // Append each uploaded image to the FormData
-                selectedFiles.forEach((file, index) => {
-                    formData.append("images[]", file); // Append each file
-                    console.log(`Appended File ${index + 1}:`, file.name);
-                });
-
-                // Send data to the PHP server using fetch
-                fetch("../functions/add_procedure.php", {
-                    method: "POST",
-                    body: formData,
-                })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        if (data.success) {
-                            Swal.fire({
-                                icon: "success",
-                                title: "Success!",
-                                text: "Procedure details saved successfully.",
-                            }).then(() => {
-                                // Redirect the user to the next page
-                                window.location.href = `add_xray.php?patient_id=${patientId}&prescription_id=${prescriptionId}`;
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: "error",
-                                title: "Error!",
-                                text: data.message || "Failed to save Procedure details.",
-                            });
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("Error:", error);
-                        Swal.fire({
-                            icon: "error",
-                            title: "Error!",
-                            text: "An error occurred while saving Procedure details.",
-                        });
-                    });
-            } else {
-                // If the user clicks "No, Edit the Data"
-                Swal.fire({
-                    icon: "info",
-                    title: "You can edit the data.",
-                    text: "Please make changes and try saving again.",
-                });
-            }
-        });
-    });
 </script>
-
-<!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="/js/procedure.js"></script>
+<script src="/js/patient-info.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </html>
