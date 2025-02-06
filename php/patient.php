@@ -271,15 +271,38 @@ $user_ID = $_SESSION['user_ID'];
 						});
 					});
 
-					// Redirect to add_patientinfo.php with the selected patient_id
-					function redirectToAddRecord() {
-						if (selectedPatientId) {
-							const url = `add_patientinfo.php?patient_id=${encodeURIComponent(selectedPatientId)}`;
-							window.location.href = url;
-						} else {
-							alert("No patient ID selected.");
-						}
-					}
+					async function redirectToAddRecord() {
+    if (!selectedPatientId) {
+        alert("No patient ID selected.");
+        return;
+    }
+
+    try {
+        console.log("Fetching procedure ID for patient:", selectedPatientId);
+
+        const response = await fetch(`../functions/get_next_procedure.php?patient_id=${encodeURIComponent(selectedPatientId)}`);
+        const text = await response.text(); // Read response as text
+        console.log("Raw Response:", text); // Log full response before parsing
+
+        // Try parsing as JSON
+        const data = JSON.parse(text);
+        console.log("Parsed JSON Response:", data);
+
+        if (data.success) {
+            const nextProcedureId = data.procedure_id;
+            console.log("Next Procedure ID:", nextProcedureId);
+            const url = `add_patientinfo.php?patient_id=${encodeURIComponent(selectedPatientId)}&procedure_id=${encodeURIComponent(nextProcedureId)}`;
+            window.location.href = url;
+        } else {
+            console.error("Error from server:", data.message);
+            alert("Failed to generate procedure ID: " + data.message);
+        }
+    } catch (error) {
+        console.error("Fetch error:", error);
+        alert("An error occurred while generating procedure ID.");
+    }
+}
+
 				</script>
 
 								
