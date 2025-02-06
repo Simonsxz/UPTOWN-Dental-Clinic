@@ -1,32 +1,64 @@
-
 <?php
-session_start();  // Ensure session is started at the very top of the page
+session_start(); // Start session
 
-include "../functions/db_conn.php";         // Include database connection
-include "../functions/function.php";    
-include "../functions/module_doctors_validation.php"; // Include the validation function
+include "../functions/db_conn.php"; // Database connection
+include "../functions/function.php"; 
+include "../functions/module_doctors_validation.php"; // Validation function
 
+// Redirect to login if the user is not authenticated
 if (!isset($_SESSION['user_ID'])) {
-    header("Location: ../index.php"); // Redirect to login if not authenticated
+    header("Location: ../index.php");
     exit;
 }
 
-$user_ID = $_SESSION['user_ID']; // Fetch user_ID from session
+$user_ID = $_SESSION['user_ID']; 
 
+// Store patient_id and procedure_id in session (only if provided)
 if (isset($_GET['patient_id'])) {
     $_SESSION['patient_id'] = $_GET['patient_id'];
 }
-
-$patientId = $_SESSION['patient_id'] ?? null;
-
-if ($patientId) {
-    // Fetch the patient name from the database using the patient_id
-    // Example function call (make sure to replace with your actual function)
-    $patientFullName = getPatientFullName($patientId); // Implement this function to fetch the name from DB
-} else {
-    $patientFullName = "No Name Available"; // Fallback in case no patient_id is found
+if (isset($_GET['procedure_id'])) {
+    $_SESSION['procedure_id'] = $_GET['procedure_id'];
 }
+
+// Retrieve patient_id and procedure_id from session (use fallback to avoid errors)
+$patient_id = $_SESSION['patient_id'] ?? null;
+$procedure_id = $_SESSION['procedure_id'] ?? null;
+
+// Fetch patient name if patient_id exists
+$patientFullName = (!empty($patient_id)) ? getPatientFullName($patient_id) : "No Name Available";
+
+// Define allowed pages
+$allowed_pages = [
+    'add_patientinfo.php',
+    'add_medical-history.php',
+    'add_medicalcondition.php',
+    'add_ptp.php',
+    'add_procedure.php',
+    'add_xray.php',
+    'add_intra.php',
+    'add_extra.php',
+    'add_notes.php'
+];
+
+// Get the current script name
+$current_page = basename($_SERVER['PHP_SELF']);
+
+// 🚀 **Fix: Only clear cache when visiting a page NOT in the allowed list**
+if (!in_array($current_page, $allowed_pages)) {
+    unset($_SESSION['cached_data']); // Clear cached data
+}
+
+// 🚀 **Fix: Store input data when switching pages**
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $_SESSION['cached_data']['medical_history'] = $_POST; // Store Medical History input data
+}
+
+// Debugging: Uncomment to check stored session data
+// echo "<pre>"; print_r($_SESSION['cached_data']['medical_history']); echo "</pre>";
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -138,36 +170,43 @@ if ($patientId) {
 
 							<div class="module-container">
                             <div class="horizontal-nav-bar">
-                                <a href="add_patientinfo.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item " disabled style="cursor: not-allowed;">P.I.R</button>
-                                </a>
-                                <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">Medical History</button>
-                                </a>
-                                <a href="medical-condition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">Medical Condition</button>
-                                </a>
-                                <a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">PTP</button>
-                                </a>
-                                <a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item active" disabled style="cursor: not-allowed;">Procedures</button>
-                                </a>
-                                <a href="patient-xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">Xray</button>
-                                </a>
-                                <a href="patient-intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">Intra Oral Photos</button>
-                                </a>
-                                <a href="patient-extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">Extra Oral Photos</button>
-                                </a>
-                                <a href="notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">Notes</button>
-                                </a>
+                            <a href="add_patientinfo.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="pirLink">
+                                <button class="nav-item ">P.I.R</button>
+                            </a>
+
+                            <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="historyLink">
+                                <button class="nav-item ">Medical History</button>
+                            </a>
+
+                            <a href="add_medicalcondition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="conditionLink">
+                                <button class="nav-item">Medical Condition</button>
+                            </a>
+
+                            <a href="add_ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="ptpLink">
+                                <button class="nav-item">PTP</button>
+                            </a>
+
+                            <a href="add_procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="procedureLink">
+                                <button class="nav-item active">Procedures</button>
+                            </a>
+
+                            <a href="add_xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="xrayLink">
+                                <button class="nav-item">Xray</button>
+                            </a>
+
+                            <a href="add_intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="intraLink">
+                                <button class="nav-item">Intra Oral Photos</button>
+                            </a>
+
+                            <a href="add_extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="extraLink">
+                                <button class="nav-item ">Extra Oral Photos</button>
+                            </a>
+
+                            <a href="add_notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="notesLink">
+                                <button class="nav-item ">Notes</button>
+                            </a>
                             </div>
 							</div>
-
               <div class="info-container" style="padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
     <h2 class="info-title" style="font-size: 20px; font-weight: 600; margin-bottom: 15px; color: #333;">Patient Procedure</h2>
     <form class="details-form1" id="procedureForm" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
@@ -204,8 +243,8 @@ if ($patientId) {
     <!-- Patient Notes -->
     <label for="treatment-plans">Procedure Notes:</label>
     <textarea 
-        id="treatment-plans" 
-        name="treatment-plans" 
+        id="treatment-plans1" 
+        name="treatment-plans1" 
         class="form-textarea" 
         placeholder="Enter notes for this patient..." 
         rows="6" 
@@ -214,10 +253,42 @@ if ($patientId) {
     </textarea>
 </div>
 
-        </main>
-      
+</main>
+
 </body>
 <script>
+   // Load cached procedures from localStorage when the page loads
+   window.addEventListener('DOMContentLoaded', function() {
+        const procedures = JSON.parse(localStorage.getItem('procedures')) || [];
+        const procedureListContainer = document.getElementById('procedureListContainer');
+        
+        // Display cached procedures
+        procedures.forEach(function(procedure) {
+            const listItem = document.createElement('div');
+            listItem.style.display = "flex";
+            listItem.style.alignItems = "center";
+            listItem.style.justifyContent = "space-between";
+            listItem.style.padding = "10px";
+            listItem.style.marginRight = "10px";
+            listItem.style.background = "#f8f9fa";
+            listItem.style.borderRadius = "5px";
+            listItem.style.border = "1px solid #ddd";
+            listItem.style.whiteSpace = "nowrap";
+            listItem.style.flex = "0 0 auto";
+            
+            listItem.innerHTML = `<span style="margin-right: 10px; font-weight: bold;">${procedure.title}</span>
+                                  <span style="margin-right: 10px;">₱${procedure.price}</span>
+                                  <button class="delete-btn" style="padding: 5px 10px; background-color: #dc3545; color: #fff; border: none; border-radius: 5px; cursor: pointer;">✖</button>`;
+            
+            procedureListContainer.appendChild(listItem);
+            
+            listItem.querySelector('.delete-btn').addEventListener('click', function() {
+                procedureListContainer.removeChild(listItem);
+                removeProcedureFromCache(procedure);
+            });
+        });
+    });
+
    document.getElementById('addProcedure').addEventListener('click', function() {
         const procedureTitle = document.getElementById('procedure-title').value.trim();
         const procedurePrice = document.getElementById('procedure-price').value.trim();
@@ -244,7 +315,12 @@ if ($patientId) {
             
             listItem.querySelector('.delete-btn').addEventListener('click', function() {
                 procedureListContainer.removeChild(listItem);
+                removeProcedureFromCache({ title: procedureTitle, price: procedurePrice });
             });
+            
+            // Save procedure to localStorage
+            const newProcedure = { title: procedureTitle, price: procedurePrice };
+            saveProcedureToCache(newProcedure);
             
             // Clear input fields
             document.getElementById('procedure-title').value = "";
@@ -253,6 +329,34 @@ if ($patientId) {
             alert("Please enter both procedure title and price.");
         }
     });
+
+   // Save procedure to localStorage
+   function saveProcedureToCache(procedure) {
+        const procedures = JSON.parse(localStorage.getItem('procedures')) || [];
+        procedures.push(procedure);
+        localStorage.setItem('procedures', JSON.stringify(procedures));
+    }
+
+   // Remove procedure from localStorage
+   function removeProcedureFromCache(procedureToRemove) {
+        let procedures = JSON.parse(localStorage.getItem('procedures')) || [];
+        procedures = procedures.filter(procedure => procedure.title !== procedureToRemove.title || procedure.price !== procedureToRemove.price);
+        localStorage.setItem('procedures', JSON.stringify(procedures));
+    }
+
+
+    window.addEventListener('DOMContentLoaded', function() {
+    const cachedNotes = localStorage.getItem('procedureNotes');
+    if (cachedNotes) {
+        document.getElementById('treatment-plans1').value = cachedNotes;
+    }
+});
+
+// Save procedure notes to localStorage when the textarea content changes
+document.getElementById('treatment-plans1').addEventListener('input', function() {
+    const notesContent = document.getElementById('treatment-plans1').value;
+    localStorage.setItem('procedureNotes', notesContent);
+});
 
 function savePrescription() {
   const title = document.getElementById('note-title').value.trim();
@@ -345,7 +449,6 @@ function savePrescription() {
   });
 }
 
-
 document.getElementById('cancelLink').addEventListener('click', function(event) {
         event.preventDefault(); // Prevent the default action (navigation)
         
@@ -368,6 +471,7 @@ document.getElementById('cancelLink').addEventListener('click', function(event) 
         });
     });
 </script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>

@@ -1,32 +1,63 @@
-
 <?php
-session_start();  // Ensure session is started at the very top of the page
+session_start(); // Start session
 
-include "../functions/db_conn.php";         // Include database connection
-include "../functions/function.php";    
-include "../functions/module_doctors_validation.php"; // Include the validation function
+include "../functions/db_conn.php"; // Database connection
+include "../functions/function.php"; 
+include "../functions/module_doctors_validation.php"; // Validation function
 
+// Redirect to login if the user is not authenticated
 if (!isset($_SESSION['user_ID'])) {
-    header("Location: ../index.php"); // Redirect to login if not authenticated
+    header("Location: ../index.php");
     exit;
 }
 
-$user_ID = $_SESSION['user_ID']; // Fetch user_ID from session
+$user_ID = $_SESSION['user_ID']; 
 
+// Store patient_id and procedure_id in session (only if provided)
 if (isset($_GET['patient_id'])) {
     $_SESSION['patient_id'] = $_GET['patient_id'];
 }
-
-$patientId = $_SESSION['patient_id'] ?? null;
-
-if ($patientId) {
-    // Fetch the patient name from the database using the patient_id
-    // Example function call (make sure to replace with your actual function)
-    $patientFullName = getPatientFullName($patientId); // Implement this function to fetch the name from DB
-} else {
-    $patientFullName = "No Name Available"; // Fallback in case no patient_id is found
+if (isset($_GET['procedure_id'])) {
+    $_SESSION['procedure_id'] = $_GET['procedure_id'];
 }
+
+// Retrieve patient_id and procedure_id from session (use fallback to avoid errors)
+$patient_id = $_SESSION['patient_id'] ?? null;
+$procedure_id = $_SESSION['procedure_id'] ?? null;
+
+// Fetch patient name if patient_id exists
+$patientFullName = (!empty($patient_id)) ? getPatientFullName($patient_id) : "No Name Available";
+
+// Define allowed pages
+$allowed_pages = [
+    'add_patientinfo.php',
+    'add_medical-history.php',
+    'add_medicalcondition.php',
+    'add_ptp.php',
+    'add_procedure.php',
+    'add_xray.php',
+    'add_intra.php',
+    'add_extra.php',
+    'add_notes.php'
+];
+
+// Get the current script name
+$current_page = basename($_SERVER['PHP_SELF']);
+
+// 🚀 **Fix: Only clear cache when visiting a page NOT in the allowed list**
+if (!in_array($current_page, $allowed_pages)) {
+    unset($_SESSION['cached_data']); // Clear cached data
+}
+
+// 🚀 **Fix: Store input data when switching pages**
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $_SESSION['cached_data']['medical_history'] = $_POST; // Store Medical History input data
+}
+
+// Debugging: Uncomment to check stored session data
+// echo "<pre>"; print_r($_SESSION['cached_data']['medical_history']); echo "</pre>";
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -130,33 +161,41 @@ if ($patientId) {
 
 							<div class="module-container">
                             <div class="horizontal-nav-bar">
-                                <a href="add_patientinfo.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item " disabled style="cursor: not-allowed;">P.I.R</button>
-                                </a>
-                                <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item active" disabled style="cursor: not-allowed;">Medical History</button>
-                                </a>
-                                <a href="medical-condition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">Medical Condition</button>
-                                </a>
-                                <a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">PTP</button>
-                                </a>
-                                <a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">Procedures</button>
-                                </a>
-                                <a href="patient-xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">Xray</button>
-                                </a>
-                                <a href="patient-intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">Intra Oral Photos</button>
-                                </a>
-                                <a href="patient-extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">Extra Oral Photos</button>
-                                </a>
-                                <a href="notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">Notes</button>
-                                </a>
+                            <a href="add_patientinfo.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="pirLink">
+                                <button class="nav-item ">P.I.R</button>
+                            </a>
+
+                            <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="historyLink">
+                                <button class="nav-item active">Medical History</button>
+                            </a>
+
+                            <a href="add_medicalcondition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="conditionLink">
+                                <button class="nav-item">Medical Condition</button>
+                            </a>
+
+                            <a href="add_ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="ptpLink">
+                                <button class="nav-item">PTP</button>
+                            </a>
+
+                            <a href="add_procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="procedureLink">
+                                <button class="nav-item">Procedures</button>
+                            </a>
+
+                            <a href="add_xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="xrayLink">
+                                <button class="nav-item">Xray</button>
+                            </a>
+
+                            <a href="add_intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="intraLink">
+                                <button class="nav-item">Intra Oral Photos</button>
+                            </a>
+
+                            <a href="add_extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="extraLink">
+                                <button class="nav-item ">Extra Oral Photos</button>
+                            </a>
+
+                            <a href="add_notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="notesLink">
+                                <button class="nav-item">Notes</button>
+                            </a>
                             </div>
 
 						</div>
@@ -164,60 +203,75 @@ if ($patientId) {
 
                         <div class="info-container">
             <h2 class="info-title">Medical History</h2>
-            <form class="details-form" id="medicalHistoryForm">
+            <form class="details-form" id="medicalHistoryForm" method="POST">
     <div class="form-group">
         <label for="last-visit">Date of Last Visit:</label>
-        <input type="date" id="last-visit" name="last-visit" class="form-input" required>
+        <input type="date" id="last-visit" name="last-visit" class="form-input" required 
+            value="<?php echo $_SESSION['cached_data']['medical_history']['last-visit'] ?? ''; ?>">
     </div>
+
     <div class="form-group">
         <label for="physician-name">General Physician's Name:</label>
-        <input type="text" id="physician-name" name="physician-name" class="form-input" required>
+        <input type="text" id="physician-name" name="physician-name" class="form-input" required
+            value="<?php echo $_SESSION['cached_data']['medical_history']['physician-name'] ?? ''; ?>">
     </div>
+
     <div class="form-group">
         <label>Have you had any serious illness or operation?</label>
-        <textarea id="serious-illness" name="serious-illness" class="form-input" rows="3" required></textarea>
+        <textarea id="serious-illness" name="serious-illness" class="form-input" rows="3" required><?php echo $_SESSION['cached_data']['medical_history']['serious-illness'] ?? ''; ?></textarea>
     </div>
+
     <div class="form-group">
         <label>If Yes, describe:</label>
-        <textarea id="illness-description" name="illness-description" class="form-input" rows="3" required></textarea>
+        <textarea id="illness-description" name="illness-description" class="form-input" rows="3" required><?php echo $_SESSION['cached_data']['medical_history']['illness-description'] ?? ''; ?></textarea>
     </div>
+
     <div class="form-group">
-        <label>Have you ever had a blood transfusion?</label>
-        <div>
-            <label><input type="radio" name="blood-transfusion" value="yes" required> Yes</label>
-            <label><input type="radio" name="blood-transfusion" value="no" required> No</label>
-        </div>
+    <label>Have you ever had a blood transfusion?</label>
+    <div>
+        <label><input type="radio" name="blood-transfusion" value="yes" 
+            <?php echo (isset($_SESSION['cached_data']['medical_history']['blood-transfusion']) && $_SESSION['cached_data']['medical_history']['blood-transfusion'] === 'yes') ? 'checked' : ''; ?>>
+            Yes</label>
+        <label><input type="radio" name="blood-transfusion" value="no" 
+            <?php echo (isset($_SESSION['cached_data']['medical_history']['blood-transfusion']) && $_SESSION['cached_data']['medical_history']['blood-transfusion'] === 'no') ? 'checked' : ''; ?>>
+            No</label>
     </div>
+</div>
+
     <div class="form-group">
         <label>If Yes, give approximate dates:</label>
-        <input type="text" id="transfusion-dates" name="transfusion-dates" class="form-input" required>
+        <input type="text" id="transfusion-dates" name="transfusion-dates" class="form-input" required
+            value="<?php echo $_SESSION['cached_data']['medical_history']['transfusion-dates'] ?? ''; ?>">
     </div>
+
     <div class="form-group">
-        <label>(For Women only) Are you pregnant?</label>
-        <div>
-            <label><input type="radio" name="pregnant" value="yes" required> Yes</label>
-            <label><input type="radio" name="pregnant" value="no" required> No</label>
-        </div>
+    <label>(For Women only) Are you pregnant?</label>
+    <div>
+        <label><input type="radio" name="pregnant" value="yes" 
+            <?php echo (isset($_SESSION['cached_data']['medical_history']['pregnant']) && $_SESSION['cached_data']['medical_history']['pregnant'] === 'yes') ? 'checked' : ''; ?>>
+            Yes</label>
+        <label><input type="radio" name="pregnant" value="no" 
+            <?php echo (isset($_SESSION['cached_data']['medical_history']['pregnant']) && $_SESSION['cached_data']['medical_history']['pregnant'] === 'no') ? 'checked' : ''; ?>>
+            No</label>
     </div>
-    <div class="form-group">
-        <label>Are you taking birth control pills?</label>
-        <div>
-            <label><input type="radio" name="birth-control" value="yes" required> Yes</label>
-            <label><input type="radio" name="birth-control" value="no" required> No</label>
-        </div>
-    </div>
+</div>
+
     <div class="form-group">
         <label>Are you taking any medication?</label>
         <div>
-            <label><input type="radio" name="medication" value="yes" required> Yes</label>
-            <label><input type="radio" name="medication" value="no" required> No</label>
+            <label><input type="radio" name="medication" value="yes" 
+                <?php echo (isset($_SESSION['cached_data']['medical_history']['medication']) && $_SESSION['cached_data']['medical_history']['medication'] == 'yes') ? 'checked' : ''; ?>> Yes</label>
+            <label><input type="radio" name="medication" value="no" 
+                <?php echo (isset($_SESSION['cached_data']['medical_history']['medication']) && $_SESSION['cached_data']['medical_history']['medication'] == 'no') ? 'checked' : ''; ?>> No</label>
         </div>
     </div>
+
     <div class="form-group">
         <label>If Yes, please specify:</label>
-        <textarea id="medication-specify" name="medication-specify" class="form-input" rows="3" required></textarea>
+        <textarea id="medication-specify" name="medication-specify" class="form-input" rows="3" required><?php echo $_SESSION['cached_data']['medical_history']['medication-specify'] ?? ''; ?></textarea>
     </div>
 </form>
+
 
         </div>
 
@@ -351,6 +405,40 @@ document.getElementById('cancelLink').addEventListener('click', function(event) 
         }
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    let form = document.getElementById("medicalHistoryForm");
+
+    // Load cached values from localStorage
+    let cachedData = JSON.parse(localStorage.getItem("medicalHistoryCache"));
+    if (cachedData) {
+        for (let key in cachedData) {
+            let field = document.querySelector(`[name="${key}"]`);
+            
+            if (field) {
+                if (field.type === "radio") {
+                    let radios = document.querySelectorAll(`[name="${key}"]`);
+                    radios.forEach(radio => {
+                        if (radio.value === cachedData[key]) {
+                            radio.checked = true;
+                        }
+                    });
+                } else {
+                    field.value = cachedData[key];
+                }
+            }
+        }
+    }
+
+    // Save data to localStorage on input change
+    form.addEventListener("input", function () {
+        let formData = new FormData(form);
+        let obj = {};
+        formData.forEach((value, key) => obj[key] = value);
+        localStorage.setItem("medicalHistoryCache", JSON.stringify(obj));
+    });
+});
+
 
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>

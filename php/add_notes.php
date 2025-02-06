@@ -1,34 +1,63 @@
-
 <?php
-session_start();  // Ensure session is started at the very top of the page
+session_start(); // Start session
 
-include "../functions/db_conn.php";         // Include database connection
-include "../functions/function.php";    
-include "../functions/module_doctors_validation.php"; // Include the validation function
+include "../functions/db_conn.php"; // Database connection
+include "../functions/function.php"; 
+include "../functions/module_doctors_validation.php"; // Validation function
 
+// Redirect to login if the user is not authenticated
 if (!isset($_SESSION['user_ID'])) {
-    header("Location: ../index.php"); // Redirect to login if not authenticated
+    header("Location: ../index.php");
     exit;
 }
 
-$user_ID = $_SESSION['user_ID']; // Fetch user_ID from session
+$user_ID = $_SESSION['user_ID']; 
 
-if (isset($_GET['patient_id']) && isset($_GET['patient_prescription'])) {
+// Store patient_id and procedure_id in session (only if provided)
+if (isset($_GET['patient_id'])) {
     $_SESSION['patient_id'] = $_GET['patient_id'];
-    $_SESSION['patient_prescription'] = $_GET['patient_prescription'];
+}
+if (isset($_GET['procedure_id'])) {
+    $_SESSION['procedure_id'] = $_GET['procedure_id'];
 }
 
-$patientId = $_SESSION['patient_id'] ?? null;
-$patientPrescription = $_SESSION['patient_prescription'] ?? null;
+// Retrieve patient_id and procedure_id from session (use fallback to avoid errors)
+$patient_id = $_SESSION['patient_id'] ?? null;
+$procedure_id = $_SESSION['procedure_id'] ?? null;
 
-if ($patientId) {
-    // Fetch the patient name from the database using the patient_id
-    // Example function call (make sure to replace with your actual function)
-    $patientFullName = getPatientFullName($patientId); // Implement this function to fetch the name from DB
-} else {
-    $patientFullName = "No Name Available"; // Fallback in case no patient_id is found
+// Fetch patient name if patient_id exists
+$patientFullName = (!empty($patient_id)) ? getPatientFullName($patient_id) : "No Name Available";
+
+// Define allowed pages
+$allowed_pages = [
+    'add_patientinfo.php',
+    'add_medical-history.php',
+    'add_medicalcondition.php',
+    'add_ptp.php',
+    'add_procedure.php',
+    'add_xray.php',
+    'add_intra.php',
+    'add_extra.php',
+    'add_notes.php'
+];
+
+// Get the current script name
+$current_page = basename($_SERVER['PHP_SELF']);
+
+// 🚀 **Fix: Only clear cache when visiting a page NOT in the allowed list**
+if (!in_array($current_page, $allowed_pages)) {
+    unset($_SESSION['cached_data']); // Clear cached data
 }
+
+// 🚀 **Fix: Store input data when switching pages**
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $_SESSION['cached_data']['medical_history'] = $_POST; // Store Medical History input data
+}
+
+// Debugging: Uncomment to check stored session data
+// echo "<pre>"; print_r($_SESSION['cached_data']['medical_history']); echo "</pre>";
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -131,261 +160,193 @@ if ($patientId) {
 
 							<div class="module-container">
                             <div class="horizontal-nav-bar">
-                                <a href="add_patientinfo.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item " disabled style="cursor: not-allowed;">P.I.R</button>
-                                </a>
-                                <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item " disabled style="cursor: not-allowed;">Medical History</button>
-                                </a>
-                                <a href="medical-condition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item " disabled style="cursor: not-allowed;">Medical Condition</button>
-                                </a>
-                                <a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item " disabled style="cursor: not-allowed;">PTP</button>
-                                </a>
-                                <a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">Procedures</button>
-                                </a>
-                                <a href="patient-xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">Xray</button>
-                                </a>
-                                <a href="patient-intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">Intra Oral Photos</button>
-                                </a>
-                                <a href="patient-extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item" disabled style="cursor: not-allowed;">Extra Oral Photos</button>
-                                </a>
-                                <a href="notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>" class="nav-item-link" onclick="return false;">
-                                    <button class="nav-item active" disabled style="cursor: not-allowed;">Notes</button>
-                                </a>
+                            <a href="add_patientinfo.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="pirLink">
+                                <button class="nav-item ">P.I.R</button>
+                            </a>
+
+                            <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="historyLink">
+                                <button class="nav-item ">Medical History</button>
+                            </a>
+
+                            <a href="add_medicalcondition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="conditionLink">
+                                <button class="nav-item">Medical Condition</button>
+                            </a>
+
+                            <a href="add_ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="ptpLink">
+                                <button class="nav-item">PTP</button>
+                            </a>
+
+                            <a href="add_procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="procedureLink">
+                                <button class="nav-item">Procedures</button>
+                            </a>
+
+                            <a href="add_xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="xrayLink">
+                                <button class="nav-item">Xray</button>
+                            </a>
+
+                            <a href="add_intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="intraLink">
+                                <button class="nav-item">Intra Oral Photos</button>
+                            </a>
+
+                            <a href="add_extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="extraLink">
+                                <button class="nav-item ">Extra Oral Photos</button>
+                            </a>
+
+                            <a href="add_notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="notesLink">
+                                <button class="nav-item active">Notes</button>
+                            </a>
                             </div>
 							</div>
 
+                            
                             <div class="info-container">
-                                <h2 class="info-title" style="text-align: center; margin-bottom: 5px; font-family: Arial, sans-serif; color: #333;">Add Notes</h2>
-                                
-                                <!-- Notes input field -->
-                                <form class="details-form1" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
-                                    <!-- Image upload input -->
-                                    <label for="image-upload" style="font-size: 14px; font-weight: bold; color: #555;">Upload Images (Optional):</label>
-                                    <input id="image-upload" type="file" accept="image/*" multiple style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;" onchange="displayImages(event)">
-                                    
-                                    <!-- Editable text area for notes -->
-                                    <label for="notes" style="font-size: 14px; font-weight: bold; color: #555;">Add Notes (Optional):</label>
-                                    <textarea id="notes" name="notes" class="form-textarea" placeholder="Write your notes here..." rows="5" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; width: auto; margin-left: 0;" required></textarea>
+    <h2 class="info-title" style="text-align: center; margin-bottom: 5px; font-family: Arial, sans-serif; color: #333;">Notes</h2>
+    
+    <!-- Image upload input -->
+    <form class="details-form1" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
+        <label for="image-upload-notes" style="font-size: 14px; font-weight: bold; color: #555;">Upload Images (Optional):</label>
+        <input id="image-upload-notes" type="file" accept="image/*" multiple style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;" onchange="displayImages(event)">
+        
+        <!-- Editable text area for notes -->
+        <textarea id="treatment-plans3" name="treatment-plans3" class="form-textarea" placeholder="Add your notes here..." rows="5" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; width: auto; margin-left: 0;" required></textarea>
 
-                                    <!-- Container to display uploaded images -->
-                                    <div id="uploaded-images-container" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 15px;">
-                                        <!-- Images uploaded via the form will be displayed here dynamically -->
-                                    </div>
-                                </form>
-                            </div>
+        <!-- Container to display uploaded images -->
+        <div id="uploaded-images-container1" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 15px;">
+            <!-- Images uploaded via the form will be displayed here dynamically -->
+        </div>
+    </form>
+</div>
 
-                            <!-- Modal for viewing large images -->
-                            <div id="image-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 1000; flex-direction: column; padding: 20px; box-sizing: border-box;">
-                                <img id="modal-image" src="" alt="Large View" style="max-width: 90%; max-height: 80%; border: 5px solid white; margin-bottom: 20px; border-radius: 10px;">
-                                <a id="download-link" href="" download style="background-color: #007BFF; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; margin-bottom: 10px;">Download</a>
-                                <button onclick="closeModal()" style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;">Close</button>
-                                <button onclick="removeImage()" style="background-color: #28a745; color: white; border: none; margin-top:5px; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;">Remove Image</button>
-                            </div>
-
+<!-- Modal for viewing large images -->
+<div id="image-modal1" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 1000; flex-direction: column; padding: 20px; box-sizing: border-box;">
+    <img id="modal-image1" src="" alt="Large View" style="max-width: 90%; max-height: 80%; border: 5px solid white; margin-bottom: 20px; border-radius: 10px;">
+    <a id="download-link1" href="" download style="background-color: #007BFF; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; margin-bottom: 10px;">Download</a>
+    <button onclick="closeModal()" style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;">Close</button>
+    <button onclick="removeImage()" style="background-color: #28a745; color: white; border: none; margin-top:5px; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;">Remove Image</button>
+</div>
 
 <script>
-    const selectedFiles = []; // Array to store all selected files
+    const selectedFiles1 = JSON.parse(localStorage.getItem('uploadedImagesNotes')) || []; // Array to store all selected files for Notes section
 
-// Function to display uploaded images
-function displayImages(event) {
-    const uploadedImagesContainer = document.getElementById('uploaded-images-container');
-    const files = Array.from(event.target.files); // Get newly selected files
-    const currentDate = new Date().toLocaleDateString();
+    // Function to display uploaded images for Notes section
+    function displayImages(event) {
+        const uploadedImagesContainer = document.getElementById('uploaded-images-container1');
+        const files = Array.from(event.target.files); // Get newly selected files
+        const currentDate = new Date().toLocaleDateString();
 
-    // Add new files to the selectedFiles array
-    selectedFiles.push(...files);
-
-    console.log("Selected Files:", selectedFiles); // Log all selected files
-
-    // Display files in the container
-    uploadedImagesContainer.innerHTML = ""; // Clear container to avoid duplicates
-    selectedFiles.forEach((file, index) => {
-        if (file) {
+        // Convert new files to base64 and add to selectedFiles1
+        files.forEach((file) => {
             const reader = new FileReader();
             reader.onload = function (e) {
-                const imageWrapper = document.createElement('div');
-                imageWrapper.style.width = '120px';
-                imageWrapper.style.textAlign = 'center';
-
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.style.width = '100px';
-                img.style.height = '100px';
-                img.style.cursor = 'pointer';
-                img.style.objectFit = 'cover';
-                img.style.borderRadius = '5px';
-                img.style.border = '1px solid #ddd';
-                img.onclick = function () {
-                    openModal(e.target.result, file.name);
-                };
-
-                const title = document.createElement('div');
-                title.textContent = file.name;
-                title.style.marginTop = '5px';
-                title.style.fontSize = '12px';
-                title.style.color = '#555';
-
-                const date = document.createElement('div');
-                date.textContent = `Uploaded: ${currentDate}`;
-                date.style.fontSize = '10px';
-                date.style.color = '#777';
-
-                imageWrapper.appendChild(img);
-                imageWrapper.appendChild(title);
-                imageWrapper.appendChild(date);
-
-                uploadedImagesContainer.appendChild(imageWrapper);
+                selectedFiles1.push({ name: file.name, data: e.target.result });
+                localStorage.setItem('uploadedImagesNotes', JSON.stringify(selectedFiles1)); // Cache the new files in localStorage
+                displayImageFromCache(); // Re-render the images after updating cache
             };
             reader.readAsDataURL(file);
-        }
-    });
-}
-
-// Function to open modal with a large image
-function openModal(imageSrc, fileName) {
-    const modal = document.getElementById('image-modal');
-    const modalImage = document.getElementById('modal-image');
-    const downloadLink = document.getElementById('download-link');
-
-    modalImage.src = imageSrc;
-    downloadLink.href = imageSrc;
-    downloadLink.download = fileName;
-    modal.style.display = 'flex';
-}
-
-// Close the modal
-function closeModal() {
-    const modal = document.getElementById('image-modal');
-    modal.style.display = 'none';
-}
-
-// Remove the image from the container
-function removeImage() {
-    const modalImage = document.getElementById('modal-image');
-    const uploadedImagesContainer = document.getElementById('uploaded-images-container');
-
-    // Find the image container to remove
-    const imageContainers = uploadedImagesContainer.children;
-    for (let i = 0; i < imageContainers.length; i++) {
-        const imgElement = imageContainers[i].querySelector('img');
-        if (imgElement && imgElement.src === modalImage.src) {
-            uploadedImagesContainer.removeChild(imageContainers[i]);
-            selectedFiles.splice(i, 1); // Remove the file from the selectedFiles array
-            break;
-        }
-    }
-
-    // Close the modal after removal
-    closeModal();
-}
-
-document.getElementById('cancelLink').addEventListener('click', function(event) {
-    event.preventDefault(); // Prevent the default action (navigation)
-
-    // SweetAlert confirmation
-    Swal.fire({
-        title: 'Are you sure?',
-        text: 'The data will not be saved!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, cancel',
-        cancelButtonText: 'No, stay'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // If the user confirms, redirect to patient.php
-            window.location.href = this.href;
-        } else {
-            // If the user clicks "No", nothing happens
-            Swal.fire('Cancelled', 'You can continue with your work.', 'info');
-        }
-    });
-});
-document.getElementById("saveButton").addEventListener("click", function () {
-    const notes = document.getElementById("notes").value;
-    const formData = new FormData();
-
-    // Get patient_id and prescription_id from PHP session variables
-    const patientId = '<?php echo $_SESSION["patient_id"] ?? ""; ?>';
-    const prescriptionId = '<?php echo $_SESSION["prescription_id"] ?? ""; ?>';
-
-    // Validate notes input
-    if (!notes.trim()) {
-        Swal.fire({
-            icon: "error",
-            title: "Missing Information",
-            text: "Please provide notes.",
         });
-        return;
     }
 
-    // Add notes to the form data
-    formData.append("notes", notes);
+    // Function to display images from cache (localStorage)
+    function displayImageFromCache() {
+        const uploadedImagesContainer = document.getElementById('uploaded-images-container1');
+        uploadedImagesContainer.innerHTML = ""; // Clear existing images to avoid duplicates
 
-    // Add uploaded images to the form data
-    selectedFiles.forEach((file, index) => {
-        formData.append("images[]", file); // Append each file
-        console.log(`Appended File ${index + 1}:`, file.name);
-    });
+        selectedFiles1.forEach((file) => {
+            const imageWrapper = document.createElement('div');
+            imageWrapper.style.width = '120px';
+            imageWrapper.style.textAlign = 'center';
 
-    // Add patient_id and prescription_id to the form data
-    formData.append("patient_id", patientId);
-    formData.append("prescription_id", prescriptionId);
+            const img = document.createElement('img');
+            img.src = file.data;
+            img.style.width = '100px';
+            img.style.height = '100px';
+            img.style.cursor = 'pointer';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '5px';
+            img.style.border = '1px solid #ddd';
+            img.onclick = function () {
+                openModal(file.data, file.name);
+            };
 
-    // Confirm save action using SweetAlert
-    Swal.fire({
-        title: "Do you want to save the notes?",
-        text: "Please confirm if you want to proceed with saving the notes.",
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonText: "Yes, Save it",
-        cancelButtonText: "No, Edit the Data",
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Proceed with saving the data if the user confirms
-            fetch("../functions/add_notes.php", {
-                method: "POST",
-                body: formData,
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        Swal.fire({
-                            icon: "success",
-                            title: "Congratulations!",
-                            text: "Notes saved successfully, and a new record has been added for the patient!",
-                            confirmButtonText: "Great!",
-                        }).then(() => {
-                            // Redirect to the patient page after saving
-                            window.location.href = "patient.php";
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: "error",
-                            title: "Error!",
-                            text: data.message || "Failed to save notes.",
-                        });
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Error!",
-                        text: "An error occurred while saving notes.",
-                    });
-                });
+            const title = document.createElement('div');
+            title.textContent = file.name;
+            title.style.marginTop = '5px';
+            title.style.fontSize = '12px';
+            title.style.color = '#555';
+
+            const date = document.createElement('div');
+            date.textContent = `Uploaded: ${new Date().toLocaleDateString()}`;
+            date.style.fontSize = '10px';
+            date.style.color = '#777';
+
+            imageWrapper.appendChild(img);
+            imageWrapper.appendChild(title);
+            imageWrapper.appendChild(date);
+
+            uploadedImagesContainer.appendChild(imageWrapper);
+        });
+    }
+
+    // Function to open modal with a large image
+    function openModal(imageSrc, fileName) {
+        const modal = document.getElementById('image-modal1');
+        const modalImage = document.getElementById('modal-image1');
+        const downloadLink = document.getElementById('download-link1');
+
+        modalImage.src = imageSrc;
+        downloadLink.href = imageSrc;
+        downloadLink.download = fileName;
+        modal.style.display = 'flex';
+    }
+
+    // Close the modal
+    function closeModal() {
+        const modal = document.getElementById('image-modal1');
+        modal.style.display = 'none';
+    }
+
+    // Remove the image from the container
+    function removeImage() {
+        const modalImage = document.getElementById('modal-image1');
+        const uploadedImagesContainer = document.getElementById('uploaded-images-container1');
+
+        // Find the image container to remove
+        const imageContainers = uploadedImagesContainer.children;
+        for (let i = 0; i < imageContainers.length; i++) {
+            const imgElement = imageContainers[i].querySelector('img');
+            if (imgElement && imgElement.src === modalImage.src) {
+                uploadedImagesContainer.removeChild(imageContainers[i]);
+                selectedFiles1.splice(i, 1); // Remove the file from the selectedFiles1 array
+                break;
+            }
         }
+
+        // Save the updated selected files to localStorage
+        localStorage.setItem('uploadedImagesNotes', JSON.stringify(selectedFiles1));
+
+        // Close the modal after removal
+        closeModal();
+    }
+
+    // Display cached images on page load
+    window.addEventListener('DOMContentLoaded', function() {
+        displayImageFromCache(); // Display images from localStorage on page load
     });
-});
 
+    // Load textarea value from localStorage
+    document.addEventListener("DOMContentLoaded", function () {
+        const textarea = document.getElementById("treatment-plans3");
 
+        // Load cached textarea value for Notes
+        if (localStorage.getItem("treatment-plans3")) {
+            textarea.value = localStorage.getItem("treatment-plans3");
+        }
+
+        // Save on change
+        textarea.addEventListener("input", function () {
+            localStorage.setItem("treatment-plans3", textarea.value);
+        });
+    });
 </script>
 
  <!-- Optional JavaScript -->

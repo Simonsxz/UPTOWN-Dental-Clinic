@@ -1,39 +1,62 @@
 <?php
 session_start();  // Ensure session is started at the very top of the page
 
-include "../functions/db_conn.php";         // Include database connection
+include "../functions/db_conn.php"; // Include database connection
 include "../functions/function.php"; 
-include "../functions/module_doctors_validation.php"; // Include the validation function
+include "../functions/module_doctors_validation.php"; // Include validation function
 
+// Redirect to login if the user is not authenticated
 if (!isset($_SESSION['user_ID'])) {
-    header("Location: ../index.php"); // Redirect to login if not authenticated
+    header("Location: ../index.php");
     exit;
 }
 
 $user_ID = $_SESSION['user_ID']; // Fetch user_ID from session
 
-// Check if patient_id is passed in the URL, and store it in the session
+// Store patient_id and procedure_id in session only if provided
 if (isset($_GET['patient_id'])) {
     $_SESSION['patient_id'] = $_GET['patient_id'];
 }
-
-// Check if procedure_id is passed in the URL, and store it in the session
 if (isset($_GET['procedure_id'])) {
-    $_SESSION['procedure_id'] = $_GET['procedure_id'];  // Store procedure_id in session
+    $_SESSION['procedure_id'] = $_GET['procedure_id'];
 }
 
-// Retrieve patient_id and procedure_id from session
-$patient_id = $_SESSION['patient_id'];
-$procedure_id = $_SESSION['procedure_id']; // Ensure procedure_id is now available
+// Retrieve patient_id and procedure_id from session (use fallback values to avoid errors)
+$patient_id = isset($_SESSION['patient_id']) ? $_SESSION['patient_id'] : null;
+$procedure_id = isset($_SESSION['procedure_id']) ? $_SESSION['procedure_id'] : null;
 
 // Fetch patient name if patient_id exists
-if ($patient_id) {
-    // Fetch the patient name from the database using the patient_id
-    $patientFullName = getPatientFullName($patient_id); // Replace with actual function
+if (!empty($patient_id)) {
+    $patientFullName = getPatientFullName($patient_id); // Ensure this function is secure
 } else {
     $patientFullName = "No Name Available"; // Fallback if no patient_id
 }
 
+// Define allowed pages
+$allowed_pages = [
+    'add_patientinfo.php',
+    'add_medical-history.php',
+    'add_medicalcondition.php',
+    'add_ptp.php',
+    'add_procedure.php',
+    'add_xray.php',
+    'add_intra.php',
+    'add_extra.php',
+    'add_notes.php'
+];
+
+// Get the current script name
+$current_page = basename($_SERVER['PHP_SELF']);
+
+// If the current page is not in the allowed list, clear cached session data
+if (!in_array($current_page, $allowed_pages)) {
+    unset($_SESSION['cached_data']);  // Clear cached data
+}
+
+// Cache input data when the form is submitted
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && in_array($current_page, $allowed_pages)) {
+    $_SESSION['cached_data'] = $_POST; // Save all input fields in the session
+}
 ?>
 
 
@@ -131,55 +154,46 @@ if ($patient_id) {
 								<h2><?php echo htmlspecialchars($patientFullName); ?></h2>
 								<p>All the details of the patient of UPTOWN Dental Clinic</p>
 							</div>
-                            <div class="button-group">
-                            <a href="patient.php" id="cancelLink">
-                                    <button type="button" class="cancel">Cancel</button>
-                                </a>
-                                <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>">
-                                    <button class="save">Next</button>
-                                </a>
-
-								</div>
 							</div>												
                             <div class="table-container">
 
                             <div class="module-container">
-    <div class="horizontal-nav-bar">
-    <a href="add_patientinfo.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="pirLink">
-            <button class="nav-item active">P.I.R</button>
-        </a>
+                 <div class="horizontal-nav-bar">
+                 <a href="add_patientinfo.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="pirLink">
+                                <button class="nav-item active">P.I.R</button>
+                            </a>
 
-        <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="historyLink">
-            <button class="nav-item">Medical History</button>
-        </a>
+                            <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="historyLink">
+                                <button class="nav-item ">Medical History</button>
+                            </a>
 
-        <a href="medical-condition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="conditionLink">
-            <button class="nav-item">Medical Condition</button>
-        </a>
+                            <a href="add_medicalcondition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="conditionLink">
+                                <button class="nav-item">Medical Condition</button>
+                            </a>
 
-        <a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="ptpLink">
-            <button class="nav-item">PTP</button>
-        </a>
+                            <a href="add_ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="ptpLink">
+                                <button class="nav-item">PTP</button>
+                            </a>
 
-        <a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="procedureLink">
-            <button class="nav-item">Procedures</button>
-        </a>
+                            <a href="add_procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="procedureLink">
+                                <button class="nav-item">Procedures</button>
+                            </a>
 
-        <a href="patient-xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="xrayLink">
-            <button class="nav-item">Xray</button>
-        </a>
+                            <a href="add_xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="xrayLink">
+                                <button class="nav-item">Xray</button>
+                            </a>
 
-        <a href="patient-intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="intraLink">
-            <button class="nav-item">Intra Oral Photos</button>
-        </a>
+                            <a href="add_intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="intraLink">
+                                <button class="nav-item">Intra Oral Photos</button>
+                            </a>
 
-        <a href="patient-extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="extraLink">
-            <button class="nav-item">Extra Oral Photos</button>
-        </a>
+                            <a href="add_extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="extraLink">
+                                <button class="nav-item ">Extra Oral Photos</button>
+                            </a>
 
-        <a href="notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="notesLink">
-            <button class="nav-item">Notes</button>
-        </a>
+                            <a href="add_notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="notesLink">
+                                <button class="nav-item">Notes</button>
+                            </a>
     </div>
 </div>
 
