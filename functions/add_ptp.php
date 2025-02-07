@@ -8,13 +8,13 @@ ini_set("display_startup_errors", 1);
 error_reporting(E_ALL);
 
 // Validate required fields
-if (empty($_POST["patient_id"]) || empty($_POST["prescription_id"]) || empty($_POST["treatment_plans"])) {
-    echo json_encode(["success" => false, "message" => "Patient ID, Prescription ID, and Treatment Plans are required."]);
+if (empty($_POST["patient_id"]) || empty($_POST["procedure_id"]) || empty($_POST["treatment_plans"])) {
+    echo json_encode(["success" => false, "message" => "Patient ID, Procedure ID, and Treatment Plans are required."]);
     exit;
 }
 
 $patientId = $_POST["patient_id"];
-$prescriptionId = $_POST["prescription_id"];
+$procedureId = $_POST["procedure_id"];
 $treatmentPlans = $_POST["treatment_plans"];
 
 // Handle file uploads
@@ -40,10 +40,10 @@ if (!empty($_FILES["images"]["name"][0])) {
 
 // Insert data into the database
 $imagePathsString = json_encode($imagePaths);
-$query = "INSERT INTO tbl_ptp (patient_id, prescription_id, treatment_plans, images, created_at, updated_at) 
+$query = "INSERT INTO tbl_ptp (patient_id, procedure_id, treatment_plans, images, created_at, updated_at) 
           VALUES (?, ?, ?, ?, NOW(), NOW())";
 $stmt = $conn->prepare($query);
-$stmt->bind_param("ssss", $patientId, $prescriptionId, $treatmentPlans, $imagePathsString);
+$stmt->bind_param("ssss", $patientId, $procedureId, $treatmentPlans, $imagePathsString);
 
 if ($stmt->execute()) {
     echo json_encode(["success" => true, "message" => "Treatment plans saved successfully."]);

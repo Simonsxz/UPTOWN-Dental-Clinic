@@ -28,35 +28,13 @@ $procedure_id = $_SESSION['procedure_id'] ?? null;
 // Fetch patient name if patient_id exists
 $patientFullName = (!empty($patient_id)) ? getPatientFullName($patient_id) : "No Name Available";
 
-// Define allowed pages
-$allowed_pages = [
-    'add_patientinfo.php',
-    'add_medical-history.php',
-    'add_medicalcondition.php',
-    'add_ptp.php',
-    'add_procedure.php',
-    'add_xray.php',
-    'add_intra.php',
-    'add_extra.php',
-    'add_notes.php'
-];
-
 // Get the current script name
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// 🚀 **Fix: Only clear cache when visiting a page NOT in the allowed list**
-if (!in_array($current_page, $allowed_pages)) {
-    unset($_SESSION['cached_data']); // Clear cached data
-}
-
-// 🚀 **Fix: Store input data when switching pages**
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $_SESSION['cached_data']['medical_history'] = $_POST; // Store Medical History input data
-}
-
-// Debugging: Uncomment to check stored session data
-// echo "<pre>"; print_r($_SESSION['cached_data']['medical_history']); echo "</pre>";
+// Remove session cache completely
+unset($_SESSION['cached_data']);
 ?>
+
 
 
 <!DOCTYPE html>
@@ -226,38 +204,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>
 
 <script>
-    const selectedFiles1 = JSON.parse(localStorage.getItem('uploadedImagesNotes')) || []; // Array to store all selected files for Notes section
+  // Function to display uploaded images for Notes section
+function displayImages(event) {
+    const uploadedImagesContainer = document.getElementById('uploaded-images-container1');
+    const files = Array.from(event.target.files); // Get newly selected files
 
-    // Function to display uploaded images for Notes section
-    function displayImages(event) {
-        const uploadedImagesContainer = document.getElementById('uploaded-images-container1');
-        const files = Array.from(event.target.files); // Get newly selected files
-        const currentDate = new Date().toLocaleDateString();
+    uploadedImagesContainer.innerHTML = ""; // Clear existing images to avoid duplicates
 
-        // Convert new files to base64 and add to selectedFiles1
-        files.forEach((file) => {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                selectedFiles1.push({ name: file.name, data: e.target.result });
-                localStorage.setItem('uploadedImagesNotes', JSON.stringify(selectedFiles1)); // Cache the new files in localStorage
-                displayImageFromCache(); // Re-render the images after updating cache
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-
-    // Function to display images from cache (localStorage)
-    function displayImageFromCache() {
-        const uploadedImagesContainer = document.getElementById('uploaded-images-container1');
-        uploadedImagesContainer.innerHTML = ""; // Clear existing images to avoid duplicates
-
-        selectedFiles1.forEach((file) => {
+    files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
             const imageWrapper = document.createElement('div');
             imageWrapper.style.width = '120px';
             imageWrapper.style.textAlign = 'center';
 
             const img = document.createElement('img');
-            img.src = file.data;
+            img.src = e.target.result;
             img.style.width = '100px';
             img.style.height = '100px';
             img.style.cursor = 'pointer';
@@ -265,7 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             img.style.borderRadius = '5px';
             img.style.border = '1px solid #ddd';
             img.onclick = function () {
-                openModal(file.data, file.name);
+                openModal(e.target.result, file.name);
             };
 
             const title = document.createElement('div');
@@ -274,79 +236,53 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             title.style.fontSize = '12px';
             title.style.color = '#555';
 
-            const date = document.createElement('div');
-            date.textContent = `Uploaded: ${new Date().toLocaleDateString()}`;
-            date.style.fontSize = '10px';
-            date.style.color = '#777';
-
             imageWrapper.appendChild(img);
             imageWrapper.appendChild(title);
-            imageWrapper.appendChild(date);
-
             uploadedImagesContainer.appendChild(imageWrapper);
-        });
-    }
+        };
+        reader.readAsDataURL(file);
+    });
+}
 
-    // Function to open modal with a large image
-    function openModal(imageSrc, fileName) {
-        const modal = document.getElementById('image-modal1');
-        const modalImage = document.getElementById('modal-image1');
-        const downloadLink = document.getElementById('download-link1');
+// Function to open modal with a large image
+function openModal(imageSrc, fileName) {
+    const modal = document.getElementById('image-modal1');
+    const modalImage = document.getElementById('modal-image1');
+    const downloadLink = document.getElementById('download-link1');
 
-        modalImage.src = imageSrc;
-        downloadLink.href = imageSrc;
-        downloadLink.download = fileName;
-        modal.style.display = 'flex';
-    }
+    modalImage.src = imageSrc;
+    downloadLink.href = imageSrc;
+    downloadLink.download = fileName;
+    modal.style.display = 'flex';
+}
 
-    // Close the modal
-    function closeModal() {
-        const modal = document.getElementById('image-modal1');
-        modal.style.display = 'none';
-    }
+// Close the modal
+function closeModal() {
+    document.getElementById('image-modal1').style.display = 'none';
+}
 
-    // Remove the image from the container
-    function removeImage() {
-        const modalImage = document.getElementById('modal-image1');
-        const uploadedImagesContainer = document.getElementById('uploaded-images-container1');
+// Remove the image from the container
+function removeImage() {
+    const modalImage = document.getElementById('modal-image1');
+    const uploadedImagesContainer = document.getElementById('uploaded-images-container1');
 
-        // Find the image container to remove
-        const imageContainers = uploadedImagesContainer.children;
-        for (let i = 0; i < imageContainers.length; i++) {
-            const imgElement = imageContainers[i].querySelector('img');
-            if (imgElement && imgElement.src === modalImage.src) {
-                uploadedImagesContainer.removeChild(imageContainers[i]);
-                selectedFiles1.splice(i, 1); // Remove the file from the selectedFiles1 array
-                break;
-            }
+    // Find and remove the selected image
+    [...uploadedImagesContainer.children].forEach((container) => {
+        const imgElement = container.querySelector('img');
+        if (imgElement && imgElement.src === modalImage.src) {
+            uploadedImagesContainer.removeChild(container);
         }
-
-        // Save the updated selected files to localStorage
-        localStorage.setItem('uploadedImagesNotes', JSON.stringify(selectedFiles1));
-
-        // Close the modal after removal
-        closeModal();
-    }
-
-    // Display cached images on page load
-    window.addEventListener('DOMContentLoaded', function() {
-        displayImageFromCache(); // Display images from localStorage on page load
     });
 
-    // Load textarea value from localStorage
-    document.addEventListener("DOMContentLoaded", function () {
-        const textarea = document.getElementById("treatment-plans3");
+    closeModal();
+}
 
-        // Load cached textarea value for Notes
-        if (localStorage.getItem("treatment-plans3")) {
-            textarea.value = localStorage.getItem("treatment-plans3");
-        }
+// Prevent textarea caching in localStorage
+document.addEventListener("DOMContentLoaded", function () {
+    const textarea = document.getElementById("treatment-plans3");
+    textarea.value = ""; // Clear stored value on page load
+});
 
-        // Save on change
-        textarea.addEventListener("input", function () {
-            localStorage.setItem("treatment-plans3", textarea.value);
-        });
-    });
 </script>
 
  <!-- Optional JavaScript -->

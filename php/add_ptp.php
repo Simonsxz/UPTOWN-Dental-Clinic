@@ -28,35 +28,14 @@ $procedure_id = $_SESSION['procedure_id'] ?? null;
 // Fetch patient name if patient_id exists
 $patientFullName = (!empty($patient_id)) ? getPatientFullName($patient_id) : "No Name Available";
 
-// Define allowed pages
-$allowed_pages = [
-    'add_patientinfo.php',
-    'add_medical-history.php',
-    'add_medicalcondition.php',
-    'add_ptp.php',
-    'add_procedure.php',
-    'add_xray.php',
-    'add_intra.php',
-    'add_extra.php',
-    'add_notes.php'
-];
-
 // Get the current script name
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// 🚀 **Fix: Only clear cache when visiting a page NOT in the allowed list**
-if (!in_array($current_page, $allowed_pages)) {
-    unset($_SESSION['cached_data']); // Clear cached data
-}
-
-// 🚀 **Fix: Store input data when switching pages**
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $_SESSION['cached_data']['medical_history'] = $_POST; // Store Medical History input data
-}
-
-// Debugging: Uncomment to check stored session data
-// echo "<pre>"; print_r($_SESSION['cached_data']['medical_history']); echo "</pre>";
+// Remove session cache completely
+unset($_SESSION['cached_data']);
 ?>
+
+
 
 
 <!DOCTYPE html>
@@ -227,7 +206,73 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
 <script>
-  const selectedFiles2 = JSON.parse(localStorage.getItem('uploadedImagesTreatment')) || [];
+document.getElementById("saveButton").addEventListener("click", function() {
+    const medicalConditions = {};
+
+    document.querySelectorAll('input[name^="medical_condition"]').forEach(function(checkbox) {
+        medicalConditions[checkbox.name] = checkbox.checked ? 1 : 0;
+    });
+
+    const patientId = '<?php echo $_SESSION['patient_id'] ?? ""; ?>';
+    const procedureId = '<?php echo $_SESSION['procedure_id'] ?? ""; ?>';
+    const treatmentPlans = document.getElementById("treatment-plans").value;
+
+    const imageInput = document.getElementById("image-upload");
+    const formData = new FormData();
+
+    formData.append("patient_id", patientId);
+    formData.append("procedure_id", procedureId);
+    formData.append("treatment_plans", treatmentPlans);
+
+    // Append selected images
+    for (let i = 0; i < imageInput.files.length; i++) {
+        formData.append("images[]", imageInput.files[i]);
+    }
+
+    console.log("Sending Data:", formData);
+
+    fetch('../functions/add_ptp.php', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.text())
+    .then(rawData => {
+        try {
+            const parsedData = JSON.parse(rawData);
+            if (parsedData.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Saved Successfully!',
+                    text: 'Treatment Plans have been saved.',
+                }).then(() => {
+                    window.location.href = `add_procedure.php?patient_id=${patientId}&procedure_id=${procedureId}`;
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: parsedData.message || 'Failed to save Treatment Plans.',
+                });
+            }
+        } catch (e) {
+            console.error('Error parsing response as JSON:', rawData);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Unexpected server response. Please check the console for more details.',
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'An error occurred while saving Treatment Plans.',
+        });
+    });
+});
+
 
 function displayImages(event) {
     const uploadedImagesContainer = document.getElementById('uploaded-images-container');
@@ -236,46 +281,39 @@ function displayImages(event) {
     files.forEach((file) => {
         const reader = new FileReader();
         reader.onload = function (e) {
-            selectedFiles2.push({ name: file.name, data: e.target.result });
-            localStorage.setItem('uploadedImagesTreatment', JSON.stringify(selectedFiles2));
-            displayImageFromCache();
+            displayImage(e.target.result, file.name);
         };
         reader.readAsDataURL(file);
     });
 }
 
-function displayImageFromCache() {
+function displayImage(imageSrc, fileName) {
     const uploadedImagesContainer = document.getElementById('uploaded-images-container');
-    uploadedImagesContainer.innerHTML = "";
+    const imageWrapper = document.createElement('div');
+    imageWrapper.style.width = '120px';
+    imageWrapper.style.textAlign = 'center';
 
-    selectedFiles2.forEach((file) => {
-        const imageWrapper = document.createElement('div');
-        imageWrapper.style.width = '120px';
-        imageWrapper.style.textAlign = 'center';
+    const img = document.createElement('img');
+    img.src = imageSrc;
+    img.style.width = '100px';
+    img.style.height = '100px';
+    img.style.cursor = 'pointer';
+    img.style.objectFit = 'cover';
+    img.style.borderRadius = '5px';
+    img.style.border = '1px solid #ddd';
+    img.onclick = function () {
+        openModal(imageSrc, fileName);
+    };
 
-        const img = document.createElement('img');
-        img.src = file.data;
-        img.style.width = '100px';
-        img.style.height = '100px';
-        img.style.cursor = 'pointer';
-        img.style.objectFit = 'cover';
-        img.style.borderRadius = '5px';
-        img.style.border = '1px solid #ddd';
-        img.onclick = function () {
-            openModal(file.data, file.name);
-        };
+    const title = document.createElement('div');
+    title.textContent = fileName;
+    title.style.marginTop = '5px';
+    title.style.fontSize = '12px';
+    title.style.color = '#555';
 
-        const title = document.createElement('div');
-        title.textContent = file.name;
-        title.style.marginTop = '5px';
-        title.style.fontSize = '12px';
-        title.style.color = '#555';
-
-        imageWrapper.appendChild(img);
-        imageWrapper.appendChild(title);
-
-        uploadedImagesContainer.appendChild(imageWrapper);
-    });
+    imageWrapper.appendChild(img);
+    imageWrapper.appendChild(title);
+    uploadedImagesContainer.appendChild(imageWrapper);
 }
 
 function openModal(imageSrc, fileName) {
@@ -292,36 +330,8 @@ function openModal(imageSrc, fileName) {
 function closeModal() {
     document.getElementById('image-modal').style.display = 'none';
 }
-
-function removeImage() {
-    const modalImage = document.getElementById('modal-image');
-    const uploadedImagesContainer = document.getElementById('uploaded-images-container');
-
-    for (let i = 0; i < selectedFiles2.length; i++) {
-        if (selectedFiles2[i].data === modalImage.src) {
-            selectedFiles2.splice(i, 1);
-            break;
-        }
-    }
-
-    localStorage.setItem('uploadedImagesTreatment', JSON.stringify(selectedFiles2));
-    displayImageFromCache();
-    closeModal();
-}
-
-window.addEventListener('DOMContentLoaded', function () {
-    displayImageFromCache();
-
-    const textarea = document.getElementById('treatment-plans');
-    if (localStorage.getItem('treatment-plans')) {
-        textarea.value = localStorage.getItem('treatment-plans');
-    }
-    textarea.addEventListener('input', function () {
-        localStorage.setItem('treatment-plans', textarea.value);
-    });
-});
-
 </script>
+
 
  <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

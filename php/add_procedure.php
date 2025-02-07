@@ -28,35 +28,13 @@ $procedure_id = $_SESSION['procedure_id'] ?? null;
 // Fetch patient name if patient_id exists
 $patientFullName = (!empty($patient_id)) ? getPatientFullName($patient_id) : "No Name Available";
 
-// Define allowed pages
-$allowed_pages = [
-    'add_patientinfo.php',
-    'add_medical-history.php',
-    'add_medicalcondition.php',
-    'add_ptp.php',
-    'add_procedure.php',
-    'add_xray.php',
-    'add_intra.php',
-    'add_extra.php',
-    'add_notes.php'
-];
-
 // Get the current script name
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// 🚀 **Fix: Only clear cache when visiting a page NOT in the allowed list**
-if (!in_array($current_page, $allowed_pages)) {
-    unset($_SESSION['cached_data']); // Clear cached data
-}
-
-// 🚀 **Fix: Store input data when switching pages**
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $_SESSION['cached_data']['medical_history'] = $_POST; // Store Medical History input data
-}
-
-// Debugging: Uncomment to check stored session data
-// echo "<pre>"; print_r($_SESSION['cached_data']['medical_history']); echo "</pre>";
+// Remove session cache completely
+unset($_SESSION['cached_data']);
 ?>
+
 
 
 <!DOCTYPE html>
@@ -162,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <a href="patient.php" id="cancelLink">
                                     <button type="button" class="cancel">Cancel</button>
                                 </a>
-                                <button type="button" class="save" onclick="savePrescription()">Next</button>
+                                <button type="button" class="save" onclick="saveProcedure()">Next</button>
 								</div>
 							</div>	
 							</div>												
@@ -207,7 +185,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </a>
                             </div>
 							</div>
-              <div class="info-container" style="padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+
+            <div class="info-container" style="padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
     <h2 class="info-title" style="font-size: 20px; font-weight: 600; margin-bottom: 15px; color: #333;">Patient Procedure</h2>
     <form class="details-form1" id="procedureForm" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
         <!-- Procedure Title Input -->
@@ -218,7 +197,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             class="form-input" 
             placeholder="Enter procedure title..." 
             style="flex: 2; min-width: 200px; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; background-color: #fff; color: #333;" 
-            required
         />
         
         <!-- Price Input -->
@@ -229,7 +207,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             class="form-input" 
             placeholder="₱ Price..." 
             style="flex: 1; min-width: 100px; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; background-color: #fff; color: #333;" 
-            required
         />
         
         <!-- Add Button -->
@@ -248,229 +225,146 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         class="form-textarea" 
         placeholder="Enter notes for this patient..." 
         rows="6" 
-        style="width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; resize: vertical; background-color: #fff; color: #333; text-align: left;" 
-        required>
+        style="width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; resize: vertical; background-color: #fff; color: #333; text-align: left;"> 
     </textarea>
 </div>
+
 
 </main>
 
 </body>
 <script>
-   // Load cached procedures from localStorage when the page loads
-   window.addEventListener('DOMContentLoaded', function() {
-        const procedures = JSON.parse(localStorage.getItem('procedures')) || [];
-        const procedureListContainer = document.getElementById('procedureListContainer');
-        
-        // Display cached procedures
-        procedures.forEach(function(procedure) {
-            const listItem = document.createElement('div');
-            listItem.style.display = "flex";
-            listItem.style.alignItems = "center";
-            listItem.style.justifyContent = "space-between";
-            listItem.style.padding = "10px";
-            listItem.style.marginRight = "10px";
-            listItem.style.background = "#f8f9fa";
-            listItem.style.borderRadius = "5px";
-            listItem.style.border = "1px solid #ddd";
-            listItem.style.whiteSpace = "nowrap";
-            listItem.style.flex = "0 0 auto";
-            
-            listItem.innerHTML = `<span style="margin-right: 10px; font-weight: bold;">${procedure.title}</span>
-                                  <span style="margin-right: 10px;">₱${procedure.price}</span>
-                                  <button class="delete-btn" style="padding: 5px 10px; background-color: #dc3545; color: #fff; border: none; border-radius: 5px; cursor: pointer;">✖</button>`;
-            
-            procedureListContainer.appendChild(listItem);
-            
-            listItem.querySelector('.delete-btn').addEventListener('click', function() {
-                procedureListContainer.removeChild(listItem);
-                removeProcedureFromCache(procedure);
-            });
-        });
-    });
+// Load procedures when the page loads
+window.addEventListener("DOMContentLoaded", function () {
+  const procedureListContainer = document.getElementById("procedureListContainer");
+});
 
-   document.getElementById('addProcedure').addEventListener('click', function() {
-        const procedureTitle = document.getElementById('procedure-title').value.trim();
-        const procedurePrice = document.getElementById('procedure-price').value.trim();
-        const procedureListContainer = document.getElementById('procedureListContainer');
-        
-        if (procedureTitle !== "" && procedurePrice !== "") {
-            const listItem = document.createElement('div');
-            listItem.style.display = "flex";
-            listItem.style.alignItems = "center";
-            listItem.style.justifyContent = "space-between";
-            listItem.style.padding = "10px";
-            listItem.style.marginRight = "10px";
-            listItem.style.background = "#f8f9fa";
-            listItem.style.borderRadius = "5px";
-            listItem.style.border = "1px solid #ddd";
-            listItem.style.whiteSpace = "nowrap";
-            listItem.style.flex = "0 0 auto";
-            
-            listItem.innerHTML = `<span style="margin-right: 10px; font-weight: bold;">${procedureTitle}</span>
+document.getElementById("addProcedure").addEventListener("click", function () {
+  const procedureTitle = document.getElementById("procedure-title").value.trim();
+  const procedurePrice = document.getElementById("procedure-price").value.trim();
+  const procedureListContainer = document.getElementById("procedureListContainer");
+
+  if (procedureTitle !== "" && procedurePrice !== "") {
+    const listItem = document.createElement("div");
+    listItem.style.display = "flex";
+    listItem.style.alignItems = "center";
+    listItem.style.justifyContent = "space-between";
+    listItem.style.padding = "10px";
+    listItem.style.marginRight = "10px";
+    listItem.style.background = "#f8f9fa";
+    listItem.style.borderRadius = "5px";
+    listItem.style.border = "1px solid #ddd";
+    listItem.style.whiteSpace = "nowrap";
+    listItem.style.flex = "0 0 auto";
+
+    listItem.innerHTML = `<span style="margin-right: 10px; font-weight: bold;">${procedureTitle}</span>
                                   <span style="margin-right: 10px;">₱${procedurePrice}</span>
                                   <button class="delete-btn" style="padding: 5px 10px; background-color: #dc3545; color: #fff; border: none; border-radius: 5px; cursor: pointer;">✖</button>`;
-            
-            procedureListContainer.appendChild(listItem);
-            
-            listItem.querySelector('.delete-btn').addEventListener('click', function() {
-                procedureListContainer.removeChild(listItem);
-                removeProcedureFromCache({ title: procedureTitle, price: procedurePrice });
-            });
-            
-            // Save procedure to localStorage
-            const newProcedure = { title: procedureTitle, price: procedurePrice };
-            saveProcedureToCache(newProcedure);
-            
-            // Clear input fields
-            document.getElementById('procedure-title').value = "";
-            document.getElementById('procedure-price').value = "";
-        } else {
-            alert("Please enter both procedure title and price.");
-        }
+
+    procedureListContainer.appendChild(listItem);
+
+    listItem.querySelector(".delete-btn").addEventListener("click", function () {
+      procedureListContainer.removeChild(listItem);
     });
 
-   // Save procedure to localStorage
-   function saveProcedureToCache(procedure) {
-        const procedures = JSON.parse(localStorage.getItem('procedures')) || [];
-        procedures.push(procedure);
-        localStorage.setItem('procedures', JSON.stringify(procedures));
-    }
-
-   // Remove procedure from localStorage
-   function removeProcedureFromCache(procedureToRemove) {
-        let procedures = JSON.parse(localStorage.getItem('procedures')) || [];
-        procedures = procedures.filter(procedure => procedure.title !== procedureToRemove.title || procedure.price !== procedureToRemove.price);
-        localStorage.setItem('procedures', JSON.stringify(procedures));
-    }
-
-
-    window.addEventListener('DOMContentLoaded', function() {
-    const cachedNotes = localStorage.getItem('procedureNotes');
-    if (cachedNotes) {
-        document.getElementById('treatment-plans1').value = cachedNotes;
-    }
-});
-
-// Save procedure notes to localStorage when the textarea content changes
-document.getElementById('treatment-plans1').addEventListener('input', function() {
-    const notesContent = document.getElementById('treatment-plans1').value;
-    localStorage.setItem('procedureNotes', notesContent);
-});
-
-function savePrescription() {
-  const title = document.getElementById('note-title').value.trim();
-  const notes = document.getElementById('treatment-plans').value.trim();
-  const patientId = '<?php echo $_SESSION['patient_id']; ?>'; // Assuming it's set in the session
-
-  // Check if all fields are filled
-  if (!title || !notes) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: 'Please fill out all fields.'
-    });
-    return;
+    // Clear input fields
+    document.getElementById("procedure-title").value = "";
+    document.getElementById("procedure-price").value = "";
+  } else {
+    alert("Please enter both procedure title and price.");
   }
+});
 
-  // Ask the user whether they want to save or edit the data
-  Swal.fire({
-    title: 'Do you want to save the prescription?',
-    text: 'Please confirm if you want to proceed with saving this prescription.',
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, Save it',
-    cancelButtonText: 'No, Edit the Data'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      // Proceed with saving the data if the user clicks "Yes"
-      const data = {
-        patient_id: patientId,
-        patient_prescription: title,
-        description: notes
-      };
+function saveProcedure() {
+    const patientId = '<?php echo $_SESSION['patient_id']; ?>'; // Get patient_id from session
+    const procedureId = new URLSearchParams(window.location.search).get("procedure_id");
 
-      // Send data to the server using fetch
-      fetch('../functions/add_prescription.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log(data); // Log the response data to check if prescription_id is returned
-        if (data.success) {
-          const prescriptionId = data.prescription_id; // Get prescription_id from the response
-
-          // Check if prescription_id is returned
-          if (prescriptionId) {
-            // Show a success SweetAlert
-            Swal.fire({
-              icon: 'success',
-              title: 'Successfully Saved!',
-              text: 'Prescription has been saved successfully.',
-              showConfirmButton: false,
-              timer: 1500  // Display the message for 1.5 seconds
-            }).then(() => {
-              // Redirect to the next page with patient_id and prescription_id
-              window.location.href = `add_medical-history.php?patient_id=${encodeURIComponent(patientId)}&prescription_id=${encodeURIComponent(prescriptionId)}`;
-            });
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error!',
-              text: 'Prescription ID not found in response.'
-            });
-          }
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error!',
-            text: 'Error saving prescription: ' + data.message
-          });
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error!',
-          text: 'An error occurred while saving the prescription.'
-        });
-      });
-    } else {
-      // User clicked "No, Edit the Data", show a message and allow them to stay on the form
-      Swal.fire({
-        icon: 'info',
-        title: 'You can edit the data.',
-        text: 'Please make changes and try saving again.'
-      });
+    if (!patientId || !procedureId) {
+        Swal.fire("Error!", "Patient ID or Procedure ID is missing!", "error");
+        return;
     }
-  });
+
+    const procedures = [];
+
+    // ✅ Extract procedures dynamically from the list container
+    document.querySelectorAll("#procedureListContainer div").forEach(item => {
+        const title = item.querySelector("span:first-child")?.textContent.trim();
+        const price = item.querySelector("span:nth-child(2)")?.textContent.replace("₱", "").trim();
+
+        if (title && price) {
+            procedures.push({ title: title, price: price });
+        }
+    });
+
+    if (procedures.length === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Procedures Added',
+            text: 'Please add at least one procedure before proceeding.',
+            showConfirmButton: false,
+            timer: 1500
+        });
+        return;
+    }
+
+    // ✅ Prepare data payload
+    const data = {
+        patient_id: patientId,
+        procedure_id: procedureId, // Ensure procedure_id is included
+        procedures: procedures
+    };
+
+    // ✅ Send data to the backend
+    fetch("../functions/add_procedure.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: "success",
+                title: "Procedures Saved",
+                text: "Procedures have been successfully saved!",
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                // Redirect after saving
+                window.location.href = `add_xray.php?patient_id=${encodeURIComponent(patientId)}&procedure_id=${encodeURIComponent(procedureId)}`;
+            });
+        } else {
+            Swal.fire("Error!", data.message, "error");
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        Swal.fire("Error!", "An error occurred while saving procedures.", "error");
+    });
 }
 
-document.getElementById('cancelLink').addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent the default action (navigation)
-        
-        // SweetAlert confirmation
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'The data will not be saved!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, cancel',
-            cancelButtonText: 'No, stay'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // If the user confirms, redirect to patient.php
-                window.location.href = this.href;
-            } else {
-                // If the user clicks "No", nothing happens
-                Swal.fire('Cancelled', 'You can continue with your work.', 'info');
-            }
-        });
-    });
+document.getElementById("cancelLink").addEventListener("click", function (event) {
+  event.preventDefault();
+
+  // SweetAlert confirmation
+  Swal.fire({
+    title: "Are you sure?",
+    text: "The data will not be saved!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, cancel",
+    cancelButtonText: "No, stay",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      window.location.href = this.href;
+    } else {
+      Swal.fire("Cancelled", "You can continue with your work.", "info");
+    }
+  });
+});
+
 </script>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>

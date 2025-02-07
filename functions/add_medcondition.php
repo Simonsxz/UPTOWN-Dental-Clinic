@@ -14,18 +14,18 @@ header('Content-Type: application/json');
 $data = json_decode(file_get_contents('php://input'), true);
 
 // Validate required fields
-if (empty($data['patient_id']) || empty($data['prescription_id']) || empty($data['medical_conditions'])) {
-    echo json_encode(['success' => false, 'message' => 'Patient ID, Prescription ID, and Medical Conditions are required.']);
+if (empty($data['patient_id']) || empty($data['procedure_id']) || empty($data['medical_conditions'])) {
+    echo json_encode(['success' => false, 'message' => 'Patient ID, Procedure ID, and Medical Conditions are required.']);
     exit;
 }
 
 $patientId = $data['patient_id'];
-$prescriptionId = $data['prescription_id'];
+$procedureId = $data['procedure_id'];
 $medicalConditions = $data['medical_conditions'];
 
 // Prepare the columns and values for insertion
-$columns = ['patient_id', 'prescription_id'];
-$values = [$patientId, $prescriptionId];
+$columns = ['patient_id', 'procedure_id'];
+$values = [$patientId, $procedureId];
 $placeholders = ['?', '?'];
 
 foreach ($medicalConditions as $conditionName => $conditionValue) {
@@ -38,7 +38,7 @@ foreach ($medicalConditions as $conditionName => $conditionValue) {
     }
 }
 
-if (count($columns) == 2) { // Only patient_id and prescription_id present
+if (count($columns) == 2) { // Only patient_id and procedure_id present
     echo json_encode(['success' => false, 'message' => 'No medical conditions selected.']);
     exit;
 }

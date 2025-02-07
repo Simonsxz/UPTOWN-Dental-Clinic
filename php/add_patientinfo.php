@@ -154,6 +154,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && in_array($current_page, $allowed_pag
 								<h2><?php echo htmlspecialchars($patientFullName); ?></h2>
 								<p>All the details of the patient of UPTOWN Dental Clinic</p>
 							</div>
+                            <div class="button-group">
+                                    <a href="patient.php" id="cancelLink">
+                                        <button type="button" class="cancel">Cancel</button>
+                                    </a>
+                                    <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" id="savebutton">
+                                        <button type="button" class="save">Next</button>
+                                    </a>
+
+                                </div>
 							</div>												
                             <div class="table-container">
 
@@ -214,10 +223,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && in_array($current_page, $allowed_pag
 					</div>
 					<!-- Other form fields remain unchanged -->
 					<div class="form-group">
-						<label for="checkup-done-by">Check-Up Done By:</label>
-						<input type="text" id="checkup-done-by" name="checkup-done-by" class="form-input">
-					</div>
-					<div class="form-group">
 						<label for="address">Address:</label>
 						<input type="text" id="address" name="address" class="form-input">
 					</div>
@@ -238,14 +243,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && in_array($current_page, $allowed_pag
 						</select>
 					</div>
 					<div class="form-group">
-						<label for="height">Height:</label>
-						<input type="text" id="height" name="height" class="form-input">
-					</div>
-					<div class="form-group">
-						<label for="weight">Weight:</label>
-						<input type="text" id="weight" name="weight" class="form-input">
-					</div>
-					<div class="form-group">
 						<label for="civil-status">Civil Status:</label>
 						<input type="text" id="civil-status" name="civil-status" class="form-input">
 					</div>
@@ -254,24 +251,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && in_array($current_page, $allowed_pag
 						<input type="text" id="occupation" name="occupation" class="form-input">
 					</div>
 					<div class="form-group">
-						<label for="religion">Religion:</label>
-						<input type="text" id="religion" name="religion" class="form-input">
-					</div>
-					<div class="form-group">
 						<label for="contact-number">Contact Number:</label>
 						<input type="tel" id="contact-number" name="contact-number" class="form-input">
-					</div>
-					<div class="form-group">
-						<label for="facebook-account">Facebook Account:</label>
-						<input type="text" id="facebook-account" name="facebook-account" class="form-input">
-					</div>
-					<div class="form-group">
-						<label for="nationality">Nationality:</label>
-						<input type="text" id="nationality" name="nationality" class="form-input">
-					</div>
-					<div class="form-group patient-name-group">
-						<label for="referred-by">Referred By:</label>
-						<input type="text" id="referred-by" name="referred-by" class="form-input">
 					</div>
 				</form>
 			</div>

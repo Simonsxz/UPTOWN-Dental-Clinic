@@ -28,35 +28,13 @@ $procedure_id = $_SESSION['procedure_id'] ?? null;
 // Fetch patient name if patient_id exists
 $patientFullName = (!empty($patient_id)) ? getPatientFullName($patient_id) : "No Name Available";
 
-// Define allowed pages
-$allowed_pages = [
-    'add_patientinfo.php',
-    'add_medical-history.php',
-    'add_medicalcondition.php',
-    'add_ptp.php',
-    'add_procedure.php',
-    'add_xray.php',
-    'add_intra.php',
-    'add_extra.php',
-    'add_notes.php'
-];
-
 // Get the current script name
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// 🚀 **Fix: Only clear cache when visiting a page NOT in the allowed list**
-if (!in_array($current_page, $allowed_pages)) {
-    unset($_SESSION['cached_data']); // Clear cached data
-}
-
-// 🚀 **Fix: Store input data when switching pages**
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $_SESSION['cached_data']['medical_history'] = $_POST; // Store Medical History input data
-}
-
-// Debugging: Uncomment to check stored session data
-// echo "<pre>"; print_r($_SESSION['cached_data']['medical_history']); echo "</pre>";
+// Remove session cache completely
+unset($_SESSION['cached_data']);
 ?>
+
 
 
 <!DOCTYPE html>
@@ -280,167 +258,74 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </body>
 
 <script>
-document.getElementById('cancelLink').addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent the default action (navigation)
-        
-        // SweetAlert confirmation
+document.getElementById("saveButton").addEventListener("click", function() {
+    const patientId = '<?php echo $_SESSION['patient_id'] ?? ""; ?>';
+    const procedureId = '<?php echo $_SESSION['procedure_id'] ?? ""; ?>'; 
+
+    if (!patientId || !procedureId) {
+        console.error("Error: Missing Patient ID or Procedure ID");
         Swal.fire({
-            title: 'Are you sure?',
-            text: 'The data will not be saved!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, cancel',
-            cancelButtonText: 'No, stay'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // If the user confirms, redirect to patient.php
-                window.location.href = this.href;
-            } else {
-                // If the user clicks "No", nothing happens
-                Swal.fire('Cancelled', 'You can continue with your work.', 'info');
-            }
-        });
-    }); 
-
-
- document.getElementById("saveButton").addEventListener("click", function() {
-    // Collect all form data
-    const lastVisit = document.getElementById("last-visit").value;
-    const physicianName = document.getElementById("physician-name").value;
-    const seriousIllness = document.getElementById("serious-illness").value;
-    const illnessDescription = document.getElementById("illness-description").value;
-    const bloodTransfusion = document.querySelector('input[name="blood-transfusion"]:checked')?.value;
-    const transfusionDates = document.getElementById("transfusion-dates").value;
-    const pregnant = document.querySelector('input[name="pregnant"]:checked')?.value;
-    const birthControl = document.querySelector('input[name="birth-control"]:checked')?.value;
-    const takingMed = document.querySelector('input[name="medication"]:checked')?.value;
-    const medicationSpecify = document.getElementById("medication-specify").value;
-
-    // Get patient_id from session or URL and prescription_id
-    const patientId = '<?php echo $_SESSION['patient_id'] ?? ""; ?>';  // Get patient ID from session or URL
-    const prescriptionId = '<?php echo $_SESSION['prescription_id'] ?? ""; ?>'; // Make sure prescription_id is also set correctly
-
-    // Validate required fields
-    if (!lastVisit || !physicianName || !seriousIllness || !illnessDescription || !bloodTransfusion || !transfusionDates || !pregnant || !birthControl || !takingMed || !medicationSpecify) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Please fill out all fields.'
+            icon: "error",
+            title: "Error",
+            text: "Missing Patient ID or Procedure ID!",
         });
         return;
     }
 
-    // Ask the user whether to save or edit the data
-    Swal.fire({
-        title: 'Do you want to save the data?',
-        text: 'Please confirm if you want to proceed with saving your Medical History.',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, Save it',
-        cancelButtonText: 'No, Edit the Data'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Proceed with saving the data if the user clicks "Yes"
-            const data = {
-                patient_id: patientId,  // Use actual patient ID
-                prescription_id: prescriptionId,  // Use actual prescription ID
-                medhistory_lastvisit: lastVisit,
-                medhistory_genphysician: physicianName,
-                medhistory_serious: seriousIllness,
-                medhistory_ifyesserious: illnessDescription,
-                medhistory_bloodtrans: bloodTransfusion,
-                medhistory_ifyesdate: transfusionDates,
-                medhistory_pregnant: pregnant,
-                medhistory_birthcontrol: birthControl,
-                medhistory_takingmed: takingMed,
-                medhistory_ifyesmed: medicationSpecify
-            };
+    const data = {
+        patient_id: patientId,
+        procedure_id: procedureId,
+        medhistory_lastvisit: document.getElementById("last-visit").value,
+        medhistory_genphysician: document.getElementById("physician-name").value,
+        medhistory_serious: document.getElementById("serious-illness").value,
+        medhistory_ifyesserious: document.getElementById("illness-description").value,
+        medhistory_bloodtrans: document.querySelector('input[name="blood-transfusion"]:checked')?.value || "",
+        medhistory_ifyesdate: document.getElementById("transfusion-dates").value,
+        medhistory_pregnant: document.querySelector('input[name="pregnant"]:checked')?.value || "",
+        medhistory_takingmed: document.querySelector('input[name="medication"]:checked')?.value || "",
+        medhistory_ifyesmed: document.getElementById("medication-specify").value
+    };
 
-            // Send data to the PHP server using AJAX
-            fetch('../functions/add_medhistory.php', {  // Replace with the correct PHP script path
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Show success SweetAlert
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: 'Medical History saved successfully.',
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => {
-                        // Redirect after 1.5 seconds
-                        window.location.href = `add_medicalcondition.php?patient_id=${patientId}&prescription_id=${prescriptionId}`;
-                    });
-                } else {
-                    // Show SweetAlert for failure
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Failed!',
-                        text: 'Failed to save Medical History.'
-                    });
-                }
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'An error occurred while saving Medical History.'
-                });
+    console.log("Sending Data:", JSON.stringify(data, null, 2));  
+
+    fetch('../functions/add_medhistory.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+    })
+    .then(response => response.json())
+    .then(parsedData => {
+        console.log("Response from Server:", parsedData);
+        if (parsedData.success) {
+            Swal.fire({
+                icon: "success",
+                title: "Success!",
+                text: "Medical history saved successfully!",
+                confirmButtonText: "OK"
+            }).then(() => {
+                window.location.href = `add_medicalcondition.php?patient_id=${patientId}&procedure_id=${procedureId}`;
             });
         } else {
-            // If the user clicks "No, Edit the Data", show a message and stay on the form
             Swal.fire({
-                icon: 'info',
-                title: 'You can edit the data.',
-                text: 'Please make changes and try saving again.'
+                icon: "error",
+                title: "Error",
+                text: "Failed to save medical history: " + parsedData.message,
             });
         }
+    })
+    .catch(error => {
+        console.error("Fetch Error:", error);
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "An error occurred while saving. Please try again.",
+        });
     });
 });
-
-document.addEventListener("DOMContentLoaded", function () {
-    let form = document.getElementById("medicalHistoryForm");
-
-    // Load cached values from localStorage
-    let cachedData = JSON.parse(localStorage.getItem("medicalHistoryCache"));
-    if (cachedData) {
-        for (let key in cachedData) {
-            let field = document.querySelector(`[name="${key}"]`);
-            
-            if (field) {
-                if (field.type === "radio") {
-                    let radios = document.querySelectorAll(`[name="${key}"]`);
-                    radios.forEach(radio => {
-                        if (radio.value === cachedData[key]) {
-                            radio.checked = true;
-                        }
-                    });
-                } else {
-                    field.value = cachedData[key];
-                }
-            }
-        }
-    }
-
-    // Save data to localStorage on input change
-    form.addEventListener("input", function () {
-        let formData = new FormData(form);
-        let obj = {};
-        formData.forEach((value, key) => obj[key] = value);
-        localStorage.setItem("medicalHistoryCache", JSON.stringify(obj));
-    });
-});
-
 
 </script>
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>

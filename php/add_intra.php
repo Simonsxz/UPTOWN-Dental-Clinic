@@ -28,34 +28,11 @@ $procedure_id = $_SESSION['procedure_id'] ?? null;
 // Fetch patient name if patient_id exists
 $patientFullName = (!empty($patient_id)) ? getPatientFullName($patient_id) : "No Name Available";
 
-// Define allowed pages
-$allowed_pages = [
-    'add_patientinfo.php',
-    'add_medical-history.php',
-    'add_medicalcondition.php',
-    'add_ptp.php',
-    'add_procedure.php',
-    'add_xray.php',
-    'add_intra.php',
-    'add_extra.php',
-    'add_notes.php'
-];
-
 // Get the current script name
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// 🚀 **Fix: Only clear cache when visiting a page NOT in the allowed list**
-if (!in_array($current_page, $allowed_pages)) {
-    unset($_SESSION['cached_data']); // Clear cached data
-}
-
-// 🚀 **Fix: Store input data when switching pages**
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $_SESSION['cached_data']['medical_history'] = $_POST; // Store Medical History input data
-}
-
-// Debugging: Uncomment to check stored session data
-// echo "<pre>"; print_r($_SESSION['cached_data']['medical_history']); echo "</pre>";
+// Remove session cache completely
+unset($_SESSION['cached_data']);
 ?>
 
 
@@ -234,7 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>
 
 <script>
-    let intraOralSelectedFiles = JSON.parse(localStorage.getItem('intraOralImages')) || []; // Load previously cached images from localStorage
+    let intraOralSelectedFiles = []; // Remove localStorage caching
 
     // Function to display uploaded images for intra oral
     function displayIntraImages(event) {
@@ -242,7 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         const files = Array.from(event.target.files); // Get newly selected files
         const currentDate = new Date().toLocaleDateString();
 
-        // Convert the files into data URLs and store them in localStorage
+        // Convert the files into data URLs
         files.forEach(file => {
             const reader = new FileReader();
             reader.onload = function (e) {
@@ -255,9 +232,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     date: currentDate
                 });
 
-                // Save the updated images to localStorage
-                localStorage.setItem('intraOralImages', JSON.stringify(intraOralSelectedFiles));
-
                 // Update the displayed images
                 displayStoredIntraImages();
             };
@@ -265,7 +239,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         });
     }
 
-    // Function to display all stored images for intra oral (including newly uploaded and cached ones)
+    // Function to display all stored images for intra oral
     function displayStoredIntraImages() {
         const intraUploadedImagesContainer = document.getElementById('intra-uploaded-images-container');
         intraUploadedImagesContainer.innerHTML = ""; // Clear current images in the container
@@ -340,17 +314,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
-        // Save the updated selected files to localStorage
-        localStorage.setItem('intraOralImages', JSON.stringify(intraOralSelectedFiles));
-
         // Close the modal after removal
         closeIntraModal();
     }
-
-    // Display cached images on page load for intra oral photos
-    window.addEventListener('DOMContentLoaded', function() {
-        displayStoredIntraImages();
-    });
 
     // Save button logic for intra oral photos
     document.getElementById("saveIntraButton").addEventListener("click", function () {
@@ -383,7 +349,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             cancelButtonText: 'No, Edit the Data',
         }).then((result) => {
             if (result.isConfirmed) {
-                // Proceed with saving the data
                 fetch('../functions/add_intra.php', {
                     method: 'POST',
                     body: formData,
@@ -396,7 +361,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 title: 'Success!',
                                 text: 'Intra Oral Photos saved successfully.',
                             }).then(() => {
-                                // Redirect to the next page
                                 window.location.href = `add_notes.php?patient_id=${patientId}&prescription_id=${prescriptionId}`;
                             });
                         } else {
@@ -419,6 +383,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         });
     });
 </script>
+
 
 
 <!-- Optional JavaScript -->

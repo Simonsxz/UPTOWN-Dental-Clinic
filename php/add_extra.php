@@ -28,34 +28,11 @@ $procedure_id = $_SESSION['procedure_id'] ?? null;
 // Fetch patient name if patient_id exists
 $patientFullName = (!empty($patient_id)) ? getPatientFullName($patient_id) : "No Name Available";
 
-// Define allowed pages
-$allowed_pages = [
-    'add_patientinfo.php',
-    'add_medical-history.php',
-    'add_medicalcondition.php',
-    'add_ptp.php',
-    'add_procedure.php',
-    'add_xray.php',
-    'add_intra.php',
-    'add_extra.php',
-    'add_notes.php'
-];
-
 // Get the current script name
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// 🚀 **Fix: Only clear cache when visiting a page NOT in the allowed list**
-if (!in_array($current_page, $allowed_pages)) {
-    unset($_SESSION['cached_data']); // Clear cached data
-}
-
-// 🚀 **Fix: Store input data when switching pages**
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $_SESSION['cached_data']['medical_history'] = $_POST; // Store Medical History input data
-}
-
-// Debugging: Uncomment to check stored session data
-// echo "<pre>"; print_r($_SESSION['cached_data']['medical_history']); echo "</pre>";
+// Remove session cache completely
+unset($_SESSION['cached_data']);
 ?>
 
 
@@ -235,8 +212,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>
 
 <script>
-    // Initialize an empty array for extra oral photos
-    let extraOralSelectedFiles = JSON.parse(localStorage.getItem('extraOralImages')) || [];
+    // Initialize an empty array for extra oral photos (no caching)
+    let extraOralSelectedFiles = [];
 
     // Function to display uploaded images for extra oral photos
     function displayExtraImages(event) {
@@ -257,9 +234,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     date: currentDate
                 });
 
-                // Save updated array in localStorage
-                localStorage.setItem('extraOralImages', JSON.stringify(extraOralSelectedFiles));
-
                 // Update the displayed images
                 displayStoredExtraImages();
             };
@@ -267,7 +241,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         });
     }
 
-    // Function to display all stored images (including new uploads and cached ones)
+    // Function to display all stored images
     function displayStoredExtraImages() {
         const extraUploadedImagesContainer = document.getElementById('extra-uploaded-images-container');
         extraUploadedImagesContainer.innerHTML = ""; // Clear current images
@@ -326,7 +300,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         modal.style.display = 'none';
     }
 
-    // Remove the selected image from the container and from localStorage
+    // Remove the selected image from the container
     function removeExtraImage() {
         const modalImage = document.getElementById('extra-modal-image');
         const extraUploadedImagesContainer = document.getElementById('extra-uploaded-images-container');
@@ -342,17 +316,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
-        // Save updated image list to localStorage
-        localStorage.setItem('extraOralImages', JSON.stringify(extraOralSelectedFiles));
-
         // Close the modal
         closeExtraModal();
     }
-
-    // Display images that have been cached in localStorage on page load
-    window.addEventListener('DOMContentLoaded', function() {
-        displayStoredExtraImages();
-    });
 
     // Save button logic for extra oral photos
     document.getElementById("saveExtraButton").addEventListener("click", function () {
@@ -429,6 +395,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         return new Blob([byteArray], { type: mime });
     }
 </script>
+
 
 
 <!-- Optional JavaScript -->

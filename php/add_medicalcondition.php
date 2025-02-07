@@ -28,34 +28,11 @@ $procedure_id = $_SESSION['procedure_id'] ?? null;
 // Fetch patient name if patient_id exists
 $patientFullName = (!empty($patient_id)) ? getPatientFullName($patient_id) : "No Name Available";
 
-// Define allowed pages
-$allowed_pages = [
-    'add_patientinfo.php',
-    'add_medical-history.php',
-    'add_medicalcondition.php',
-    'add_ptp.php',
-    'add_procedure.php',
-    'add_xray.php',
-    'add_intra.php',
-    'add_extra.php',
-    'add_notes.php'
-];
-
 // Get the current script name
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// 🚀 **Fix: Only clear cache when visiting a page NOT in the allowed list**
-if (!in_array($current_page, $allowed_pages)) {
-    unset($_SESSION['cached_data']); // Clear cached data
-}
-
-// 🚀 **Fix: Store input data when switching pages**
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $_SESSION['cached_data']['medical_history'] = $_POST; // Store Medical History input data
-}
-
-// Debugging: Uncomment to check stored session data
-// echo "<pre>"; print_r($_SESSION['cached_data']['medical_history']); echo "</pre>";
+// Remove session cache completely
+unset($_SESSION['cached_data']);
 ?>
 
 
@@ -265,115 +242,72 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 document.getElementById("saveButton").addEventListener("click", function() {
     const medicalConditions = {};
 
-    // Loop through all checkboxes and set value as 1 (checked) or 0 (unchecked)
     document.querySelectorAll('input[name^="medical_condition"]').forEach(function(checkbox) {
-        medicalConditions[checkbox.name] = checkbox.checked ? 1 : 0; // 1 if checked, 0 if unchecked
+        medicalConditions[checkbox.name] = checkbox.checked ? 1 : 0;
     });
 
-    // Get patient_id and prescription_id from PHP session variables
     const patientId = '<?php echo $_SESSION['patient_id'] ?? ""; ?>';
-    const prescriptionId = '<?php echo $_SESSION['prescription_id'] ?? ""; ?>';
+    const procedureId = '<?php echo $_SESSION['procedure_id'] ?? ""; ?>';
 
-    // Log the data being sent
     console.log('Medical Conditions:', medicalConditions);
     console.log('Patient ID:', patientId);
-    console.log('Prescription ID:', prescriptionId);
+    console.log('Procedure ID:', procedureId);
 
-    // Ask the user whether to save or edit the data
-    Swal.fire({
-        title: 'Do you want to save the data?',
-        text: 'Please confirm if you want to proceed with saving your Medical Conditions.',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, Save it',
-        cancelButtonText: 'No, Edit the Data'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Proceed with saving the data if the user clicks "Yes"
-            const data = {
-                patient_id: patientId,
-                prescription_id: prescriptionId,
-                medical_conditions: medicalConditions,
-            };
+    const data = {
+        patient_id: patientId,
+        procedure_id: procedureId,
+        medical_conditions: medicalConditions,
+    };
 
-            console.log('Sending Data:', data); // Debug: See the data before sending
+    console.log('Sending Data:', data);
 
-            fetch('../functions/add_medcondition.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
-            .then(response => response.text())
-            .then(rawData => {
-                try {
-                    const parsedData = JSON.parse(rawData);
-                    if (parsedData.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success!',
-                            text: 'Medical Conditions saved successfully.',
-                        }).then(() => {
-                            // Redirect the user after saving
-                            window.location.href = `add_ptp.php?patient_id=${patientId}&prescription_id=${prescriptionId}`;
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: parsedData.message || 'Failed to save Medical Conditions.',
-                        });
-                    }
-                } catch (e) {
-                    console.error('Error parsing response as JSON:', rawData);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: 'Unexpected server response. Please check the console for more details.',
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+    fetch('../functions/add_medcondition.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => response.text())
+    .then(rawData => {
+        try {
+            const parsedData = JSON.parse(rawData);
+            if (parsedData.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Saved Successfully!',
+                    text: 'Medical Conditions have been saved.',
+                }).then(() => {
+                    window.location.href = `add_ptp.php?patient_id=${patientId}&procedure_id=${procedureId}`;
+                });
+            } else {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error!',
-                    text: 'An error occurred while saving Medical Conditions.',
+                    text: parsedData.message || 'Failed to save Medical Conditions.',
                 });
-            });
-        } else {
-            // If the user clicks "No, Edit the Data", show a message and stay on the form
+            }
+        } catch (e) {
+            console.error('Error parsing response as JSON:', rawData);
             Swal.fire({
-                icon: 'info',
-                title: 'You can edit the data.',
-                text: 'Please make changes and try saving again.'
+                icon: 'error',
+                title: 'Error!',
+                text: 'Unexpected server response. Please check the console for more details.',
             });
         }
-    });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    const checkboxes = document.querySelectorAll(".medical-condition-group input[type='checkbox']");
-    
-    // Load cached data
-    checkboxes.forEach((checkbox) => {
-        const isChecked = localStorage.getItem(checkbox.name);
-        if (isChecked === "true") {
-            checkbox.checked = true;
-        }
-    });
-
-    // Save data on change
-    checkboxes.forEach((checkbox) => {
-        checkbox.addEventListener("change", () => {
-            localStorage.setItem(checkbox.name, checkbox.checked);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'An error occurred while saving Medical Conditions.',
         });
     });
 });
 
-
 </script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>

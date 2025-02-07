@@ -1,57 +1,43 @@
 <?php
 session_start();
+include "../functions/db_conn.php";
 
-// Include necessary files
-include "../functions/db_conn.php"; // Include database connection
-
-// Enable error reporting for debugging
+// Enable error reporting
 ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Validate POST data
-if (empty($_POST['patient_id']) || empty($_POST['prescription_id']) || empty($_POST['procedure_details'])) {
-    echo json_encode(['success' => false, 'message' => 'Patient ID, Prescription ID, and Procedure Details are required.']);
+// ✅ Get JSON data
+$data = json_decode(file_get_contents("php://input"), true);
+
+if (empty($data['patient_id']) || empty($data['procedure_id']) || empty($data['procedures'])) {
+    echo json_encode(['success' => false, 'message' => 'Patient ID, Procedure ID, and Procedures are required.']);
     exit;
 }
 
-$patientId = $_POST['patient_id'];
-$prescriptionId = $_POST['prescription_id'];
-$procedureDetails = $_POST['procedure_details'];
+$patientId = $data['patient_id'];
+$procedureId = $data['procedure_id'];
 $createdAt = date("Y-m-d H:i:s");
 $updatedAt = $createdAt;
+$procedures = $data['procedures'];
 
-// Handle image upload
-$imagePaths = [];
-if (!empty($_FILES['images']['name'][0])) {
-    $uploadDir = "../uploads/procedures/";
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-
-    foreach ($_FILES['images']['name'] as $key => $imageName) {
-        $tempPath = $_FILES['images']['tmp_name'][$key];
-        $imagePath = $uploadDir . uniqid() . "_" . basename($imageName);
-        if (move_uploaded_file($tempPath, $imagePath)) {
-            $imagePaths[] = $imagePath;
-        }
+// ✅ Combine all procedures into a single string (separated by "|")
+$procedureDetailsArray = [];
+foreach ($procedures as $procedure) {
+    if (!empty($procedure['title']) && !empty($procedure['price'])) {
+        $procedureDetailsArray[] = $procedure['title'] . " - ₱" . $procedure['price'];
     }
 }
+$procedureDetails = implode(" | ", $procedureDetailsArray); // Use " | " as separator
 
-// Serialize image paths for storage
-$imagePathsSerialized = json_encode($imagePaths);
-
-// Insert into the database
-$query = "INSERT INTO tbl_procedure (patient_id, prescription_id, procedure_details, images, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)";
+// ✅ Insert single row with all procedures combined
+$query = "INSERT INTO tbl_procedure (patient_id, procedure_id, procedure_details, created_at, updated_at) 
+          VALUES (?, ?, ?, ?, ?)";
 $stmt = $conn->prepare($query);
-$stmt->bind_param("ssssss", $patientId, $prescriptionId, $procedureDetails, $imagePathsSerialized, $createdAt, $updatedAt);
-
-if ($stmt->execute()) {
-    echo json_encode(['success' => true, 'message' => 'Procedure details saved successfully.']);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Failed to save Procedure details.']);
-}
+$stmt->bind_param("sssss", $patientId, $procedureId, $procedureDetails, $createdAt, $updatedAt);
+$stmt->execute();
 
 $stmt->close();
 $conn->close();
+
+echo json_encode(['success' => true, 'message' => 'Procedures saved successfully.']);
 ?>

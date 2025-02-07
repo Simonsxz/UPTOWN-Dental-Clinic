@@ -28,34 +28,11 @@ $procedure_id = $_SESSION['procedure_id'] ?? null;
 // Fetch patient name if patient_id exists
 $patientFullName = (!empty($patient_id)) ? getPatientFullName($patient_id) : "No Name Available";
 
-// Define allowed pages
-$allowed_pages = [
-    'add_patientinfo.php',
-    'add_medical-history.php',
-    'add_medicalcondition.php',
-    'add_ptp.php',
-    'add_procedure.php',
-    'add_xray.php',
-    'add_intra.php',
-    'add_extra.php',
-    'add_notes.php'
-];
-
 // Get the current script name
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// 🚀 **Fix: Only clear cache when visiting a page NOT in the allowed list**
-if (!in_array($current_page, $allowed_pages)) {
-    unset($_SESSION['cached_data']); // Clear cached data
-}
-
-// 🚀 **Fix: Store input data when switching pages**
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $_SESSION['cached_data']['medical_history'] = $_POST; // Store Medical History input data
-}
-
-// Debugging: Uncomment to check stored session data
-// echo "<pre>"; print_r($_SESSION['cached_data']['medical_history']); echo "</pre>";
+// Remove session cache completely
+unset($_SESSION['cached_data']);
 ?>
 
 
@@ -234,180 +211,115 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>
 
 <script>
-     // Load previously cached images from localStorage (as base64 strings)
-     const selectedFiles = JSON.parse(localStorage.getItem('uploadedImages')) || [];
+    let selectedFiles = []; // Remove localStorage caching
 
-// Function to display uploaded images
-function displayImages(event) {
-    const uploadedImagesContainer = document.getElementById('uploaded-images-container');
-    const files = Array.from(event.target.files); // Get newly selected files
-    const currentDate = new Date().toLocaleDateString();
+    // Function to display uploaded images
+    function displayImages(event) {
+        const uploadedImagesContainer = document.getElementById('uploaded-images-container');
+        const files = Array.from(event.target.files); // Get newly selected files
+        const currentDate = new Date().toLocaleDateString();
 
-    // Convert new files to base64 and add to selectedFiles
-    files.forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            selectedFiles.push({ name: file.name, data: e.target.result });
-            localStorage.setItem('uploadedImages', JSON.stringify(selectedFiles)); // Cache the new files in localStorage
-            displayImageFromCache(); // Re-render the images after updating cache
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-// Function to display images from cache (localStorage)
-function displayImageFromCache() {
-    const uploadedImagesContainer = document.getElementById('uploaded-images-container');
-    uploadedImagesContainer.innerHTML = ""; // Clear existing images to avoid duplicates
-
-    selectedFiles.forEach((file, index) => {
-        const imageWrapper = document.createElement('div');
-        imageWrapper.style.width = '120px';
-        imageWrapper.style.textAlign = 'center';
-
-        const img = document.createElement('img');
-        img.src = file.data;
-        img.style.width = '100px';
-        img.style.height = '100px';
-        img.style.cursor = 'pointer';
-        img.style.objectFit = 'cover';
-        img.style.borderRadius = '5px';
-        img.style.border = '1px solid #ddd';
-        img.onclick = function () {
-            openModal(file.data, file.name);
-        };
-
-        const title = document.createElement('div');
-        title.textContent = file.name;
-        title.style.marginTop = '5px';
-        title.style.fontSize = '12px';
-        title.style.color = '#555';
-
-        const date = document.createElement('div');
-        date.textContent = `Uploaded: ${new Date().toLocaleDateString()}`;
-        date.style.fontSize = '10px';
-        date.style.color = '#777';
-
-        imageWrapper.appendChild(img);
-        imageWrapper.appendChild(title);
-        imageWrapper.appendChild(date);
-
-        uploadedImagesContainer.appendChild(imageWrapper);
-    });
-}
-
-// Function to open modal with a large image
-function openModal(imageSrc, fileName) {
-    const modal = document.getElementById('image-modal');
-    const modalImage = document.getElementById('modal-image');
-    const downloadLink = document.getElementById('download-link');
-
-    modalImage.src = imageSrc;
-    downloadLink.href = imageSrc;
-    downloadLink.download = fileName;
-    modal.style.display = 'flex';
-}
-
-// Close the modal
-function closeModal() {
-    const modal = document.getElementById('image-modal');
-    modal.style.display = 'none';
-}
-
-// Remove the image from the container
-function removeImage() {
-    const modalImage = document.getElementById('modal-image');
-    const uploadedImagesContainer = document.getElementById('uploaded-images-container');
-
-    // Find the image container to remove
-    const imageContainers = uploadedImagesContainer.children;
-    for (let i = 0; i < imageContainers.length; i++) {
-        const imgElement = imageContainers[i].querySelector('img');
-        if (imgElement && imgElement.src === modalImage.src) {
-            uploadedImagesContainer.removeChild(imageContainers[i]);
-            selectedFiles.splice(i, 1); // Remove the file from the selectedFiles array
-            break;
-        }
+        files.forEach((file) => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                selectedFiles.push({ name: file.name, data: e.target.result });
+                displayStoredImages(); // Re-render the images
+            };
+            reader.readAsDataURL(file);
+        });
     }
 
-    // Save the updated selected files to localStorage
-    localStorage.setItem('uploadedImages', JSON.stringify(selectedFiles));
-
-    // Close the modal after removal
-    closeModal();
-}
-
-// Display cached images on page load
-window.addEventListener('DOMContentLoaded', function() {
-    displayImageFromCache(); // Display images from localStorage on page load
-});
-
-    // Display cached images on page load
-    window.addEventListener('DOMContentLoaded', function() {
+    // Function to display all stored images
+    function displayStoredImages() {
         const uploadedImagesContainer = document.getElementById('uploaded-images-container');
+        uploadedImagesContainer.innerHTML = ""; // Clear current images
+
         selectedFiles.forEach((file, index) => {
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const imageWrapper = document.createElement('div');
-                    imageWrapper.style.width = '120px';
-                    imageWrapper.style.textAlign = 'center';
+            const imageWrapper = document.createElement('div');
+            imageWrapper.style.width = '120px';
+            imageWrapper.style.textAlign = 'center';
 
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.style.width = '100px';
-                    img.style.height = '100px';
-                    img.style.cursor = 'pointer';
-                    img.style.objectFit = 'cover';
-                    img.style.borderRadius = '5px';
-                    img.style.border = '1px solid #ddd';
-                    img.onclick = function () {
-                        openModal(e.target.result, file.name);
-                    };
+            const img = document.createElement('img');
+            img.src = file.data;
+            img.style.width = '100px';
+            img.style.height = '100px';
+            img.style.cursor = 'pointer';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '5px';
+            img.style.border = '1px solid #ddd';
+            img.onclick = function () {
+                openModal(file.data, file.name);
+            };
 
-                    const title = document.createElement('div');
-                    title.textContent = file.name;
-                    title.style.marginTop = '5px';
-                    title.style.fontSize = '12px';
-                    title.style.color = '#555';
+            const title = document.createElement('div');
+            title.textContent = file.name;
+            title.style.marginTop = '5px';
+            title.style.fontSize = '12px';
+            title.style.color = '#555';
 
-                    const date = document.createElement('div');
-                    date.textContent = `Uploaded: ${new Date().toLocaleDateString()}`;
-                    date.style.fontSize = '10px';
-                    date.style.color = '#777';
+            const date = document.createElement('div');
+            date.textContent = `Uploaded: ${new Date().toLocaleDateString()}`;
+            date.style.fontSize = '10px';
+            date.style.color = '#777';
 
-                    imageWrapper.appendChild(img);
-                    imageWrapper.appendChild(title);
-                    imageWrapper.appendChild(date);
+            imageWrapper.appendChild(img);
+            imageWrapper.appendChild(title);
+            imageWrapper.appendChild(date);
 
-                    uploadedImagesContainer.appendChild(imageWrapper);
-                };
-                reader.readAsDataURL(file);
-            }
+            uploadedImagesContainer.appendChild(imageWrapper);
         });
-    });
+    }
+
+    // Function to open modal with a large image
+    function openModal(imageSrc, fileName) {
+        const modal = document.getElementById('image-modal');
+        const modalImage = document.getElementById('modal-image');
+        const downloadLink = document.getElementById('download-link');
+
+        modalImage.src = imageSrc;
+        downloadLink.href = imageSrc;
+        downloadLink.download = fileName;
+        modal.style.display = 'flex';
+    }
+
+    // Close the modal
+    function closeModal() {
+        const modal = document.getElementById('image-modal');
+        modal.style.display = 'none';
+    }
+
+    // Remove the image from the container
+    function removeImage() {
+        const modalImage = document.getElementById('modal-image');
+        const uploadedImagesContainer = document.getElementById('uploaded-images-container');
+
+        const imageContainers = uploadedImagesContainer.children;
+        for (let i = 0; i < imageContainers.length; i++) {
+            const imgElement = imageContainers[i].querySelector('img');
+            if (imgElement && imgElement.src === modalImage.src) {
+                uploadedImagesContainer.removeChild(imageContainers[i]);
+                selectedFiles.splice(i, 1); // Remove from selectedFiles array
+                break;
+            }
+        }
+        closeModal();
+    }
 
     document.getElementById("saveButton").addEventListener("click", function () {
-        // Collect all uploaded images
         const uploadedImages = selectedFiles;
-
-        // Get patient_id and prescription_id from PHP session variables
         const patientId = '<?php echo $_SESSION['patient_id'] ?? ""; ?>';
         const prescriptionId = '<?php echo $_SESSION['prescription_id'] ?? ""; ?>';
 
-        // Prepare the form data
         const formData = new FormData();
         formData.append('patient_id', patientId);
         formData.append('prescription_id', prescriptionId);
 
-        // Add all uploaded images to the form data if there are any
         if (uploadedImages.length > 0) {
             uploadedImages.forEach((file, index) => {
                 formData.append(`image_${index}`, file);
             });
         }
 
-        // Confirmation with SweetAlert
         Swal.fire({
             title: 'Do you want to save the data?',
             text: 'Please confirm if you want to proceed with saving your images.',
@@ -417,7 +329,6 @@ window.addEventListener('DOMContentLoaded', function() {
             cancelButtonText: 'No, Edit the Data',
         }).then((result) => {
             if (result.isConfirmed) {
-                // Proceed with saving the data
                 fetch('../functions/add_xray.php', {
                     method: 'POST',
                     body: formData,
@@ -430,7 +341,6 @@ window.addEventListener('DOMContentLoaded', function() {
                                 title: 'Success!',
                                 text: 'Images saved successfully.',
                             }).then(() => {
-                                // Redirect to the next page
                                 window.location.href = `add_intra.php?patient_id=${patientId}&prescription_id=${prescriptionId}`;
                             });
                         } else {
@@ -449,13 +359,6 @@ window.addEventListener('DOMContentLoaded', function() {
                             text: 'An error occurred while saving images.',
                         });
                     });
-            } else {
-                // If the user clicks "No, Edit the Data", show a message and stay on the form
-                Swal.fire({
-                    icon: 'info',
-                    title: 'You can edit the data.',
-                    text: 'Please make changes and try saving again.',
-                });
             }
         });
     });
