@@ -20,7 +20,7 @@ $treatmentPlans = $_POST["treatment_plans"];
 // Handle file uploads
 $imagePaths = [];
 if (!empty($_FILES["images"]["name"][0])) {
-    $uploadDir = "../uploads/ptp_images/";
+    $uploadDir = "/uploads/ptp_images/";
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0777, true); // Create the directory if it doesn't exist
     }

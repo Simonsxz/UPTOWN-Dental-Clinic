@@ -2,27 +2,27 @@
 session_start();
 include "../functions/db_conn.php";
 
+// Check if 'fetch_history' and 'patient_id' are set in the POST request
 if (isset($_POST['fetch_history']) && isset($_POST['patient_id'])) {
     $patient_id = $_POST['patient_id'];
 
-    // Query to fetch patient history from the view, including both prescription_id and patient_prescription
-    $sql = "SELECT patient_id, prescription_id, patient_prescription, patient_doctor, payment, patient_created_at AS prescription_date 
-            FROM patient_details_view 
+    // Query to fetch patient history using patient_id
+    $sql = "SELECT patient_id, procedure_id, procedure_details, created_at 
+            FROM patient_procedure_details 
             WHERE patient_id = ?";
+
     $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, 's', $patient_id);
+    mysqli_stmt_bind_param($stmt, 's', $patient_id); // Bind only patient_id
 
     $history = [];
     if (mysqli_stmt_execute($stmt)) {
-        mysqli_stmt_bind_result($stmt, $patient_id, $prescription_id, $patient_prescription, $patient_doctor, $payment, $prescription_date);
+        mysqli_stmt_bind_result($stmt, $patient_id, $procedure_id, $procedure_details, $created_at);
         while (mysqli_stmt_fetch($stmt)) {
             $history[] = [
                 'patient_id' => $patient_id,
-                'prescription_id' => $prescription_id,  // Include prescription_id
-                'patient_prescription' => $patient_prescription,  // Include patient_prescription
-                'patient_doctor' => $patient_doctor,
-                'patient_payment' => $payment,  // This is NULL as per the view definition
-                'prescription_date' => $prescription_date
+                'procedure_id' => $procedure_id,
+                'procedure_details' => $procedure_details,
+                'created_at' => $created_at
             ];
         }
     } else {
@@ -39,5 +39,6 @@ if (isset($_POST['fetch_history']) && isset($_POST['patient_id'])) {
     }
 } else {
     header('Content-Type: application/json');
-    echo json_encode(['error' => 'Invalid request']);
+    echo json_encode(['error' => 'Invalid request. Missing patient_id']);
 }
+?>

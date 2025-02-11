@@ -1,4 +1,16 @@
+<?php
+session_start();
+include "../functions/db_conn.php";         // Include database connection
+include "../functions/function.php"; 
+include "../functions/module_doctors_validation.php"; // Include the validation function
 
+$user_ID = $_SESSION['user_ID'];
+
+if (!isset($_SESSION['user_ID'])) {
+    header("Location: ../index.php"); // Redirect to login if not authenticated
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,18 +42,21 @@
 		
 		<ul class="side-menu">
 			<!-- Main -->
-		
-			<li><a href="dashboard.html"><i class='bx bxs-dashboard icon' ></i>Dashboard</a></li>
+            <li><a href="dashboard.php" ><i class='bx bxs-dashboard icon' ></i>Dashboard</a></li>
 			<li class="divider" data-text="main">Main</li>
-            <li><a href="doctors.html"><i class='bx bxs-user-detail icon' ></i> User Account </a></li>
-			<li><a href="patient.html"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
-			<li><a href="xray.html"><i class='bx bxs-barcode icon' ></i> X-ray </a></li>
-			<li><a href=""><i class='bx bxs-photo-album icon' ></i> Oral Photos </a></li>
+			<?php if ($user_ID && isAdmin($user_ID, $conn)): ?>
+				<li><a href="doctors.php" ><i class='bx bxs-user-detail icon'></i> User Account</a></li>
+			<?php endif; ?>
+
+			<li><a href="patient.php"  ><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
+            <li><a href="family.php"><i class='bx bxs-group icon'></i> Family </a></li>
+			<li><a href=""><i class='bx bxs-report icon'></i> Reports </a></li>
+
 
 			<!-- help -->
 			<li class="divider" data-text="Settings">Settings</li>
-            <li><a href="settings.html" class="active"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
-            <li><a href="#"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
+            <li><a href="settings.php" class="active"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
+            <li><a href="logout.php"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
 		</ul>
 	</section>
 	<!-- Side Bar -->

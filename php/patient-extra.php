@@ -13,13 +13,13 @@ if (!isset($_SESSION['user_ID'])) {
 $user_ID = $_SESSION['user_ID']; // Fetch user_ID from session
 
 // Check if both patient_id and prescription_id are set in the URL parameters
-if (isset($_GET['patient_id']) && isset($_GET['prescription_id'])) {
+if (isset($_GET['patient_id']) && isset($_GET['procedure_id'])) {
     $_SESSION['patient_id'] = $_GET['patient_id']; // Store patient_id in session
-    $_SESSION['prescription_id'] = $_GET['prescription_id']; // Store prescription_id in session
+    $_SESSION['procedure_id'] = $_GET['procedure_id']; // Store prescription_id in session
 }
 
 $patientId = $_SESSION['patient_id'] ?? null;
-$prescriptionId = $_SESSION['prescription_id'] ?? null;
+$procedure_id = $_SESSION['procedure_id'] ?? null;
 
 if ($patientId) {
     // Fetch the patient name from the database using the patient_id
@@ -64,21 +64,21 @@ if ($patientId) {
 		<ul class="side-menu">
 			<!-- Main -->
 		
-			<li><a href="dashboard.php" ><i class='bx bxs-dashboard icon' ></i>Dashboard</a></li>
+            <li><a href="dashboard.php" ><i class='bx bxs-dashboard icon' ></i>Dashboard</a></li>
 			<li class="divider" data-text="main">Main</li>
 			<?php if ($user_ID && isAdmin($user_ID, $conn)): ?>
-				<li><a href="doctors.php"><i class='bx bxs-user-detail icon'></i> User Account</a></li>
+				<li><a href="doctors.php" ><i class='bx bxs-user-detail icon'></i> User Account</a></li>
 			<?php endif; ?>
 
-			<li><a href="patient.php" class="active"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
-            <li><a href="family.php" ><i class='bx bxs-group icon'></i> Family </a></li>
+			<li><a href="patient.php"  class="active"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
+            <li><a href="family.php"><i class='bx bxs-group icon'></i> Family </a></li>
 			<li><a href=""><i class='bx bxs-report icon'></i> Reports </a></li>
 
 
 			<!-- help -->
 			<li class="divider" data-text="Settings">Settings</li>
-            <li><a href="settings.html"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
-            <li><a href="#"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
+            <li><a href="settings.php"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
+            <li><a href="logout.php"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
 		</ul>
 	</section>
 	<!-- Side Bar -->
@@ -137,31 +137,31 @@ if ($patientId) {
 
 							<div class="module-container">
 							<div class="horizontal-nav-bar">
-								<a href="patient-info.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+                            <a href="patient-info.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item ">P.I.R</button>
 								</a>
-								<a href="medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
-									<button class="nav-item">Medical History</button>
+								<a href="medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
+									<button class="nav-item ">Medical History</button>
 								</a>
-								<a href="medical-condition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
-									<button class="nav-item ">Medical Condition</button>
+								<a href="medical-condition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
+									<button class="nav-item">Medical Condition</button>
 								</a>
-								<a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
-									<button class="nav-item">PTP</button>
+								<a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
+									<button class="nav-item ">PTP</button>
 								</a>
-								<a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+								<a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item ">Procedures</button>
 								</a>
-								<a href="patient-xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+								<a href="patient-xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item ">Xray</button>
 								</a>
-								<a href="patient-intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+								<a href="patient-intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item ">Intra Oral Photos</button>
 								</a>
-								<a href="patient-extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+								<a href="patient-extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item active">Extra Oral Photos</button>
 								</a>
-								<a href="notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+								<a href="notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item">Notes</button>
 								</a>
 							</div>
@@ -170,7 +170,7 @@ if ($patientId) {
 
 							<?php
 $patientId = $_SESSION['patient_id'] ?? null;
-$prescriptionId = $_SESSION['prescription_id'] ?? null; // Changed from patient_prescription to prescription_id
+$prescriptionId = $_SESSION['procedure_id'] ?? null; // Changed from patient_prescription to prescription_id
 
 if ($patientId && $prescriptionId) {
     // Database connection
@@ -182,7 +182,7 @@ if ($patientId && $prescriptionId) {
     }
 
     // Fetch image paths from tbl_patientextra
-    $stmt = $conn->prepare("SELECT image_paths FROM tbl_patientextra WHERE patient_id = ? AND prescription_id = ?"); // Updated from patient_prescription to prescription_id
+    $stmt = $conn->prepare("SELECT image_paths FROM tbl_patientextra WHERE patient_id = ? AND procedure_id = ?"); // Updated from patient_prescription to prescription_id
     $stmt->bind_param("ss", $patientId, $prescriptionId); // Changed patient_prescription to prescription_id
     $stmt->execute();
     $result = $stmt->get_result();
@@ -206,7 +206,7 @@ if ($patientId && $prescriptionId) {
 
 
 <div class="info-container">
-    <h2 class="info-title" style="margin-bottom: 10px; margin-left:20px; margin-top:-20px;">Patient Intra-Oral Images</h2>
+    <h2 class="info-title" style="margin-bottom: 10px; margin-left:20px; margin-top:-20px;">Patient Extra-Oral Images</h2>
     <form class="details-form1">
         <!-- Uploaded Images Container -->
         <div id="uploaded-images-container" class="images-container">

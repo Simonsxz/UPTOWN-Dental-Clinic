@@ -81,8 +81,8 @@ unset($_SESSION['cached_data']);
 
 			<!-- help -->
 			<li class="divider" data-text="Settings">Settings</li>
-            <li><a href="settings.html"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
-            <li><a href="#"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
+            <li><a href="settings.php"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
+            <li><a href="logout.php"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
 		</ul>
 	</section>
 	<!-- Side Bar -->
@@ -139,40 +139,40 @@ unset($_SESSION['cached_data']);
 
 							<div class="module-container">
                             <div class="horizontal-nav-bar">
-                            <a href="add_patientinfo.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="pirLink">
-                                <button class="nav-item ">P.I.R</button>
+                            <a href="add_patientinfo.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="pirLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>P.I.R</button>
                             </a>
 
-                            <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="historyLink">
-                                <button class="nav-item active">Medical History</button>
+                            <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="historyLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item active" disabled>Medical History</button>
                             </a>
 
-                            <a href="add_medicalcondition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="conditionLink">
-                                <button class="nav-item">Medical Condition</button>
+                            <a href="add_medicalcondition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="conditionLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>Medical Condition</button>
                             </a>
 
-                            <a href="add_ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="ptpLink">
-                                <button class="nav-item">PTP</button>
+                            <a href="add_ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="ptpLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>PTP</button>
                             </a>
 
-                            <a href="add_procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="procedureLink">
-                                <button class="nav-item">Procedures</button>
+                            <a href="add_procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="procedureLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>Procedures</button>
                             </a>
 
-                            <a href="add_xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="xrayLink">
-                                <button class="nav-item">Xray</button>
+                            <a href="add_xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="xrayLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>Xray</button>
                             </a>
 
-                            <a href="add_intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="intraLink">
-                                <button class="nav-item">Intra Oral Photos</button>
+                            <a href="add_intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="intraLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item " disabled>Intra Oral Photos</button>
                             </a>
 
-                            <a href="add_extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="extraLink">
-                                <button class="nav-item ">Extra Oral Photos</button>
+                            <a href="add_extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="extraLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item " disabled>Extra Oral Photos</button>
                             </a>
 
-                            <a href="add_notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="notesLink">
-                                <button class="nav-item">Notes</button>
+                            <a href="add_notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="notesLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>Notes</button>
                             </a>
                             </div>
 
@@ -180,75 +180,77 @@ unset($_SESSION['cached_data']);
 
 
                         <div class="info-container">
-            <h2 class="info-title">Medical History</h2>
-            <form class="details-form" id="medicalHistoryForm" method="POST">
-    <div class="form-group">
-        <label for="last-visit">Date of Last Visit:</label>
-        <input type="date" id="last-visit" name="last-visit" class="form-input" required 
-            value="<?php echo $_SESSION['cached_data']['medical_history']['last-visit'] ?? ''; ?>">
-    </div>
-
-    <div class="form-group">
-        <label for="physician-name">General Physician's Name:</label>
-        <input type="text" id="physician-name" name="physician-name" class="form-input" required
-            value="<?php echo $_SESSION['cached_data']['medical_history']['physician-name'] ?? ''; ?>">
-    </div>
-
-    <div class="form-group">
-        <label>Have you had any serious illness or operation?</label>
-        <textarea id="serious-illness" name="serious-illness" class="form-input" rows="3" required><?php echo $_SESSION['cached_data']['medical_history']['serious-illness'] ?? ''; ?></textarea>
-    </div>
-
-    <div class="form-group">
-        <label>If Yes, describe:</label>
-        <textarea id="illness-description" name="illness-description" class="form-input" rows="3" required><?php echo $_SESSION['cached_data']['medical_history']['illness-description'] ?? ''; ?></textarea>
-    </div>
-
-    <div class="form-group">
-    <label>Have you ever had a blood transfusion?</label>
-    <div>
-        <label><input type="radio" name="blood-transfusion" value="yes" 
-            <?php echo (isset($_SESSION['cached_data']['medical_history']['blood-transfusion']) && $_SESSION['cached_data']['medical_history']['blood-transfusion'] === 'yes') ? 'checked' : ''; ?>>
-            Yes</label>
-        <label><input type="radio" name="blood-transfusion" value="no" 
-            <?php echo (isset($_SESSION['cached_data']['medical_history']['blood-transfusion']) && $_SESSION['cached_data']['medical_history']['blood-transfusion'] === 'no') ? 'checked' : ''; ?>>
-            No</label>
-    </div>
-</div>
-
-    <div class="form-group">
-        <label>If Yes, give approximate dates:</label>
-        <input type="text" id="transfusion-dates" name="transfusion-dates" class="form-input" required
-            value="<?php echo $_SESSION['cached_data']['medical_history']['transfusion-dates'] ?? ''; ?>">
-    </div>
-
-    <div class="form-group">
-    <label>(For Women only) Are you pregnant?</label>
-    <div>
-        <label><input type="radio" name="pregnant" value="yes" 
-            <?php echo (isset($_SESSION['cached_data']['medical_history']['pregnant']) && $_SESSION['cached_data']['medical_history']['pregnant'] === 'yes') ? 'checked' : ''; ?>>
-            Yes</label>
-        <label><input type="radio" name="pregnant" value="no" 
-            <?php echo (isset($_SESSION['cached_data']['medical_history']['pregnant']) && $_SESSION['cached_data']['medical_history']['pregnant'] === 'no') ? 'checked' : ''; ?>>
-            No</label>
-    </div>
-</div>
-
-    <div class="form-group">
-        <label>Are you taking any medication?</label>
-        <div>
-            <label><input type="radio" name="medication" value="yes" 
-                <?php echo (isset($_SESSION['cached_data']['medical_history']['medication']) && $_SESSION['cached_data']['medical_history']['medication'] == 'yes') ? 'checked' : ''; ?>> Yes</label>
-            <label><input type="radio" name="medication" value="no" 
-                <?php echo (isset($_SESSION['cached_data']['medical_history']['medication']) && $_SESSION['cached_data']['medical_history']['medication'] == 'no') ? 'checked' : ''; ?>> No</label>
+    <h2 class="info-title">Medical History</h2>
+    <form class="details-form" id="medicalHistoryForm" method="POST">
+        <div class="form-group">
+            <label for="last-visit">Date of Last Visit:</label>
+            <input type="date" id="last-visit" name="last-visit" class="form-input" 
+                value="<?php echo $_SESSION['cached_data']['medical_history']['last-visit'] ?? ''; ?>">
         </div>
-    </div>
 
-    <div class="form-group">
-        <label>If Yes, please specify:</label>
-        <textarea id="medication-specify" name="medication-specify" class="form-input" rows="3" required><?php echo $_SESSION['cached_data']['medical_history']['medication-specify'] ?? ''; ?></textarea>
-    </div>
-</form>
+        <div class="form-group">
+            <label for="physician-name">General Physician's Name:</label>
+            <input type="text" id="physician-name" name="physician-name" class="form-input" 
+                value="<?php echo $_SESSION['cached_data']['medical_history']['physician-name'] ?? ''; ?>">
+        </div>
+
+        <div class="form-group">
+            <label>Have you had any serious illness or operation?</label>
+            <textarea id="serious-illness" name="serious-illness" class="form-input" rows="3"><?php echo $_SESSION['cached_data']['medical_history']['serious-illness'] ?? ''; ?></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>If Yes, describe:</label>
+            <textarea id="illness-description" name="illness-description" class="form-input" rows="3"><?php echo $_SESSION['cached_data']['medical_history']['illness-description'] ?? ''; ?></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Have you ever had a blood transfusion?</label>
+            <div>
+                <label><input type="radio" name="blood-transfusion" value="yes" 
+                    <?php echo (isset($_SESSION['cached_data']['medical_history']['blood-transfusion']) && $_SESSION['cached_data']['medical_history']['blood-transfusion'] === 'yes') ? 'checked' : ''; ?>>
+                    Yes</label>
+                <label><input type="radio" name="blood-transfusion" value="no" 
+                    <?php echo (isset($_SESSION['cached_data']['medical_history']['blood-transfusion']) && $_SESSION['cached_data']['medical_history']['blood-transfusion'] === 'no') ? 'checked' : ''; ?>>
+                    No</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>If Yes, give approximate dates:</label>
+            <input type="text" id="transfusion-dates" name="transfusion-dates" class="form-input" 
+                value="<?php echo $_SESSION['cached_data']['medical_history']['transfusion-dates'] ?? ''; ?>">
+        </div>
+
+        <div class="form-group">
+            <label>(For Women only) Are you pregnant?</label>
+            <div>
+                <label><input type="radio" name="pregnant" value="yes" 
+                    <?php echo (isset($_SESSION['cached_data']['medical_history']['pregnant']) && $_SESSION['cached_data']['medical_history']['pregnant'] === 'yes') ? 'checked' : ''; ?>>
+                    Yes</label>
+                <label><input type="radio" name="pregnant" value="no" 
+                    <?php echo (isset($_SESSION['cached_data']['medical_history']['pregnant']) && $_SESSION['cached_data']['medical_history']['pregnant'] === 'no') ? 'checked' : ''; ?>>
+                    No</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Are you taking any medication?</label>
+            <div>
+                <label><input type="radio" name="medication" value="yes" 
+                    <?php echo (isset($_SESSION['cached_data']['medical_history']['medication']) && $_SESSION['cached_data']['medical_history']['medication'] == 'yes') ? 'checked' : ''; ?>> Yes</label>
+                <label><input type="radio" name="medication" value="no" 
+                    <?php echo (isset($_SESSION['cached_data']['medical_history']['medication']) && $_SESSION['cached_data']['medical_history']['medication'] == 'no') ? 'checked' : ''; ?>> No</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>If Yes, please specify:</label>
+            <textarea id="medication-specify" name="medication-specify" class="form-input" rows="3"><?php echo $_SESSION['cached_data']['medical_history']['medication-specify'] ?? ''; ?></textarea>
+        </div>
+    </form>
+</div>
+
 
 
         </div>

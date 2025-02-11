@@ -1,0 +1,5 @@
+[07-Feb-2025 15:31:11 Europe/Berlin] PHP Fatal error:  Uncaught mysqli_sql_exception: Column 'images_path' cannot be null in C:\xampp\htdocs\UPTOWN-Dental-Clinic\functions\add_xray.php:61
+Stack trace:
+#0 C:\xampp\htdocs\UPTOWN-Dental-Clinic\functions\add_xray.php(61): mysqli_stmt->execute()
+#1 {main}
+  thrown in C:\xampp\htdocs\UPTOWN-Dental-Clinic\functions\add_xray.php on line 61

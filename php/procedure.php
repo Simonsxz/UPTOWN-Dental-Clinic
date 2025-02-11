@@ -13,13 +13,13 @@ if (!isset($_SESSION['user_ID'])) {
 $user_ID = $_SESSION['user_ID']; // Fetch user_ID from session
 
 // Check if both patient_id and prescription_id are set in the URL parameters
-if (isset($_GET['patient_id']) && isset($_GET['prescription_id'])) {
+if (isset($_GET['patient_id']) && isset($_GET['procedure_id'])) {
     $_SESSION['patient_id'] = $_GET['patient_id']; // Store patient_id in session
-    $_SESSION['prescription_id'] = $_GET['prescription_id']; // Store prescription_id in session
+    $_SESSION['procedure_id'] = $_GET['procedure_id']; // Store prescription_id in session
 }
 
 $patientId = $_SESSION['patient_id'] ?? null;
-$prescriptionId = $_SESSION['prescription_id'] ?? null;
+$procedure_id = $_SESSION['procedure_id'] ?? null;
 
 if ($patientId) {
     // Fetch the patient name from the database using the patient_id
@@ -62,22 +62,21 @@ if ($patientId) {
 		
 		<ul class="side-menu">
 			<!-- Main -->
-		
-			<li><a href="dashboard.php" ><i class='bx bxs-dashboard icon' ></i>Dashboard</a></li>
+            <li><a href="dashboard.php" ><i class='bx bxs-dashboard icon' ></i>Dashboard</a></li>
 			<li class="divider" data-text="main">Main</li>
 			<?php if ($user_ID && isAdmin($user_ID, $conn)): ?>
-				<li><a href="doctors.php"><i class='bx bxs-user-detail icon'></i> User Account</a></li>
+				<li><a href="doctors.php" ><i class='bx bxs-user-detail icon'></i> User Account</a></li>
 			<?php endif; ?>
 
-			<li><a href="patient.php" class="active"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
-            <li><a href="family.php" ><i class='bx bxs-group icon'></i> Family </a></li>
+			<li><a href="patient.php"  class="active"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
+            <li><a href="family.php"><i class='bx bxs-group icon'></i> Family </a></li>
 			<li><a href=""><i class='bx bxs-report icon'></i> Reports </a></li>
 
 
 			<!-- help -->
 			<li class="divider" data-text="Settings">Settings</li>
-            <li><a href="settings.html"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
-            <li><a href="#"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
+            <li><a href="settings.php"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
+            <li><a href="logout.php"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
 		</ul>
 	</section>
 	<!-- Side Bar -->
@@ -141,107 +140,104 @@ if ($patientId) {
 
 							<div class="module-container">
                             <div class="horizontal-nav-bar">
-								<a href="patient-info.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+                            <a href="patient-info.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item ">P.I.R</button>
 								</a>
-								<a href="medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
-									<button class="nav-item">Medical History</button>
+								<a href="medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
+									<button class="nav-item ">Medical History</button>
 								</a>
-								<a href="medical-condition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
-									<button class="nav-item ">Medical Condition</button>
+								<a href="medical-condition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
+									<button class="nav-item">Medical Condition</button>
 								</a>
-								<a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
-									<button class="nav-item">PTP</button>
+								<a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
+									<button class="nav-item ">PTP</button>
 								</a>
-								<a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
-									<button class="nav-item">Procedures</button>
+								<a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
+									<button class="nav-item active">Procedures</button>
 								</a>
-								<a href="patient-xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+								<a href="patient-xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item">Xray</button>
 								</a>
-								<a href="patient-intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+								<a href="patient-intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item">Intra Oral Photos</button>
 								</a>
-								<a href="patient-extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+								<a href="patient-extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item">Extra Oral Photos</button>
 								</a>
-								<a href="notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+								<a href="notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item">Notes</button>
 								</a>
 							</div>
 
 							</div>
-
                             <?php
-                            $patientId = $_SESSION['patient_id'] ?? null;
-                            $patientPrescription = $_SESSION['patient_prescription'] ?? null;
+$patientId = $_SESSION['patient_id'] ?? null;
+$procedureId = $_GET['procedure_id'] ?? null; // Get procedure_id from URL
 
-                            if ($patientId && $patientPrescription) {
-                                // Database connection
-                                $conn = new mysqli('localhost', 'root', '', 'db_uptowndc');
+if ($patientId && $procedureId) {
+    // Database connection
+    $conn = new mysqli('localhost', 'root', '', 'db_uptowndc');
 
-                                // Check connection
-                                if ($conn->connect_error) {
-                                    die("Connection failed: " . $conn->connect_error);
-                                }
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
 
-                                // Fetch title and notes from tbl_patientprescription
-                                $stmt = $conn->prepare("SELECT patient_prescription AS title, description AS notes FROM tbl_patientprescription WHERE patient_id = ? AND patient_prescription = ?");
-                                $stmt->bind_param("ss", $patientId, $patientPrescription);
-                                $stmt->execute();
-                                $result = $stmt->get_result();
+    // Fetch procedure details and notes from tbl_procedure
+    $stmt = $conn->prepare("SELECT procedure_details, procedure_notes FROM tbl_procedure WHERE patient_id = ? AND procedure_id = ?");
+    $stmt->bind_param("ss", $patientId, $procedureId);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-                                // Check if data exists
-                                if ($result->num_rows > 0) {
-                                    $row = $result->fetch_assoc();
-                                    $title = $row['title']; // Prescription title
-                                    $notes = $row['notes']; // Notes content
-                                } else {
-                                    echo "<script>alert('No prescription notes found for this patient.');</script>";
-                                    $title = '';
-                                    $notes = '';
-                                }
+    // Check if data exists
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $procedureDetails = $row['procedure_details']; // Procedures list
+        $procedureNotes = $row['procedure_notes']; // Procedure notes
+    } else {
+        echo "<script>alert('No procedure details found for this patient.');</script>";
+        $procedureDetails = '';
+        $procedureNotes = '';
+    }
 
-                                $stmt->close();
-                                $conn->close();
-                            } else {
-                                echo "<script>alert('Patient ID or prescription not set.');</script>";
-                                $title = '';
-                                $notes = '';
-                            }
-                            ?>
-
+    $stmt->close();
+    $conn->close();
+} else {
+    echo "<script>alert('Patient ID or procedure ID not set.');</script>";
+    $procedureDetails = '';
+    $procedureNotes = '';
+}
+?>
 
 <div class="info-container" style="padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-    <h2 class="info-title" style="font-size: 24px; margin-bottom: 15px; color: #333;">Notes</h2>
+    <h2 class="info-title" style="font-size: 24px; margin-bottom: 15px; color: #333;">Procedure Details</h2>
     <form class="details-form1">
         <!-- Title Text Box -->
-        <label for="note-title" style="display: block; font-size: 16px; margin-bottom: 8px; color: #555;">Prescription Title:</label>
+        <label for="note-title" style="display: block; font-size: 16px; margin-bottom: 8px; color: #555;">Procedures:</label>
         <input 
             type="text" 
             id="note-title" 
             name="note-title" 
             class="form-input" 
-            placeholder="Enter prescription title here..." 
-            value="<?php echo htmlspecialchars($title ?? ''); ?>" 
+            placeholder="No procedures found..." 
+            value="<?php echo htmlspecialchars($procedureDetails ?? ''); ?>" 
             style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; background-color: #f4f4f4; color: #333; margin-bottom: 15px;" 
             readonly
         />
 
         <!-- Notes Text Area -->
-        <label for="treatment-plans" style="display: block; font-size: 16px; margin-bottom: 8px; color: #555;">View patient notes:</label>
+        <label for="treatment-plans" style="display: block; font-size: 16px; margin-bottom: 8px; color: #555;">View procedure notes:</label>
         <textarea 
             id="treatment-plans" 
             name="treatment-plans" 
             class="form-textarea" 
-            placeholder="Notes for this patient..." 
+            placeholder="No notes available..." 
             rows="6" 
             style="width: 100%; padding: 12px 12px 12px 0; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; resize: vertical; background-color: #f4f4f4; color: #333; text-align: left;" 
-            readonly>
-            <?php echo htmlspecialchars($notes); ?>
-        </textarea>
+            readonly><?php echo htmlspecialchars($procedureNotes ?? ''); ?></textarea>
     </form>
 </div>
+
 
 
 			

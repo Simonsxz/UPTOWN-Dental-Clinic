@@ -9,10 +9,11 @@ error_log("Received Data: " . file_get_contents('php://input'));
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-if (empty($data['patient_id']) || empty($data['procedure_id']) || empty($data['medhistory_lastvisit'])) {
-    echo json_encode(['success' => false, 'message' => 'All fields are required.']);
+if (empty($data['patient_id']) || empty($data['procedure_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Patient ID and Procedure ID are required.']);
     exit;
 }
+
 
 // Assign variables
 $patientId = $data['patient_id'];

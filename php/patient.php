@@ -1,9 +1,43 @@
 <?php
 session_start();
-include "../functions/db_conn.php";
+include "../functions/db_conn.php";         // Include database connection
+include "../functions/function.php"; 
+include "../functions/module_doctors_validation.php"; // Include the validation function
 
-$user_ID = $_SESSION['user_ID']; 
-// Fetch user_ID from session
+$user_ID = $_SESSION['user_ID'];
+
+if (!isset($_SESSION['user_ID'])) {
+    header("Location: ../index.php"); // Redirect to login if not authenticated
+    exit;
+}
+
+if (isset($_POST['fetch_history']) && isset($_POST['patient_id'])) {
+    $patient_id = $_POST['patient_id'];
+    $sql = "SELECT ptn.patient_id, ptn.procedure_id, pr.procedure_details, ptn.patient_doctor, ptn.created_at AS prescription_date, pa.payment 
+            FROM tbl_patientnotes ptn
+            JOIN tbl_procedure pr ON ptn.procedure_id = pr.procedure_id
+            JOIN tbl_patientaccount pa ON ptn.patient_id = pa.patient_id
+            WHERE ptn.patient_id = ?";
+    
+    if ($stmt = $conn->prepare($sql)) {
+        $stmt->bind_param("s", $patient_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $history = [];
+        while ($row = $result->fetch_assoc()) {
+            $history[] = $row;
+        }
+        
+        echo json_encode(['history' => $history]);
+    } else {
+        echo json_encode(['error' => 'Failed to execute query.']);
+    }
+} else {
+    echo json_encode(['error' => 'Invalid request']);
+}
+?>
+
 ?>
 
 
@@ -44,18 +78,21 @@ $user_ID = $_SESSION['user_ID'];
 		<ul class="side-menu">
 			<!-- Main -->
 		
-			<li><a href="dashboard.php"><i class='bx bxs-dashboard icon' ></i>Dashboard</a></li>
+			<li><a href="dashboard.php" ><i class='bx bxs-dashboard icon' ></i>Dashboard</a></li>
 			<li class="divider" data-text="main">Main</li>
-            <li><a href="doctors.php"><i class='bx bxs-user-detail icon' ></i> User Account </a></li>
-			<li><a href="patient.php" class="active"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
-            <li><a href="family.php" ><i class='bx bxs-group icon'></i> Family </a></li>
+			<?php if ($user_ID && isAdmin($user_ID, $conn)): ?>
+				<li><a href="doctors.php" ><i class='bx bxs-user-detail icon'></i> User Account</a></li>
+			<?php endif; ?>
+
+			<li><a href="patient.php"  class="active"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
+            <li><a href="family.php"><i class='bx bxs-group icon'></i> Family </a></li>
 			<li><a href=""><i class='bx bxs-report icon'></i> Reports </a></li>
 
 
 			<!-- help -->
 			<li class="divider" data-text="Settings">Settings</li>
-            <li><a href="settings.html"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
-            <li><a href="#"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
+            <li><a href="settings.php"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
+            <li><a href="logout.php"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
 		</ul>
 	</section>
 	<!-- Side Bar -->
@@ -245,7 +282,8 @@ $user_ID = $_SESSION['user_ID'];
 								
 							</div>
 
-							<div class="modal fade" id="memberModal" tabindex="-1" aria-labelledby="folderModalLabel" aria-hidden="true">
+					<!-- Modal to Display Patient History Details -->
+<div class="modal fade" id="memberModal" tabindex="-1" aria-labelledby="folderModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -260,13 +298,14 @@ $user_ID = $_SESSION['user_ID'];
                     </button>
                 </div>
 
-				<script>
-					let selectedPatientId = null;
+                <script>
+                let selectedPatientId = null;
+                let selectedProcedureId = null;
 
-					// Capture the patient_id when the modal opens
-					document.querySelectorAll('.view-link').forEach(link => {
-						link.addEventListener('click', function () {
-							selectedPatientId = this.getAttribute('data-member-id');
+                // Capture the patient_id and procedure_id when the modal opens
+                document.querySelectorAll('.view-link').forEach(link => {
+                    link.addEventListener('click', function () {
+                        selectedPatientId = this.getAttribute('data-member-id');
 							console.log("Selected Patient ID:", selectedPatientId); // Debugging purpose
 						});
 					});
@@ -278,7 +317,7 @@ $user_ID = $_SESSION['user_ID'];
     }
 
     try {
-        console.log("Fetching procedure ID for patient:", selectedPatientId);
+                        console.log("Fetching patient history for patient:", selectedPatientId, "and procedure:", selectedProcedureId);
 
         const response = await fetch(`../functions/get_next_procedure.php?patient_id=${encodeURIComponent(selectedPatientId)}`);
         const text = await response.text(); // Read response as text
@@ -299,30 +338,26 @@ $user_ID = $_SESSION['user_ID'];
         }
     } catch (error) {
         console.error("Fetch error:", error);
-        alert("An error occurred while generating procedure ID.");
-    }
-}
+                        alert("An error occurred while fetching patient history.");
+                    }
+                }
+                </script>
 
-				</script>
-
-								
-             <!-- Table to Display Patient History -->
-			<table class="table table-bordered table-hover" id="patientHistoryTable">
-				<thead class="table-light">
-					<tr>
-						<th>Patient ID</th>
-						<th>Prescription ID</th>
-						<th>Prescription</th>
-						<th>Doctor</th>
-						<th>Payment</th>
-						<th>Date</th>
-						<th style="width: 150px; text-align: center;">Action</th> <!-- Fixed width for the Action column -->
-					</tr>
-				</thead>
-				<tbody id="patientHistoryTableBody">
-					<!-- Patient history data will be dynamically inserted here -->
-				</tbody>
-			</table>
+                <!-- Table to Display Patient History -->
+                <table class="table table-bordered table-hover" id="patientHistoryTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Patient ID</th>
+                            <th>Procedure ID</th>
+                            <th>Procedure Details</th>
+                            <th>Date</th>
+                            <th style="width: 150px; text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="patientHistoryTableBody">
+                        <!-- Patient history data will be dynamically inserted here -->
+                    </tbody>
+                </table>
 
             </div>
         </div>
@@ -515,56 +550,44 @@ $(document).ready(function () {
     $(document).on("click", ".view-link", function (event) {
         event.preventDefault();
 
-        // Retrieve the patient ID from the clicked element
         var patientId = $(this).data('member-id');
         console.log('Fetching history for Patient ID:', patientId);
 
-        // Validate the patient ID
         if (!patientId) {
             console.error('Patient ID is missing');
             return;
         }
 
-        // Make an AJAX request to fetch patient history from the view
         $.ajax({
             type: "POST",
-            url: "../functions/fetch_patienthistory.php", // Use the new PHP script for the view
-            data: {
-                'fetch_history': true,
-                'patient_id': patientId
-            },
+            url: "../functions/fetch_patienthistory.php",
+            data: { 'fetch_history': true, 'patient_id': patientId },
             success: function (response) {
                 console.log('Response:', response);
 
                 var tableBody = $('#patientHistoryTableBody');
-                tableBody.empty();
+                tableBody.empty();  // Clear any old rows
 
-                // Check for errors or empty history
                 if (response.error || (response.history && response.history.length === 0)) {
                     tableBody.append('<tr><td colspan="6">No history found for this patient.</td></tr>');
-                } else {
-                    // Populate the modal table with fetched data
+                } else if (response.history) {
+                    // Loop through history and populate the table
                     response.history.forEach(function (entry) {
                         var row = $('<tr>');
-						row.append('<td>' + entry.patient_id + '</td>');
-						row.append('<td>' + entry.prescription_id + '</td>');  // Show prescription_id
-						row.append('<td>' + entry.patient_prescription + '</td>');  // Show patient_prescription
-						row.append('<td>' + entry.patient_doctor + '</td>');
-						row.append('<td>' + entry.patient_payment + '</td>');
-						row.append('<td>' + entry.prescription_date + '</td>');
+                        row.append('<td>' + entry.patient_id + '</td>');
+                        row.append('<td>' + entry.procedure_id + '</td>');
+                        row.append('<td>' + entry.procedure_details + '</td>');
+                        row.append('<td>' + entry.created_at + '</td>');
 
-                        // Action buttons: View, Edit, Delete
-						var actionButtons = `
-							<td>
-								<button class="btn btn-sm btn-info view-action" data-patient-id="${entry.patient_id}" data-patient-prescription="${entry.prescription_id}">View</button>
-	
+                        var actionButtons = `
+                            <td>
+                                <button class="btn btn-sm btn-info view-action" data-patient-id="${entry.patient_id}" data-procedure-id="${entry.procedure_id}">View</button>
                                 <button class="btn btn-sm btn-warning edit-action" data-patient-id="${entry.patient_id}">Edit</button>
                                 <button class="btn btn-sm btn-danger delete-action" data-patient-id="${entry.patient_id}">Delete</button>
                             </td>
                         `;
                         row.append(actionButtons);
 
-                        // Append the row to the table
                         tableBody.append(row);
                     });
                 }
@@ -586,13 +609,13 @@ $(document).ready(function () {
     $(document).on('click', '.view-action', function () {
         // Retrieve data from button attributes
         const patientId = $(this).data('patient-id');
-        const patientPrescription = $(this).data('patient-prescription');
+        const procedureId = $(this).data('procedure-id');
 
-        console.log('Redirecting with Patient ID:', patientId, 'and Prescription:', patientPrescription);
+        console.log('Redirecting with Patient ID:', patientId, 'and Prescription:', procedureId);
 
         // Redirect with query parameters
         if (patientId) {
-            const url = `../php/patient-info.php?patient_id=${encodeURIComponent(patientId)}&patient_prescription=${encodeURIComponent(patientPrescription)}`;
+            const url = `../php/patient-info.php?patient_id=${encodeURIComponent(patientId)}&procedure_id=${encodeURIComponent(procedureId)}`;
             window.location.href = url;
         } else {
             console.error('Patient ID is missing.');
@@ -601,21 +624,19 @@ $(document).ready(function () {
 });
 
 
-
-
 </script>
 
 
 <style>
 	/* Adjust the width of the modal */
 .modal-dialog {
-    max-width: 80%;   /* Adjust the percentage as needed */
+    max-width: 90%;   /* Adjust the percentage as needed */
     width: auto;      /* Ensure the modal doesn't stretch too wide */
 }
 
 /* Optionally, you can set a minimum width if needed */
 .modal-dialog {
-    min-width: 600px; /* Adjust as per the desired minimum width */
+    min-width: 700px; /* Adjust as per the desired minimum width */
 }
 
 /* Set the table layout to auto to allow columns to adjust based on content */

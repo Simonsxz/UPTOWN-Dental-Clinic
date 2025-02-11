@@ -82,8 +82,8 @@ unset($_SESSION['cached_data']);
 
 			<!-- help -->
 			<li class="divider" data-text="Settings">Settings</li>
-            <li><a href="settings.html"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
-            <li><a href="#"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
+            <li><a href="settings.php"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
+            <li><a href="logout.php"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
 		</ul>
 	</section>
 	<!-- Side Bar -->
@@ -138,61 +138,65 @@ unset($_SESSION['cached_data']);
 
 							<div class="module-container">
                             <div class="horizontal-nav-bar">
-                            <a href="add_patientinfo.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="pirLink">
-                                <button class="nav-item ">P.I.R</button>
+                            <a href="add_patientinfo.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="pirLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>P.I.R</button>
                             </a>
 
-                            <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="historyLink">
-                                <button class="nav-item ">Medical History</button>
+                            <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="historyLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item " disabled>Medical History</button>
                             </a>
 
-                            <a href="add_medicalcondition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="conditionLink">
-                                <button class="nav-item">Medical Condition</button>
+                            <a href="add_medicalcondition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="conditionLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item " disabled>Medical Condition</button>
                             </a>
 
-                            <a href="add_ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="ptpLink">
-                                <button class="nav-item">PTP</button>
+                            <a href="add_ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="ptpLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>PTP</button>
                             </a>
 
-                            <a href="add_procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="procedureLink">
-                                <button class="nav-item">Procedures</button>
+                            <a href="add_procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="procedureLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>Procedures</button>
                             </a>
 
-                            <a href="add_xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="xrayLink">
-                                <button class="nav-item">Xray</button>
+                            <a href="add_xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="xrayLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>Xray</button>
                             </a>
 
-                            <a href="add_intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="intraLink">
-                                <button class="nav-item">Intra Oral Photos</button>
+                            <a href="add_intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="intraLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item " disabled>Intra Oral Photos</button>
                             </a>
 
-                            <a href="add_extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="extraLink">
-                                <button class="nav-item ">Extra Oral Photos</button>
+                            <a href="add_extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="extraLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item " disabled>Extra Oral Photos</button>
                             </a>
 
-                            <a href="add_notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="notesLink">
-                                <button class="nav-item active">Notes</button>
+                            <a href="add_notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="notesLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item active" disabled>Notes</button>
                             </a>
                             </div>
 							</div>
 
-                            
                             <div class="info-container">
     <h2 class="info-title" style="text-align: center; margin-bottom: 5px; font-family: Arial, sans-serif; color: #333;">Notes</h2>
-    
+
     <!-- Image upload input -->
-    <form class="details-form1" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
+    <form class="details-form1" id="notesForm" enctype="multipart/form-data" action="your_php_script.php" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
         <label for="image-upload-notes" style="font-size: 14px; font-weight: bold; color: #555;">Upload Images (Optional):</label>
-        <input id="image-upload-notes" type="file" accept="image/*" multiple style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;" onchange="displayImages(event)">
+        <input id="image-upload-notes" type="file" accept="image/*" name="images[]" multiple style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;" onchange="displayImages(event)">
         
         <!-- Editable text area for notes -->
-        <textarea id="treatment-plans3" name="treatment-plans3" class="form-textarea" placeholder="Add your notes here..." rows="5" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; width: auto; margin-left: 0;" required></textarea>
+        <textarea id="treatment-plans3" name="notes" class="form-textarea" placeholder="Add your notes here..." rows="5" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; width: auto; margin-left: 0;" required></textarea>
+
+        <!-- Hidden fields for patient_id and procedure_id -->
+        <input type="hidden" name="patient_id" value=""> <!-- Dynamic value will be set -->
+        <input type="hidden" name="procedure_id" value=""> <!-- Dynamic value will be set -->
 
         <!-- Container to display uploaded images -->
         <div id="uploaded-images-container1" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 15px;">
             <!-- Images uploaded via the form will be displayed here dynamically -->
         </div>
-    </form>
+
+  </form>
 </div>
 
 <!-- Modal for viewing large images -->
@@ -204,7 +208,64 @@ unset($_SESSION['cached_data']);
 </div>
 
 <script>
-  // Function to display uploaded images for Notes section
+// Function to dynamically set patient_id and procedure_id from URL
+const urlParams = new URLSearchParams(window.location.search);
+const patientId = urlParams.get('patient_id');
+const procedureId = urlParams.get('procedure_id');
+
+// Update hidden inputs with the values from the URL
+document.querySelector('input[name="patient_id"]').value = patientId;
+document.querySelector('input[name="procedure_id"]').value = procedureId;
+
+// Function to handle form submission via AJAX
+document.getElementById('saveButton').addEventListener('click', function() {
+    const form = document.getElementById('notesForm');
+    const formData = new FormData(form); // Get form data, including files
+    
+    // Send data to PHP script via fetch (AJAX)
+    fetch('../functions/add_notes.php', { // Replace with the correct PHP script path
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // SweetAlert success message
+            Swal.fire({
+                icon: 'success',
+                title: 'Patient data saved successfully!',
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                // Redirect after the success message
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url; // Redirect to the patient.php page
+                }
+            });
+        } else {
+            // SweetAlert error message
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: data.message || "An error occurred while saving.",
+                confirmButtonText: 'Try Again'
+            });
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        // SweetAlert error message for AJAX failure
+        Swal.fire({
+            icon: 'error',
+            title: 'An error occurred!',
+            text: "Unable to send data, please try again.",
+            confirmButtonText: 'Close'
+        });
+    });
+});
+
+
+// Function to display uploaded images for Notes section
 function displayImages(event) {
     const uploadedImagesContainer = document.getElementById('uploaded-images-container1');
     const files = Array.from(event.target.files); // Get newly selected files
@@ -276,14 +337,8 @@ function removeImage() {
 
     closeModal();
 }
-
-// Prevent textarea caching in localStorage
-document.addEventListener("DOMContentLoaded", function () {
-    const textarea = document.getElementById("treatment-plans3");
-    textarea.value = ""; // Clear stored value on page load
-});
-
 </script>
+
 
  <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

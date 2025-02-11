@@ -13,13 +13,13 @@ if (!isset($_SESSION['user_ID'])) {
 $user_ID = $_SESSION['user_ID']; // Fetch user_ID from session
 
 // Check if both patient_id and prescription_id are set in the URL parameters
-if (isset($_GET['patient_id']) && isset($_GET['prescription_id'])) {
+if (isset($_GET['patient_id']) && isset($_GET['procedure_id'])) {
     $_SESSION['patient_id'] = $_GET['patient_id']; // Store patient_id in session
-    $_SESSION['prescription_id'] = $_GET['prescription_id']; // Store prescription_id in session
+    $_SESSION['procedure_id'] = $_GET['procedure_id']; // Store prescription_id in session
 }
 
 $patientId = $_SESSION['patient_id'] ?? null;
-$prescriptionId = $_SESSION['prescription_id'] ?? null;
+$procedure_id = $_SESSION['procedure_id'] ?? null;
 
 if ($patientId) {
     // Fetch the patient name from the database using the patient_id
@@ -29,8 +29,6 @@ if ($patientId) {
 }
 
 // You can now use $patientId and $prescriptionId wherever needed
-?>
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -67,18 +65,18 @@ if ($patientId) {
 			<li><a href="dashboard.php" ><i class='bx bxs-dashboard icon' ></i>Dashboard</a></li>
 			<li class="divider" data-text="main">Main</li>
 			<?php if ($user_ID && isAdmin($user_ID, $conn)): ?>
-				<li><a href="doctors.php"><i class='bx bxs-user-detail icon'></i> User Account</a></li>
+				<li><a href="doctors.php" ><i class='bx bxs-user-detail icon'></i> User Account</a></li>
 			<?php endif; ?>
 
-			<li><a href="patient.php" class="active"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
-            <li><a href="family.php" ><i class='bx bxs-group icon'></i> Family </a></li>
+			<li><a href="patient.php"  class="active"><i class='bx bxs-user-circle icon' ></i> Patient </a></li>
+            <li><a href="family.php"><i class='bx bxs-group icon'></i> Family </a></li>
 			<li><a href=""><i class='bx bxs-report icon'></i> Reports </a></li>
 
 
 			<!-- help -->
 			<li class="divider" data-text="Settings">Settings</li>
-            <li><a href="settings.html"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
-            <li><a href="#"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
+            <li><a href="settings.php"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
+            <li><a href="logout.php"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
 		</ul>
 	</section>
 	<!-- Side Bar -->
@@ -142,38 +140,38 @@ if ($patientId) {
 
 							<div class="module-container">
 							<div class="horizontal-nav-bar">
-								<a href="patient-info.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+                            <a href="patient-info.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item ">P.I.R</button>
 								</a>
-								<a href="medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
-									<button class="nav-item">Medical History</button>
+								<a href="medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
+									<button class="nav-item ">Medical History</button>
 								</a>
-								<a href="medical-condition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
-									<button class="nav-item ">Medical Condition</button>
+								<a href="medical-condition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
+									<button class="nav-item">Medical Condition</button>
 								</a>
-								<a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
-									<button class="nav-item">PTP</button>
+								<a href="ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
+									<button class="nav-item ">PTP</button>
 								</a>
-								<a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+								<a href="procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item ">Procedures</button>
 								</a>
-								<a href="patient-xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+								<a href="patient-xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item ">Xray</button>
 								</a>
-								<a href="patient-intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+								<a href="patient-intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item ">Intra Oral Photos</button>
 								</a>
-								<a href="patient-extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+								<a href="patient-extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item ">Extra Oral Photos</button>
 								</a>
-								<a href="notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&prescription_id=<?php echo urlencode($_SESSION['prescription_id']); ?>" class="nav-item-link">
+								<a href="notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link">
 									<button class="nav-item active">Notes</button>
 								</a>
 							</div>
 							</div>
 							<?php
 $patientId = $_SESSION['patient_id'] ?? null;
-$prescriptionId = $_SESSION['prescription_id'] ?? null; // Changed from patient_prescription to prescription_id
+$prescriptionId = $_SESSION['procedure_id'] ?? null; // Changed from $patientPrescription to $prescriptionId
 
 if ($patientId && $prescriptionId) {
     // Database connection
@@ -184,49 +182,80 @@ if ($patientId && $prescriptionId) {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    // Fetch notes from tbl_patientnotes
-    $stmt = $conn->prepare("SELECT notes FROM tbl_patientnotes WHERE patient_id = ? AND prescription_id = ?"); // Updated from patient_prescription to prescription_id
-    $stmt->bind_param("ss", $patientId, $prescriptionId); // Changed patient_prescription to prescription_id
+    // Fetch data from tbl_patientnotes
+    $stmt = $conn->prepare("SELECT notes, images FROM tbl_patientnotes WHERE patient_id = ? AND procedure_id = ?");
+    $stmt->bind_param("ss", $patientId, $prescriptionId);
     $stmt->execute();
     $result = $stmt->get_result();
 
     // Check if data exists
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $notes = $row['notes']; // Fetch the notes from the database
+        $notes = htmlspecialchars($row['notes']); // Prevents issues with special characters
+        $images = json_decode($row['images'], true); // Decode JSON array
+
+        if (!is_array($images)) {
+            $images = []; // Ensure it's an array
+        }
     } else {
         echo "<script>alert('No notes found for this patient.');</script>";
-        $notes = ''; // If no notes found, leave the text area empty
+        $notes = '';
+        $images = [];
     }
 
     $stmt->close();
     $conn->close();
 } else {
     echo "<script>alert('Patient ID or prescription not set.');</script>";
-    $notes = ''; // If patient_id or prescription is not set, leave the text area empty
+    $notes = '';
+    $images = [];
 }
 ?>
 
+<div class="info-container">
+    <h2 class="info-title" style="text-align: center; font-size: 24px; margin-bottom: 5px; color: #333;">Patient Notes</h2>
+    
+    <form class="details-form1" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
+        <label for="notes" style="font-size: 16px; color: #555;">View patient notes:</label>
 
-<div class="info-container" style="padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-    <h2 class="info-title" style="font-size: 24px; margin-bottom: 15px; color: #333;">Notes</h2>
-    <form class="details-form1">
-        <label for="treatment-plans" style="display: block; font-size: 16px; margin-bottom: 8px; color: #555;">View patient notes:</label>
-        <textarea 
-            id="treatment-plans" 
-            name="treatment-plans" 
-            class="form-textarea" 
-            placeholder="Notes for this patient..." 
-            rows="6" 
-            style="width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; resize: vertical; background-color: #f4f4f4; color: #333;" 
-            readonly>
-            <?php echo htmlspecialchars($notes); ?>
-        </textarea> 
+        <!-- Textarea for Notes -->
+        <textarea id="notes" name="notes" class="form-textarea" placeholder="Notes for this patient..." rows="6" style="width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; resize: vertical; background-color: #f4f4f4; color: #333;" readonly><?php echo $notes; ?></textarea>
+
+        <!-- Container to display uploaded images -->
+        <div id="uploaded-images-container" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 15px;">
+            <?php if (!empty($images)): ?>
+                <?php foreach ($images as $image): ?>
+                    <?php $imagePath = htmlspecialchars(trim($image)); ?>
+                    <div style="width: 120px; text-align: center;">
+                        <img src="<?php echo $imagePath; ?>" style="width: 100px; height: 100px; cursor: pointer; object-fit: cover; border-radius: 5px;" onclick="openModal('<?php echo $imagePath; ?>')">
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p style="color: #777;">No images found for this patient.</p>
+            <?php endif; ?>
+        </div>
     </form>
 </div>
 
+<!-- Modal for viewing large images -->
+<div id="image-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 1000; flex-direction: column; padding: 20px; box-sizing: border-box;">
+    <img id="modal-image" src="" alt="Large View" style="max-width: 90%; max-height: 80%; border: 5px solid white; margin-bottom: 20px; border-radius: 10px;">
+    <a id="download-link" href="" download style="background-color: #007BFF; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; margin-bottom: 10px;">Download</a>
+    <button onclick="closeModal()" style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;">Close</button>
+</div>
 
-			
+<script>
+function openModal(imageSrc) {
+    document.getElementById('modal-image').src = imageSrc;
+    document.getElementById('download-link').href = imageSrc;
+    document.getElementById('image-modal').style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById('image-modal').style.display = "none";
+}
+</script>
+
         </main>
       
 </body>

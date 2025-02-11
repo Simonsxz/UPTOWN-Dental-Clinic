@@ -8,13 +8,13 @@ ini_set("display_startup_errors", 1);
 error_reporting(E_ALL);
 
 // Validate required fields
-if (empty($_POST["patient_id"]) || empty($_POST["prescription_id"]) || empty($_POST["notes"])) {
-    echo json_encode(["success" => false, "message" => "Patient ID, Prescription ID, and Notes are required."]);
+if (empty($_POST["patient_id"]) || empty($_POST["procedure_id"]) || empty($_POST["notes"])) {
+    echo json_encode(["success" => false, "message" => "Patient ID, Procedure ID, and Notes are required."]);
     exit;
 }
 
 $patientId = $_POST["patient_id"];
-$prescriptionId = $_POST["prescription_id"];
+$procedureId = $_POST["procedure_id"];
 $notes = $_POST["notes"];
 
 // Get the doctor name based on the user_ID from the session
@@ -41,7 +41,7 @@ if (empty($patientDoctor)) {
 // Handle file uploads
 $imagePaths = [];
 if (!empty($_FILES["images"]["name"][0])) {
-    $uploadDir = "../uploads/notes_images/";
+    $uploadDir = "/uploads/notes_images/";
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0777, true); // Create the directory if it doesn't exist
     }
@@ -63,16 +63,24 @@ if (!empty($_FILES["images"]["name"][0])) {
 $imagePathsString = json_encode($imagePaths);
 
 // Insert data into the database
-$query = "INSERT INTO tbl_patientnotes (patient_id, prescription_id, notes, images, patient_doctor, created_at) 
-          VALUES (?, ?, ?, ?, ?, NOW())";
+$query = "INSERT INTO tbl_patientnotes (patient_id, procedure_id, notes, images, patient_doctor, created_at) 
+          VALUES (?, ?, ?, ?, ?, NOW())";  // Changed prescription_id to procedure_id
 $stmt = $conn->prepare($query);
-$stmt->bind_param("sssss", $patientId, $prescriptionId, $notes, $imagePathsString, $patientDoctor);
+$stmt->bind_param("sssss", $patientId, $procedureId, $notes, $imagePathsString, $patientDoctor);
 
 if ($stmt->execute()) {
-    echo json_encode(["success" => true, "message" => "Notes and images saved successfully."]);
+    echo json_encode([
+        "success" => true,
+        "message" => "Notes and images saved successfully.",
+        "redirect_url" => "patient.php" // Provide the redirection URL
+    ]);
 } else {
-    echo json_encode(["success" => false, "message" => "Failed to save notes and images."]);
+    echo json_encode([
+        "success" => false,
+        "message" => "Failed to save notes and images."
+    ]);
 }
+
 
 // Close resources
 $stmt->close();

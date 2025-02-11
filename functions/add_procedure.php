@@ -16,6 +16,7 @@ if (empty($data['patient_id']) || empty($data['procedure_id']) || empty($data['p
 
 $patientId = $data['patient_id'];
 $procedureId = $data['procedure_id'];
+$procedureNotes = !empty($data['procedure_notes']) ? $data['procedure_notes'] : ''; // ✅ Capture procedure notes
 $createdAt = date("Y-m-d H:i:s");
 $updatedAt = $createdAt;
 $procedures = $data['procedures'];
@@ -29,15 +30,15 @@ foreach ($procedures as $procedure) {
 }
 $procedureDetails = implode(" | ", $procedureDetailsArray); // Use " | " as separator
 
-// ✅ Insert single row with all procedures combined
-$query = "INSERT INTO tbl_procedure (patient_id, procedure_id, procedure_details, created_at, updated_at) 
-          VALUES (?, ?, ?, ?, ?)";
+// ✅ Insert single row with all procedures and notes combined
+$query = "INSERT INTO tbl_procedure (patient_id, procedure_id, procedure_details, procedure_notes, created_at, updated_at) 
+          VALUES (?, ?, ?, ?, ?, ?)";
 $stmt = $conn->prepare($query);
-$stmt->bind_param("sssss", $patientId, $procedureId, $procedureDetails, $createdAt, $updatedAt);
+$stmt->bind_param("ssssss", $patientId, $procedureId, $procedureDetails, $procedureNotes, $createdAt, $updatedAt);
 $stmt->execute();
 
 $stmt->close();
 $conn->close();
 
-echo json_encode(['success' => true, 'message' => 'Procedures saved successfully.']);
+echo json_encode(['success' => true, 'message' => 'Procedures and notes saved successfully.']);
 ?>

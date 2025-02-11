@@ -81,8 +81,8 @@ unset($_SESSION['cached_data']);
 
 			<!-- help -->
 			<li class="divider" data-text="Settings">Settings</li>
-            <li><a href="settings.html"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
-            <li><a href="#"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
+            <li><a href="settings.php"><i class='bx bxs-cog icon'></i>Settings</i></a></li>
+            <li><a href="logout.php"><i class='bx bxs-left-arrow-circle icon'></i>Logout</i></a></li>
 		</ul>
 	</section>
 	<!-- Side Bar -->
@@ -139,7 +139,7 @@ unset($_SESSION['cached_data']);
                                     <a href="patient.php" id="cancelLink">
                                         <button type="button" class="cancel">Cancel</button>
                                     </a>
-                                    <button type="button" class="save" id="saveButton">Next</button>
+                                    <button type="button" class="save" id="saveExtraButton">Next</button>
                                 </div>
 								</div>
 							</div>												
@@ -147,41 +147,42 @@ unset($_SESSION['cached_data']);
 
 							<div class="module-container">
                             <div class="horizontal-nav-bar">
-                            <a href="add_patientinfo.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="pirLink">
-                                <button class="nav-item ">P.I.R</button>
+                            <a href="add_patientinfo.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="pirLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>P.I.R</button>
                             </a>
 
-                            <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="historyLink">
-                                <button class="nav-item ">Medical History</button>
+                            <a href="add_medical-history.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="historyLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>Medical History</button>
                             </a>
 
-                            <a href="add_medicalcondition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="conditionLink">
-                                <button class="nav-item">Medical Condition</button>
+                            <a href="add_medicalcondition.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="conditionLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>Medical Condition</button>
                             </a>
 
-                            <a href="add_ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="ptpLink">
-                                <button class="nav-item">PTP</button>
+                            <a href="add_ptp.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="ptpLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>PTP</button>
                             </a>
 
-                            <a href="add_procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="procedureLink">
-                                <button class="nav-item">Procedures</button>
+                            <a href="add_procedure.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="procedureLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>Procedures</button>
                             </a>
 
-                            <a href="add_xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="xrayLink">
-                                <button class="nav-item">Xray</button>
+                            <a href="add_xray.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="xrayLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>Xray</button>
                             </a>
 
-                            <a href="add_intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="intraLink">
-                                <button class="nav-item">Intra Oral Photos</button>
+                            <a href="add_intra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="intraLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>Intra Oral Photos</button>
                             </a>
 
-                            <a href="add_extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="extraLink">
-                                <button class="nav-item active">Extra Oral Photos</button>
+                            <a href="add_extra.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="extraLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item active" disabled>Extra Oral Photos</button>
                             </a>
 
-                            <a href="add_notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="notesLink">
-                                <button class="nav-item">Notes</button>
+                            <a href="add_notes.php?patient_id=<?php echo urlencode($_SESSION['patient_id']); ?>&procedure_id=<?php echo urlencode($_SESSION['procedure_id']); ?>" class="nav-item-link" id="notesLink" style="pointer-events: none; color: #ccc;">
+                                <button class="nav-item" disabled>Notes</button>
                             </a>
+
                             </div>
 							</div>
 
@@ -212,8 +213,7 @@ unset($_SESSION['cached_data']);
 </div>
 
 <script>
-    // Initialize an empty array for extra oral photos (no caching)
-    let extraOralSelectedFiles = [];
+    let extraOralSelectedFiles = []; // Array to store selected files for extra oral photos
 
     // Function to display uploaded images for extra oral photos
     function displayExtraImages(event) {
@@ -221,38 +221,39 @@ unset($_SESSION['cached_data']);
         const files = Array.from(event.target.files); // Get newly selected files
         const currentDate = new Date().toLocaleDateString();
 
-        // Add new files to the extraOralSelectedFiles array
+        // Display image previews
         files.forEach(file => {
             const reader = new FileReader();
             reader.onload = function (e) {
                 const imageData = e.target.result; // Base64 encoded image
 
-                // Save new image in the extraOralSelectedFiles array
-                extraOralSelectedFiles.push({
-                    dataUrl: imageData,
-                    name: file.name,
-                    date: currentDate
-                });
+                // Add new file to the extraOralSelectedFiles array
+                extraOralSelectedFiles.push(file);
 
                 // Update the displayed images
                 displayStoredExtraImages();
             };
-            reader.readAsDataURL(file); // Read the image file as data URL
+            reader.readAsDataURL(file); // Read the image file as a data URL
         });
     }
 
-    // Function to display all stored images
+    // Function to display all stored images for extra oral photos
     function displayStoredExtraImages() {
         const extraUploadedImagesContainer = document.getElementById('extra-uploaded-images-container');
-        extraUploadedImagesContainer.innerHTML = ""; // Clear current images
+        extraUploadedImagesContainer.innerHTML = ""; // Clear current images in the container
 
-        extraOralSelectedFiles.forEach((image, index) => {
+        extraOralSelectedFiles.forEach((file, index) => {
             const imageWrapper = document.createElement('div');
             imageWrapper.style.width = '120px';
             imageWrapper.style.textAlign = 'center';
 
             const img = document.createElement('img');
-            img.src = image.dataUrl;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
             img.style.width = '100px';
             img.style.height = '100px';
             img.style.cursor = 'pointer';
@@ -260,17 +261,17 @@ unset($_SESSION['cached_data']);
             img.style.borderRadius = '5px';
             img.style.border = '1px solid #ddd';
             img.onclick = function () {
-                openExtraModal(image.dataUrl, image.name);
+                openExtraModal(URL.createObjectURL(file), file.name);
             };
 
             const title = document.createElement('div');
-            title.textContent = image.name;
+            title.textContent = file.name;
             title.style.marginTop = '5px';
             title.style.fontSize = '12px';
             title.style.color = '#555';
 
             const date = document.createElement('div');
-            date.textContent = `Uploaded: ${image.date}`;
+            date.textContent = `Uploaded: ${new Date().toLocaleDateString()}`;
             date.style.fontSize = '10px';
             date.style.color = '#777';
 
@@ -282,7 +283,7 @@ unset($_SESSION['cached_data']);
         });
     }
 
-    // Function to open the modal with a large image for extra oral photos
+    // Function to open modal with a large image for extra oral photos
     function openExtraModal(imageSrc, fileName) {
         const modal = document.getElementById('extra-image-modal');
         const modalImage = document.getElementById('extra-modal-image');
@@ -300,101 +301,76 @@ unset($_SESSION['cached_data']);
         modal.style.display = 'none';
     }
 
-    // Remove the selected image from the container
+    // Remove the image from the container for extra oral photos
     function removeExtraImage() {
         const modalImage = document.getElementById('extra-modal-image');
         const extraUploadedImagesContainer = document.getElementById('extra-uploaded-images-container');
 
-        // Find the image to remove based on its dataUrl (src)
+        // Find the image container to remove
         const imageContainers = extraUploadedImagesContainer.children;
         for (let i = 0; i < imageContainers.length; i++) {
             const imgElement = imageContainers[i].querySelector('img');
             if (imgElement && imgElement.src === modalImage.src) {
                 extraUploadedImagesContainer.removeChild(imageContainers[i]);
-                extraOralSelectedFiles.splice(i, 1); // Remove image from the array
+                extraOralSelectedFiles.splice(i, 1); // Remove the file from the selectedFiles array
                 break;
             }
         }
 
-        // Close the modal
+        // Close the modal after removal
         closeExtraModal();
     }
 
-    // Save button logic for extra oral photos
-    document.getElementById("saveExtraButton").addEventListener("click", function () {
-        const formData = new FormData();
-        const patientId = '<?php echo $_SESSION['patient_id'] ?? ""; ?>';
-        const prescriptionId = '<?php echo $_SESSION['prescription_id'] ?? ""; ?>';
+   // Save button logic for extra oral photos
+document.getElementById("saveExtraButton").addEventListener("click", function () {
+    // Collect all uploaded images for extra oral
+    const formData = new FormData();
+    const patientId = '<?php echo $_SESSION['patient_id'] ?? ""; ?>';
+    const procedureId = '<?php echo $_SESSION['procedure_id'] ?? ""; ?>'; // Changed from prescription_id to procedure_id
 
-        formData.append('patient_id', patientId);
-        formData.append('prescription_id', prescriptionId);
+    formData.append('patient_id', patientId);
+    formData.append('procedure_id', procedureId); // Use procedure_id here
 
-        extraOralSelectedFiles.forEach((image, index) => {
-            // Convert base64 data back to file
-            const dataUrl = image.dataUrl;
-            const fileName = image.name;
-            const fileBlob = dataURLtoBlob(dataUrl); // Convert base64 to Blob
-            const file = new File([fileBlob], fileName, { type: "image/jpeg" });
-            formData.append('extra_images[]', file); // Append image to the form data
-        });
-
-        Swal.fire({
-            title: 'Do you want to save the Extra Oral Photos?',
-            text: 'Please confirm if you want to proceed with saving the photos.',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Save it',
-            cancelButtonText: 'No, Edit the Data',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch('../functions/add_extra.php', {
-                    method: 'POST',
-                    body: formData,
-                })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        if (data.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success!',
-                                text: 'Extra Oral Photos saved successfully.',
-                            }).then(() => {
-                                window.location.href = `add_notes.php?patient_id=${patientId}&prescription_id=${prescriptionId}`;
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: data.message || 'Failed to save Extra Oral Photos.',
-                            });
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: 'An error occurred while saving the photos.',
-                        });
-                    });
-            }
-        });
+    // Append files to form data
+    extraOralSelectedFiles.forEach((file, index) => {
+        formData.append('images[]', file); // Notice the 'images[]' key
     });
 
-    // Convert base64 data to Blob for uploading
-    function dataURLtoBlob(dataUrl) {
-        const [header, base64Data] = dataUrl.split(',');
-        const mime = header.match(/:(.*?);/)[1];
-        const binaryString = atob(base64Data);
-        const byteArray = new Uint8Array(binaryString.length);
-
-        for (let i = 0; i < binaryString.length; i++) {
-            byteArray[i] = binaryString.charCodeAt(i);
+    // Send the form data to the server
+    fetch('../functions/add_extra.php', {
+        method: 'POST',
+        body: formData,
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Extra Oral Photos saved successfully.',
+            }).then(() => {
+                window.location.href = `add_notes.php?patient_id=${patientId}&procedure_id=${procedureId}`; // Update URL to use procedure_id
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: data.message || 'Failed to save Extra Oral Photos.',
+            });
         }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'An error occurred while saving your photos.',
+        });
+    });
+});
 
-        return new Blob([byteArray], { type: mime });
-    }
 </script>
+
 
 
 
