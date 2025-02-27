@@ -367,6 +367,25 @@ document.getElementById("cancelLink").addEventListener("click", function (event)
 
 </script>
 
+<style>
+    #procedureListContainer {
+    display: flex;
+    flex-wrap: wrap;  /* Allow items to wrap */
+    gap: 10px;  /* Add some spacing between items */
+    padding: 10px;
+    max-width: 100%; /* Prevents overflow */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #f8f9fa;
+}
+
+#procedureListContainer div {
+    flex: 1 1 auto; /* Allow resizing while maintaining proper wrapping */
+    min-width: 150px; /* Set a minimum width before wrapping */
+    max-width: calc(50% - 10px); /* Ensure items don’t become too large */
+}
+
+</style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>

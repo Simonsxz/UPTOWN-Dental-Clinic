@@ -1,44 +1,40 @@
 <?php
-session_start();
-include "../functions/db_conn.php";         // Include database connection
+session_start(); // Start session
+
+include "../functions/db_conn.php"; // Database connection
 include "../functions/function.php"; 
-include "../functions/module_doctors_validation.php"; // Include the validation function
+include "../functions/module_doctors_validation.php"; // Validation function
 
-$user_ID = $_SESSION['user_ID'];
-
+// Redirect to login if the user is not authenticated
 if (!isset($_SESSION['user_ID'])) {
-    header("Location: ../index.php"); // Redirect to login if not authenticated
+    header("Location: ../index.php");
     exit;
 }
 
-if (isset($_POST['fetch_history']) && isset($_POST['patient_id'])) {
-    $patient_id = $_POST['patient_id'];
-    $sql = "SELECT ptn.patient_id, ptn.procedure_id, pr.procedure_details, ptn.patient_doctor, ptn.created_at AS prescription_date, pa.payment 
-            FROM tbl_patientnotes ptn
-            JOIN tbl_procedure pr ON ptn.procedure_id = pr.procedure_id
-            JOIN tbl_patientaccount pa ON ptn.patient_id = pa.patient_id
-            WHERE ptn.patient_id = ?";
-    
-    if ($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param("s", $patient_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        $history = [];
-        while ($row = $result->fetch_assoc()) {
-            $history[] = $row;
-        }
-        
-        echo json_encode(['history' => $history]);
-    } else {
-        echo json_encode(['error' => 'Failed to execute query.']);
-    }
-} else {
-    echo json_encode(['error' => 'Invalid request']);
+$user_ID = $_SESSION['user_ID']; 
+
+// Store patient_id and procedure_id in session (only if provided)
+if (isset($_GET['patient_id'])) {
+    $_SESSION['patient_id'] = $_GET['patient_id'];
 }
+if (isset($_GET['procedure_id'])) {
+    $_SESSION['procedure_id'] = $_GET['procedure_id'];
+}
+
+// Retrieve patient_id and procedure_id from session (use fallback to avoid errors)
+$patient_id = $_SESSION['patient_id'] ?? null;
+$procedure_id = $_SESSION['procedure_id'] ?? null;
+
+// Fetch patient name if patient_id exists
+$patientFullName = (!empty($patient_id)) ? getPatientFullName($patient_id) : "No Name Available";
+
+// Get the current script name
+$current_page = basename($_SERVER['PHP_SELF']);
+
+// Remove session cache completely
+unset($_SESSION['cached_data']);
 ?>
 
-?>
 
 
 <!DOCTYPE html>
@@ -221,15 +217,17 @@ if (isset($_POST['fetch_history']) && isset($_POST['patient_id'])) {
 															<button class="action-button view-button1" title="View Patient Details">View</button>
 														</a>
 
-														<a href="#" 
-															class="link-dark1 edit-link" 
-															data-bs-toggle="modal" 
-															data-bs-target="#StudentEditModal" 
-															data-user-id="<?php echo htmlspecialchars($patient_id); ?>"> 
-															<button class="action-button edit-button" title="Edit User Details">
-																Edit
-															</button>
-														</a>
+                                                        <a href="#" 
+                                                        class="link-dark1 view-link2"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#StudentEditModal"
+                                                        data-student-id="<?php echo htmlspecialchars($patient_id); ?>"> 
+                                                        <button class="action-button edit-button" title="Edit User Details">
+                                                            Edit
+                                                        </button>
+                                                        </a>
+
+                                                  
 
 														<a href="#" 
 															class="link-dark1 delete-link" 
@@ -344,25 +342,65 @@ if (isset($_POST['fetch_history']) && isset($_POST['patient_id'])) {
                 </script>
 
                 <!-- Table to Display Patient History -->
-                <table class="table table-bordered table-hover" id="patientHistoryTable">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Patient ID</th>
-                            <th>Procedure ID</th>
-                            <th>Procedure Details</th>
-                            <th>Date</th>
-                            <th style="width: 150px; text-align: center;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="patientHistoryTableBody">
-                        <!-- Patient history data will be dynamically inserted here -->
-                    </tbody>
-                </table>
+             <table class="table table-bordered table-hover" id="patientHistoryTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Patient ID</th>
+                        <th>Procedure ID</th>
+                        <th>Procedure Details</th>
+                        <th>Doctor</th> <!-- New column for patient_doctor -->
+                        <th>Date</th>
+                        <th style="width: 150px; text-align: center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="patientHistoryTableBody">
+                    <!-- Patient history data will be dynamically inserted here -->
+                </tbody>
+            </table>
+
 
             </div>
         </div>
     </div>
 							</div>
+
+
+                   <!-- Edit Patient Modal -->
+<div class="modal fade" id="StudentEditModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">Edit Patient Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+    <form id="editPatientForm">
+        <div class="mb-3">
+            <label for="patient_id" class="form-label">Patient ID</label>
+            <input type="text" class="form-control" id="patient_id" name="patient_id" readonly>
+        </div>
+        <div class="mb-3">
+            <label for="patient_fullName" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="patient_fullName" name="patient_fullName" required>
+        </div>
+        <div class="mb-3">
+            <label for="patient_family" class="form-label">Family</label>
+            <select class="form-control" id="patient_family" name="patient_family" required>
+                <option value="" disabled selected>Search or select a family</option>
+                <option value="N/A">N/A</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="patient_address" class="form-label">Address</label>
+            <input type="text" class="form-control" id="patient_address" name="patient_address" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+</div>
+
+    </div>
+  </div>
+</div>
 
 
 	
@@ -576,14 +614,23 @@ $(document).ready(function () {
                         var row = $('<tr>');
                         row.append('<td>' + entry.patient_id + '</td>');
                         row.append('<td>' + entry.procedure_id + '</td>');
-                        row.append('<td>' + entry.procedure_details + '</td>');
+
+                        // Convert procedure_details to a vertical list
+                        var procedureDetailsList = entry.procedure_details
+                            .split(" | ") // Split by delimiter
+                            .map(item => `<li>${item.trim()}</li>`) // Wrap each item in <li>
+                            .join(""); // Join list items
+
+                        row.append('<td><ul style="padding-left: 15px; margin: 0;">' + procedureDetailsList + '</ul></td>'); // Display as a list
+                        row.append('<td>' + (entry.patient_doctor ? entry.patient_doctor : 'N/A') + '</td>'); // Show patient_doctor
+
                         row.append('<td>' + entry.created_at + '</td>');
 
                         var actionButtons = `
                             <td>
                                 <button class="btn btn-sm btn-info view-action" data-patient-id="${entry.patient_id}" data-procedure-id="${entry.procedure_id}">View</button>
                                 <button class="btn btn-sm btn-warning edit-action" data-patient-id="${entry.patient_id}">Edit</button>
-                                <button class="btn btn-sm btn-danger delete-action" data-patient-id="${entry.patient_id}">Delete</button>
+                                <button class="btn btn-sm btn-danger delete-action" data-patient-id="${entry.patient_id}" data-procedure-id="${entry.procedure_id}">Delete</button>
                             </td>
                         `;
                         row.append(actionButtons);
@@ -602,6 +649,195 @@ $(document).ready(function () {
         });
     });
 });
+
+$(document).on("click", ".delete-action1", function () {
+    const button = $(this);
+    const patientId = button.data("patient-id");
+    const procedureId = button.data("procedure-id");
+
+    console.log("Deleting patient_id:", patientId, "procedure_id:", procedureId); // Debugging
+
+    if (!patientId || !procedureId) {
+        Swal.fire({
+            icon: "error",
+            title: "Missing Data",
+            text: "Error: Missing patient_id or procedure_id.",
+        });
+        return;
+    }
+
+    // SweetAlert2 confirmation dialog
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This record will be permanently deleted!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: "POST",
+                url: "../functions/delete_record.php",
+                contentType: "application/json",
+                data: JSON.stringify({ 
+                    patient_id: patientId.toString(),  // Ensure it's sent as a string
+                    procedure_id: procedureId.toString() 
+                }),
+                dataType: "json",
+                success: function (response) {
+                    console.log("Response from server:", response); // Debugging
+
+                    if (response.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Deleted!",
+                            text: "Record deleted successfully!",
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+
+                        button.closest("tr").remove(); // Remove row from table
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: response.message,
+                        });
+                        console.error("Delete failed:", response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", xhr.responseText);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "An error occurred while deleting the record.",
+                    });
+                }
+            });
+        }
+    });
+});
+
+$(document).ready(function () {
+    $('.view-link2').click(function () {
+        var patientId = $(this).data('student-id'); // Ensure correct data attribute
+
+        $.ajax({
+            url: '../functions/fetch_patientaccount.php', // Fetch patient details
+            type: 'POST',
+            data: { patient_id: patientId },
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    $('#patient_id').val(response.data.patient_id);
+                    $('#patient_fullName').val(response.data.patient_fullName);
+                    $('#patient_address').val(response.data.patient_address);
+
+                    var currentFamily = response.data.patient_family; // Store exact fetched value
+
+                    // Fetch Family List and Pre-Select the Current Family
+                    $.ajax({
+                        url: '../functions/fetch_families.php', // Fetch all families
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (familyResponse) {
+                            if (familyResponse.success) {
+                                var familyDropdown = $('#patient_family');
+                                familyDropdown.empty(); // Clear previous options
+                                familyDropdown.append('<option value="" disabled>Select a family</option>');
+                                familyDropdown.append('<option value="N/A">N/A</option>');
+
+                                familyResponse.families.forEach(function (family) {
+                                    var familyValue = family.folder_name + ' (' + family.folder_head + ')';
+                                    var selected = currentFamily == familyValue ? 'selected' : '';
+                                    familyDropdown.append('<option value="' + familyValue + '" ' + selected + '>' +
+                                        familyValue + '</option>');
+                                });
+
+                                // If current family is not in the list, set it manually
+                                if (!familyDropdown.find("option[value='" + currentFamily + "']").length) {
+                                    familyDropdown.append('<option value="' + currentFamily + '" selected>' + currentFamily + '</option>');
+                                }
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'Failed to fetch family list!'
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'Error fetching family data.'
+                            });
+                        }
+                    });
+
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Failed to fetch patient details!'
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Error fetching patient data.'
+                });
+            }
+        });
+    });
+
+    $('#editPatientForm').submit(function (event) {
+        event.preventDefault(); // Prevent default form submission
+
+        var formData = $(this).serialize(); // Serialize form data
+        console.log("Submitting Data:", formData); // Debugging: Log data to console
+
+        $.ajax({
+            url: '../functions/update_patientaccount.php',
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Patient details updated successfully!',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload(); // Reload page after confirmation
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Update Failed',
+                        text: 'Failed to update patient details: ' + response.message
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Error updating data!'
+                });
+            }
+        });
+    });
+});
+
 
 
 $(document).ready(function () {
@@ -630,7 +866,7 @@ $(document).ready(function () {
 <style>
 	/* Adjust the width of the modal */
 .modal-dialog {
-    max-width: 90%;   /* Adjust the percentage as needed */
+    max-width: 98%;   /* Adjust the percentage as needed */
     width: auto;      /* Ensure the modal doesn't stretch too wide */
 }
 
